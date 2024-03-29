@@ -3,5 +3,7 @@ project(sfml)
 
 set(CMAKE_CXX_STANDARD 17)
 find_package(SFML 2.6.1 COMPONENTS graphics audio REQUIRED)
-add_executable(game main.cpp)
+add_executable(game main.cpp
+        MainMenu.h
+        MainMenu.cpp)
 target_link_libraries(game sfml-graphics sfml-audio)
