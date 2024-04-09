@@ -7,6 +7,9 @@ MainMenu::MainMenu() {
     if(!textureBackground.loadFromFile("resources/Textures/menubg.png")) {
         exit(1);
     }
+
+    status = false;
+
     menuBackground.setTexture(textureBackground);
     menuBackground.setPosition(0,0);
     menuOptions[0].setFillColor(sf::Color::White);
@@ -19,4 +22,27 @@ MainMenu::MainMenu() {
 void MainMenu::draw(sf::RenderWindow* window) {
     window->draw(menuBackground);
     window->draw(menuOptions[0]);
+}
+
+void MainMenu::update(sf::Event *event) {
+    switch(event->type) {
+        case(sf::Event::MouseMoved): {
+            if(event->mouseMove.x > menuOptions[0].getPosition().x &&
+            event->mouseMove.x < menuOptions[0].getPosition().x + menuOptions[0].getGlobalBounds().getSize().x) {
+                if(event->mouseMove.y > menuOptions[0].getPosition().y &&
+                   event->mouseMove.y < menuOptions[0].getPosition().y + menuOptions[0].getGlobalBounds().getSize().y) {
+                        menuOptions[0].setFillColor(sf::Color::Red);
+                } else {
+                    menuOptions[0].setFillColor(sf::Color::White);
+                }
+            } else {
+                menuOptions[0].setFillColor(sf::Color::White);
+            }
+            break;
+        }
+    }
+}
+
+bool MainMenu::isActive() {
+    return this->status;
 }

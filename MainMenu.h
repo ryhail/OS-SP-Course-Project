@@ -11,9 +11,12 @@ private:
     sf::Font menuFont;
     sf::Sprite menuBackground;
     sf::Texture textureBackground;
+    bool status;
 public:
     MainMenu();
     void draw(sf::RenderWindow* window);
+    void update(sf::Event* event);
+    bool isActive();
 };
 
 
