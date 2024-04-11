@@ -1,6 +1,7 @@
+#include <SFML/Graphics.hpp>
 #ifndef SFML_TESTSERVER_H
 #define SFML_TESTSERVER_H
-#include <SFML/Graphics.hpp>
+
 
 class TestServer {
     sf::RectangleShape firstShape;

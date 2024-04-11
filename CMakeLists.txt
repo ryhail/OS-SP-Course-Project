@@ -8,5 +8,9 @@ add_executable(game main.cpp
         MainMenu.cpp
         server/client.c
         TestServer.h
-        TestServer.cpp)
+        TestServer.cpp
+        UserInterface.h
+        UserInterface.cpp
+        ConnectToServer.h
+        ConnectToServer.cpp)
 target_link_libraries(game sfml-graphics sfml-audio)

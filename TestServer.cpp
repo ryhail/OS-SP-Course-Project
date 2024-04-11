@@ -5,7 +5,7 @@
 #include "TestServer.h"
 
 TestServer::TestServer() {
-    status = true;
+    status = false;
 
     firstShape.setPosition(300, 300);
     firstShape.setSize(sf::Vector2f(50,50));
