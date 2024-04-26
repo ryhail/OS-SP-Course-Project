@@ -1,19 +1,26 @@
 #include <SFML/Window/Event.hpp>
+#include <sstream>
 #include "Application.h"
+#include "states/TitleState.h"
+#include "states/MenuState.h"
+
 const sf::Time Application::TimePerFrame = sf::seconds(1.f/60.f);
 
 Application::Application()
         : mWindow(sf::VideoMode(1280, 720), "States", sf::Style::Close)
-        , mStateStack(State::Context(mWindow))
+        , mFonts()
+        , mTextures()
+        , mStateStack(State::Context(mWindow, &mTextures, &mFonts))
         , mStatisticsText()
         , mStatisticsUpdateTime()
         , mStatisticsNumFrames(0)
 {
     mWindow.setKeyRepeatEnabled(false);
 
-    mStatisticTextFont.loadFromFile("resources/Fonts/SuperPixel.ttf");
-
-    mStatisticsText.setFont(mStatisticTextFont);
+    mFonts.load(Fonts::MainNumbers, "resources/Fonts/PixelifySans.ttf");
+    mFonts.load(Fonts::MainLetters, "resources/Fonts/SuperPixel.ttf");
+    mTextures.load(Textures::MainMenu, "resources/Textures/menubg.png");
+    mStatisticsText.setFont(mFonts.getResource(Fonts::MainNumbers));
     mStatisticsText.setPosition(5.f, 5.f);
     mStatisticsText.setCharacterSize(10u);
 
@@ -82,10 +89,9 @@ void Application::updateStatistics(sf::Time dt)
     mStatisticsNumFrames += 1;
     if (mStatisticsUpdateTime >= sf::seconds(1.0f))
     {
-        char* fps;
-        strfromf64x(fps, 5, "%lu", mStatisticsNumFrames);
-        mStatisticsText.setString("FPS: " + std::string(fps));
-
+        std::stringstream stream;
+        stream << mStatisticsNumFrames;
+        mStatisticsText.setString("FPS: " + stream.str());
         mStatisticsUpdateTime -= sf::seconds(1.0f);
         mStatisticsNumFrames = 0;
     }
@@ -93,5 +99,6 @@ void Application::updateStatistics(sf::Time dt)
 
 void Application::registerStates()
 {
-
+    mStateStack.registerState<TitleState>(States::Title);
+    mStateStack.registerState<MenuState>(States::Menu);
 }

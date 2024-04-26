@@ -5,7 +5,7 @@
 #include <functional>
 #include <map>
 #include "StateIdentifiers.h"
- class State;
+#include "State.h"
 
 namespace sf
 {

@@ -1,6 +1,12 @@
 #include "State.h"
+#include "StateStack.h"
 
-State::Context::Context(sf::RenderWindow& window): window(&window)
+State::Context::Context(sf::RenderWindow& window,
+        ResourceHolder<Textures::ID, sf::Texture>* textures,
+        ResourceHolder<Fonts::ID, sf::Font>* fonts)
+        : window(&window),
+        textures(textures),
+        fonts(fonts)
 {
 }
 
@@ -33,3 +39,5 @@ State::Context State::getContext() const
 {
     return mContext;
 }
+
+

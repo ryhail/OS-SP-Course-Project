@@ -4,8 +4,6 @@ project(sfml)
 set(CMAKE_CXX_STANDARD 17)
 find_package(SFML 2.6.1 COMPONENTS graphics audio REQUIRED)
 add_executable(game main.cpp
-        MainMenu.h
-        MainMenu.cpp
         server/client.c
         TestServer.h
         TestServer.cpp
@@ -19,5 +17,10 @@ add_executable(game main.cpp
         states/State.cpp
         states/StateStack.cpp
         Application.h
-        Application.cpp)
+        Application.cpp
+        resources/ResourceHolder.inl
+        states/TitleState.h
+        states/TitleState.cpp
+        states/MenuState.h
+        states/MenuState.cpp)
 target_link_libraries(game sfml-graphics sfml-audio)

@@ -3,15 +3,17 @@
 
 #include <memory>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Font.hpp>
 #include "StateIdentifiers.h"
-#include "StateStack.h"
+#include "../resources/ResourceHolder.h"
+#include "../resources/Fonts.h"
 
 namespace sf
 {
     class RenderWindow;
 }
 
-
+class StateStack;
 
 class State
 {
@@ -19,8 +21,12 @@ public:
     typedef std::unique_ptr<State> Ptr;
     struct Context
     {
-        Context(sf::RenderWindow& window);
-        sf::RenderWindow*	window;
+        Context(sf::RenderWindow& window,
+                ResourceHolder<Textures::ID, sf::Texture>* textures,
+                ResourceHolder<Fonts::ID, sf::Font>* fonts);
+        sf::RenderWindow*	                                window;
+        ResourceHolder<Textures::ID, sf::Texture>*        textures;
+        ResourceHolder<Fonts::ID, sf::Font>*                 fonts;
     };
 public:
     State(StateStack& stack, Context context);

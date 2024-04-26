@@ -22,14 +22,15 @@ private:
 
 
 private:
-    static const sf::Time	TimePerFrame;
-
-    sf::RenderWindow		mWindow;
-    StateStack				mStateStack;
-    sf::Font                mStatisticTextFont;
-    sf::Text				mStatisticsText;
-    sf::Time				mStatisticsUpdateTime;
-    std::size_t				mStatisticsNumFrames;
+    static const sf::Time	                    TimePerFrame;
+    sf::RenderWindow		                    mWindow;
+    ResourceHolder<Textures::ID, sf::Texture>   mTextures;
+    ResourceHolder<Fonts::ID, sf::Font>         mFonts;
+    StateStack				                    mStateStack;
+    sf::Font                                    mStatisticTextFont;
+    sf::Text				                    mStatisticsText;
+    sf::Time				                    mStatisticsUpdateTime;
+    std::size_t				                    mStatisticsNumFrames;
 };
 
 
