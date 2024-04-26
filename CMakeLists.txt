@@ -12,5 +12,12 @@ add_executable(game main.cpp
         UserInterface.h
         UserInterface.cpp
         ConnectToServer.h
-        ConnectToServer.cpp)
+        ConnectToServer.cpp
+        states/StateStack.h
+        states/State.h
+        states/StateIdentifiers.h
+        states/State.cpp
+        states/StateStack.cpp
+        Application.h
+        Application.cpp)
 target_link_libraries(game sfml-graphics sfml-audio)

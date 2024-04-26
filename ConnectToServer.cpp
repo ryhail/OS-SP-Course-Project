@@ -24,7 +24,10 @@ void ConnectToServer::update(sf::Event* event) {
             if(event->key.code == sf::Keyboard::Enter) {
                 if(userInput.empty())
                     break;
-
+                else {
+                    _server_ip_present = true;
+                    status = false;
+                }
             }
         }
         default:
@@ -51,4 +54,12 @@ ConnectToServer::ConnectToServer() {
     textField.setCharacterSize(40);
     textField.setFont(font);
     textField.setString("server ip");
+}
+
+std::string ConnectToServer::getServerIp() {
+    return userInput;
+}
+
+bool ConnectToServer::getInputStatus() {
+    return _server_ip_present;
 }

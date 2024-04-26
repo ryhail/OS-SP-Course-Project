@@ -10,11 +10,13 @@ class ConnectToServer {
     std::string userInput;
     sf::Font font;
     bool status;
+    bool _server_ip_present = false;
 public:
     ConnectToServer();
     void update(sf::Event*);
     void draw(sf::RenderWindow* window);
-
+    std::string getServerIp();
+    bool getInputStatus();
 };
 
 
