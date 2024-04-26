@@ -48,6 +48,8 @@ bool MenuState::handleEvent(const sf::Event &event) {
             int currentOption = isCursorOnMenuOption(event.mouseButton.x, event.mouseButton.y);
             switch(currentOption) {
                 case 0:
+                    requestStackPop();
+                    requestStackPush(States::Connect);
                     break;
                 case 1:
                     requestStackPop();

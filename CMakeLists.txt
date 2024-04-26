@@ -22,5 +22,9 @@ add_executable(game main.cpp
         states/TitleState.h
         states/TitleState.cpp
         states/MenuState.h
-        states/MenuState.cpp)
+        states/MenuState.cpp
+        states/ConnectState.h
+        states/ConnectState.cpp
+        states/utility.h
+        states/utility.cpp)
 target_link_libraries(game sfml-graphics sfml-audio)
