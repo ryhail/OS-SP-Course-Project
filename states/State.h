@@ -7,6 +7,7 @@
 #include "StateIdentifiers.h"
 #include "../resources/ResourceHolder.h"
 #include "../resources/Fonts.h"
+#include "../player_managment/player/Player.h"
 
 namespace sf
 {
@@ -27,6 +28,8 @@ public:
         sf::RenderWindow*	                                window;
         ResourceHolder<Textures::ID, sf::Texture>*        textures;
         ResourceHolder<Fonts::ID, sf::Font>*                 fonts;
+        Player*                                            player1;
+        Player*                                            player2;
     };
 public:
     State(StateStack& stack, Context context);

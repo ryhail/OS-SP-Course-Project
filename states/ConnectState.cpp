@@ -30,6 +30,13 @@ ConnectState::ConnectState(StateStack &stack, State::Context context)
     mFrame.setOutlineColor(sf::Color::Magenta);
     mFrame.setPosition(mChoices[0].getPosition() - mChoices[0].getSize() / 8.f);
     mFrame.setSize(mChoices[0].getSize() * 1.25f);
+
+    centerOrigin(mServerIp);
+    mServerIp.setFont(context.fonts->getResource(Fonts::MainNumbers));
+    mServerIp.setString("server ip");
+    mServerIp.setCharacterSize((int) mConnectButton.getSize().x / 5);
+    mServerIp.setFillColor(sf::Color::White);
+    mServerIp.setPosition(mChoices[0].getPosition().x, windowSize.y / 5);
 }
 
 void ConnectState::draw() {
@@ -39,9 +46,11 @@ void ConnectState::draw() {
     window.draw(mFrame);
     window.draw(mChoices[0]);
     window.draw(mChoices[1]);
+    window.draw(mServerIp);
 }
 
 bool ConnectState::update(sf::Time dt) {
+
     return true;
 }
 
@@ -53,9 +62,6 @@ bool ConnectState::handleEvent(const sf::Event &event) {
         case sf::Keyboard::Key::Right:
             mChoice = true;
             break;
-        case sf::Keyboard::Key::Enter:
-            //todo
-            break;
         default:
             break;
     }
@@ -63,6 +69,45 @@ bool ConnectState::handleEvent(const sf::Event &event) {
         mFrame.setPosition(mChoices[1].getPosition() - mChoices[1].getSize() / 8.f);
     } else {
         mFrame.setPosition(mChoices[0].getPosition() - mChoices[0].getSize() / 8.f);
+    }
+    switch(event.type) {
+        case(sf::Event::EventType::TextEntered): {
+            if((event.text.unicode <= 57 && event.text.unicode >= 48)
+               || event.text.unicode == 46) {
+                if(mUserInput.size() == 20)
+                    break;
+                mUserInput += event.text.unicode;
+                mServerIp.setString(mUserInput);
+            }
+        }
+        case(sf::Event::EventType::KeyPressed): {
+            if(event.key.code == sf::Keyboard::BackSpace) {
+                if(mUserInput.empty()) {
+                    mServerIp.setString("server ip");
+                    break;
+                }
+                getContext().player1->setActive(!mChoice);
+                getContext().player2->setActive(mChoice);
+                mUserInput.pop_back();
+                mServerIp.setString(mUserInput);
+            }
+            break;
+        }
+        case(sf::Event::EventType::KeyReleased): {
+            if(event.key.code == sf::Keyboard::Enter) {
+                if(mUserInput.empty()) {
+                    mServerIp.setString("server ip");
+                    break;
+                }
+                else {
+                    requestStackPop();
+                    requestStackPush(States::Game);
+                    break;
+                }
+            }
+        }
+        default:
+            break;
     }
     return true;
 }

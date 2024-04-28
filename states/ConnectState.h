@@ -20,6 +20,8 @@ private:
     bool               mChoice;
     sf::RectangleShape mConnectButton;
     sf::Text           mConnectText;
+    sf::Text           mServerIp;
+    std::string        mUserInput;
 };
 
 

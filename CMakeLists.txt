@@ -26,5 +26,18 @@ add_executable(game main.cpp
         states/ConnectState.h
         states/ConnectState.cpp
         states/utility.h
-        states/utility.cpp)
+        states/utility.cpp
+        states/GameState.h
+        states/GameState.cpp
+        player_managment/player/Player.h
+        player_managment/player/Player.cpp
+        entity_managment/Bullet/Bullet.h
+        entity_managment/sever_structures.h
+        entity_managment/SceneNode.h
+        entity_managment/SceneNode.cpp
+        levelDesign/Level.h
+        levelDesign/Level.cpp
+        levelDesign/MapTile.h
+        levelDesign/MapTile.cpp
+)
 target_link_libraries(game sfml-graphics sfml-audio)

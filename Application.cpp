@@ -4,6 +4,7 @@
 #include "states/TitleState.h"
 #include "states/MenuState.h"
 #include "states/ConnectState.h"
+#include "states/GameState.h"
 
 const sf::Time Application::TimePerFrame = sf::seconds(1.f/60.f);
 
@@ -16,11 +17,11 @@ Application::Application()
         , mStatisticsUpdateTime()
         , mStatisticsNumFrames(0)
 {
-    mWindow.setKeyRepeatEnabled(false);
+    mWindow.setKeyRepeatEnabled(true);
 
     mFonts.load(Fonts::MainNumbers, "resources/Fonts/PixelifySans.ttf");
     mFonts.load(Fonts::MainLetters, "resources/Fonts/SuperPixel.ttf");
-    mTextures.load(Textures::MainMenu, "resources/Textures/menubg.png");
+
     mStatisticsText.setFont(mFonts.getResource(Fonts::MainNumbers));
     mStatisticsText.setPosition(5.f, 5.f);
     mStatisticsText.setCharacterSize(10u);
@@ -103,4 +104,5 @@ void Application::registerStates()
     mStateStack.registerState<TitleState>(States::Title);
     mStateStack.registerState<MenuState>(States::Menu);
     mStateStack.registerState<ConnectState>(States::Connect);
+    mStateStack.registerState<GameState>(States::Game);
 }
