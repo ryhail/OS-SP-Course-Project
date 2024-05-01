@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.27)
 project(sfml)
 
 set(CMAKE_CXX_STANDARD 17)
-find_package(SFML 2.6.1 COMPONENTS graphics audio REQUIRED)
+find_package(SFML 2.6.1 COMPONENTS graphics audio)
 add_executable(game main.cpp
         server/client.c
         TestServer.h
@@ -39,5 +39,7 @@ add_executable(game main.cpp
         levelDesign/Level.cpp
         levelDesign/MapTile.h
         levelDesign/MapTile.cpp
+        input_handler/InputHandler.cpp
+        input_handler/InputHandler.h
 )
 target_link_libraries(game sfml-graphics sfml-audio)
