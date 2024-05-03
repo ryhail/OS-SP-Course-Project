@@ -1,6 +1,7 @@
 #include "Player.h"
 
-Player::Player(TextureHolder *textures, Textures::ID playerType) : Entity(*new sf::Vector2i(200, 200)){
+Player::Player(TextureHolder *textures, Textures::ID playerType)
+        : Entity(){
     playerSprite.setTexture(textures->getResource(playerType));
     playerSprite.setPosition(coordinates.x, coordinates.y);
     facing.y = 0;
@@ -45,6 +46,8 @@ int Player::getSpeed() const {
  * смещение считается speed * time в проекциях вектора по Х, У
  * таким образом обеспечивается перемещение по времени
  */
-void Player::move(sf::Vector2i direction, sf::Time time) {
-    coordinates += shift;
+void Player::move(sf::Vector2i direction, sf::Time dt) {
+    coordinates.x += direction.x * speed * dt.asSeconds();
+    coordinates.y += direction.y * speed * dt.asSeconds();
 }
+

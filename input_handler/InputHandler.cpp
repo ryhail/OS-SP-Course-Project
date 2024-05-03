@@ -36,16 +36,17 @@ InputHandler::InputHandler() {
     pair.second.category = EntityType::ACTIVE_PLAYER;
 }
 
-//void InputHandler::handleEvent(const sf::Event& event, CommandQueue& commands)
-//{
-//    if (event.type == sf::Event::KeyPressed)
-//    {
-//         Check if pressed key appears in key binding, trigger command if so
-//        auto found = mKeyBinding.find(event.key.code);
-//        if (found != mKeyBinding.end() && !isRealtimeAction(found->second))
-//            commands.push(mActionBinding[found->second]);
-//    }
-//}
+void InputHandler::handleEvent(const sf::Event& event, CommandQueue& commands)
+{
+    if (event.type == sf::Event::KeyPressed)
+    {
+        //Check if pressed key appears in key binding, trigger command if so
+        HotKey singleHotKey {event.key.code};
+        auto found = mKeyBinding.find(singleHotKey);
+        if (found != mKeyBinding.end() && !isRealtimeAction(found->second))
+            commands.push(mActionBinding[found->second]);
+    }
+}
 /*
  * метод, обрабатывающий ввод в реальном времени
  * что даёт возможность передвижению
@@ -132,6 +133,10 @@ bool InputHandler::isRealtimeAction(Action action)
         case MoveRight:
         case MoveDown:
         case MoveUp:
+        case MoveUpRight:
+        case MoveDownRight:
+        case MoveDownLeft:
+        case MoveUpLeft:
             return true;
 
         default:

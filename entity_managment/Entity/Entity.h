@@ -12,7 +12,7 @@ protected:
     sf::Vector2i coordinates;
 public:
     Entity();
-    explicit Entity(sf::Vector2i _coordinates);
+    explicit Entity(const sf::Vector2i _coordinates);
 
     sf::Vector2i getCoordinates() { return coordinates; }
 

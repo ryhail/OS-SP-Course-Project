@@ -1,11 +1,11 @@
 #include "Entity.h"
 
 Entity::Entity() {
-    coordinates.x = 0;
-    coordinates.y = 0;
+    coordinates.x = 200;
+    coordinates.y = 200;
 }
 
-void Entity::updateCurrent(sf::Vector2i _coordinates) {
+void Entity::updateCurrent(const sf::Vector2i _coordinates) {
     coordinates.x = _coordinates.x;
     coordinates.y = _coordinates.y;
 }

@@ -36,7 +36,7 @@ public:
     };
     InputHandler();
 
-    //void					    handleEvent(const sf::Event& event, CommandQueue& commands);
+    void					    handleEvent(const sf::Event& event, CommandQueue& commands);
     void					    handleRealtimeInput(CommandQueue& commands);
 
     void					    assignKey(Action action, const HotKey& hotKey);
