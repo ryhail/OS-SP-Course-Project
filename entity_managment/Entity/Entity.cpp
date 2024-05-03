@@ -5,6 +5,15 @@ Entity::Entity() {
     coordinates.y = 0;
 }
 
-void Entity::updateCurrent(coordinate _coordinate) {
-    coordinates = _coordinate;
+void Entity::updateCurrent(sf::Vector2i _coordinates) {
+    coordinates.x = _coordinates.x;
+    coordinates.y = _coordinates.y;
+}
+
+void Entity::updateCurrent(sf::Time dt) {
+    //will be overriden
+}
+
+Entity::Entity(sf::Vector2i _coordinates) {
+    coordinates = _coordinates;
 }

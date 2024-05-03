@@ -12,4 +12,6 @@ void centerOrigin(sf::Sprite& sprite);
 void centerOrigin(sf::Text& text);
 void centerOrigin(sf::RectangleShape& rect);
 
+int sign(int shislo);
+
 #endif //SFML_UTILITY_H

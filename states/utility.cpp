@@ -17,3 +17,6 @@ void centerOrigin(sf::Text& text)
     text.setOrigin(std::floor(bounds.left + bounds.width / 2.f), std::floor(bounds.top + bounds.height / 2.f));
 }
 
+int sign(int shislo) {
+    return shislo > 0 ? 1 : -1;
+}

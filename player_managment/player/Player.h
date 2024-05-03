@@ -6,23 +6,28 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include "../../entity_managment/Bullet/Bullet.h"
+#include "../../entity_managment/Entity/EntityType.h"
 
-class Player {
-    sf::Vector2i coordinates;
-    sf::Vector2i facing;
-    sf::Sprite   playerSprite;
-    int          hitPoints;
-    bool         active;
+#define PLAYER_INIT_SPEED 5
+
+class Player : public Entity{
+    sf::Vector2i    facing;
+    sf::Sprite      playerSprite;
+    int             hitPoints;
+    int             speed;
+    bool            active;
 public:
     Player(TextureHolder *textures, Textures::ID playerType);
-    void takeDamage(int dmg);
-    void heal(int heal);
-    sf::Vector2i getCoordinates();
-    void updateCoordinates(sf::Vector2i newCoords);
-    void updateFacing(int x, int y);
-    void setActive(bool value);
-    bool isActive();
-    void draw(sf::RenderWindow* window);
+    void    takeDamage(int dmg);
+    void    heal(int heal);
+    void    updateFacing(int x, int y);
+    void    setActive(bool value);
+    void move(sf::Vector2i direction, sf::Time time);
+    bool    isActive() const;
+    void    draw(sf::RenderWindow* window);
+    int     getSpeed() const;
+
+    EntityType::Type getCategory() const override;
 };
 
 

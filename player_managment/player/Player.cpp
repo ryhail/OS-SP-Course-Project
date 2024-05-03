@@ -1,12 +1,11 @@
 #include "Player.h"
 
-Player::Player(TextureHolder *textures, Textures::ID playerType) {
+Player::Player(TextureHolder *textures, Textures::ID playerType) : Entity(*new sf::Vector2i(200, 200)){
     playerSprite.setTexture(textures->getResource(playerType));
-    coordinates.y = 200;
-    coordinates.x = 200;
     playerSprite.setPosition(coordinates.x, coordinates.y);
     facing.y = 0;
     facing.x = 0;
+    speed = PLAYER_INIT_SPEED;
 }
 
 void Player::takeDamage(int dmg) {
@@ -15,11 +14,6 @@ void Player::takeDamage(int dmg) {
 
 void Player::heal(int heal) {
     hitPoints+=heal;
-}
-
-void Player::updateCoordinates(sf::Vector2i newCoords) {
-    coordinates = newCoords;
-    playerSprite.setPosition(coordinates.x, coordinates.y);
 }
 
 void Player::updateFacing(int x, int y) {
@@ -31,7 +25,7 @@ void Player::setActive(bool value) {
     active = value;
 }
 
-bool Player::isActive() {
+bool Player::isActive() const {
     return active;
 }
 
@@ -39,6 +33,18 @@ void Player::draw(sf::RenderWindow* window) {
     window->draw(playerSprite);
 }
 
-sf::Vector2i Player::getCoordinates() {
-    return coordinates;
+EntityType::Type Player::getCategory() const {
+    return active ? EntityType::ACTIVE_PLAYER : EntityType::INACTIVE_PLAYER;
+}
+
+int Player::getSpeed() const {
+    return speed;
+}
+/*
+ * прибавляет к текущим координатам coordinates смещение
+ * смещение считается speed * time в проекциях вектора по Х, У
+ * таким образом обеспечивается перемещение по времени
+ */
+void Player::move(sf::Vector2i direction, sf::Time time) {
+    coordinates += shift;
 }

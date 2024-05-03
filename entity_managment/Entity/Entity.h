@@ -8,12 +8,18 @@
 #include "../SceneNode.h"
 
 class Entity: public SceneNode{
-    coordinate coordinates;
+protected:
+    sf::Vector2i coordinates;
 public:
     Entity();
+    explicit Entity(sf::Vector2i _coordinates);
+
+    sf::Vector2i getCoordinates() { return coordinates; }
 
 private:
-    void updateCurrent(coordinate _coordinate) override;
+    void updateCurrent(sf::Vector2i _coordinates) override;
+    void updateCurrent(sf::Time dt) override;
+
     //virtual Textures::ID  getResource() = 0;
 };
 #endif //COURSE_ENTITY_H
