@@ -3,6 +3,7 @@
 //
 
 #include <valarray>
+#include <iostream>
 #include "InputHandler.h"
 #include "../entity_managment/Entity/EntityType.h"
 #include "../player_managment/player/Player.h"
@@ -10,14 +11,14 @@
 
 InputHandler::InputHandler() {
     // Set initial key bindings
-    HotKey hotKeyForMoveLeft        = {sf::Keyboard::Left};
-    HotKey hotKeyForMoveDown        = {sf::Keyboard::Down};
-    HotKey hotKeyForMoveRight       = {sf::Keyboard::Right};
-    HotKey hotKeyForMoveUp          = {sf::Keyboard::Up};
-    HotKey hotKeyForMoveUpLeft      = {sf::Keyboard::Left, sf::Keyboard::Up};
-    HotKey hotKeyForMoveDownLeft    = {sf::Keyboard::Left, sf::Keyboard::Down};
-    HotKey hotKeyForMoveUpRight     = {sf::Keyboard::Right, sf::Keyboard::Up};
-    HotKey hotKeyForMoveDownRight   = {sf::Keyboard::Right, sf::Keyboard::Down};
+    HotKey hotKeyForMoveLeft        = {sf::Keyboard::A};
+    HotKey hotKeyForMoveDown        = {sf::Keyboard::S};
+    HotKey hotKeyForMoveRight       = {sf::Keyboard::D};
+    HotKey hotKeyForMoveUp          = {sf::Keyboard::W};
+    HotKey hotKeyForMoveUpLeft      = {sf::Keyboard::A, sf::Keyboard::W};
+    HotKey hotKeyForMoveDownLeft    = {sf::Keyboard::A, sf::Keyboard::S};
+    HotKey hotKeyForMoveUpRight     = {sf::Keyboard::D, sf::Keyboard::W};
+    HotKey hotKeyForMoveDownRight   = {sf::Keyboard::D, sf::Keyboard::S};
 
     mKeyBinding[hotKeyForMoveLeft]      = MoveLeft;
     mKeyBinding[hotKeyForMoveDown]      = MoveDown;
@@ -57,17 +58,44 @@ void InputHandler::handleEvent(const sf::Event& event, CommandQueue& commands)
 void InputHandler::handleRealtimeInput(CommandQueue& commands)
 {
     // Traverse all assigned keys and check if they are pressed
-    for(const auto& pair: mKeyBinding)
-    {
-        bool completedHotKey = true;
-        for (sf::Keyboard::Key key : pair.first) {
-            if (!sf::Keyboard::isKeyPressed(key)) {
-                completedHotKey = false;
-            }
-        }
-        if(completedHotKey && isRealtimeAction(pair.second)) {
-            commands.push(mActionBinding[pair.second]);
-        }
+//    for(const auto& pair: mKeyBinding)
+//    {
+//        bool completedHotKey = true;
+//        for (sf::Keyboard::Key key : pair.first) {
+//            if (!sf::Keyboard::isKeyPressed(key)) {
+//                completedHotKey = false;
+//            }
+//        }
+//        if(completedHotKey && isRealtimeAction(pair.second)) {
+//            for(auto itr : pair.first) {
+//                std::cout << toascii(itr) << " ";
+//            }
+//            commands.push(mActionBinding[pair.second]);
+//        }
+//    }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+        commands.push(mActionBinding[MoveUpLeft]);
+    }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+        commands.push(mActionBinding[MoveUpRight]);
+    }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+        commands.push(mActionBinding[MoveDownLeft]);
+    }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+        commands.push(mActionBinding[MoveDownRight]);
+    }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
+        commands.push(mActionBinding[MoveUp]);
+    }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+        commands.push(mActionBinding[MoveLeft]);
+    }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) ) {
+        commands.push(mActionBinding[MoveDown]);
+    }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) ) {
+        commands.push(mActionBinding[MoveRight]);
     }
 }
 

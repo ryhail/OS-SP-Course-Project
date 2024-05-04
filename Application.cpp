@@ -61,10 +61,11 @@ void Application::processInput()
     sf::Event event;
     while (mWindow.pollEvent(event))
     {
-        mStateStack.handleEvent(event);
-
         if (event.type == sf::Event::Closed)
             mWindow.close();
+
+        mStateStack.handleEvent(event);
+
     }
 }
 
