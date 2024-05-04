@@ -11,6 +11,10 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
         controlledPlayer = context.player2;
         updatedPlayer = context.player1;
     }
+    controlledPlayer->update(mLevel.getCurrentMapTile()->getSpawnPoint());
+    controlledPlayer->setSpritePosition(mLevel.getCurrentMapTile()->getSpawnPoint());
+    updatedPlayer->update(mLevel.getCurrentMapTile()->getSpawnPoint());
+    updatedPlayer->setSpritePosition(mLevel.getCurrentMapTile()->getSpawnPoint());
     buildScene();
 
 }

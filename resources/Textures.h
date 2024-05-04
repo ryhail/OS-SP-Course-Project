@@ -6,6 +6,7 @@ namespace Textures {
         TitleScreen,
         MainMenu,
         Tile,
+        Border,
         Player1
     };
 }

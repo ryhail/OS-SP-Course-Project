@@ -14,6 +14,7 @@ public:
     Level(sf::RenderWindow* window);
     void								update(sf::Time dt);
     void								draw();
+    MapTile*                            getCurrentMapTile();
 private:
     std::vector<MapTile*>               mapTiles;
     MapTile*                            currentMapTile;

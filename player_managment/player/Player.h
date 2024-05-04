@@ -21,6 +21,7 @@ public:
     void    takeDamage(int dmg);
     void    heal(int heal);
     void    updateFacing(int x, int y);
+    void    setSpritePosition(sf::Vector2f _coords);
     void    setActive(bool value);
     void    move(sf::Vector2i direction, sf::Time time);
     bool    isActive() const;

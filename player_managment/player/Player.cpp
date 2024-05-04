@@ -56,3 +56,7 @@ void Player::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) cons
     target.draw(playerSprite, states);
 }
 
+void Player::setSpritePosition(sf::Vector2f _coords) {
+    playerSprite.setPosition(_coords);
+}
+

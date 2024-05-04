@@ -14,3 +14,11 @@ void Level::update(sf::Time dt) {
 void Level::draw() {
     currentMapTile->draw();
 }
+
+MapTile *Level::getCurrentMapTile() {
+    return currentMapTile;
+}
+
+
+
+

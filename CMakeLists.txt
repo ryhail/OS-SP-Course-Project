@@ -47,5 +47,7 @@ add_executable(game main.cpp
         command/CommandQueue.h
         entity_managment/Entity/Entity.cpp
         input_handler/InputHandler.cpp
+        levelDesign/Tile.h
+        levelDesign/Tile.cpp
 )
 target_link_libraries(game sfml-graphics sfml-audio)
