@@ -73,26 +73,26 @@ void InputHandler::handleRealtimeInput(CommandQueue& commands)
 //            commands.push(mActionBinding[pair.second]);
 //        }
 //    }
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
-        commands.push(mActionBinding[MoveUpLeft]);
-    }
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-        commands.push(mActionBinding[MoveUpRight]);
-    }
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
-        commands.push(mActionBinding[MoveDownLeft]);
-    }
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-        commands.push(mActionBinding[MoveDownRight]);
-    }
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
-        commands.push(mActionBinding[MoveUp]);
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+            commands.push(mActionBinding[MoveUpRight]);
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+            commands.push(mActionBinding[MoveUpLeft]);
+        else
+            commands.push(mActionBinding[MoveUp]);
+        return;
+    }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+            commands.push(mActionBinding[MoveDownRight]);
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+            commands.push(mActionBinding[MoveDownLeft]);
+        else
+            commands.push(mActionBinding[MoveDown]);
+        return;
     }
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
         commands.push(mActionBinding[MoveLeft]);
-    }
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) ) {
-        commands.push(mActionBinding[MoveDown]);
     }
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) ) {
         commands.push(mActionBinding[MoveRight]);
@@ -134,22 +134,22 @@ void InputHandler::initializeActions()
         player.move(sf::Vector2i(1, 0), dt);
     });
     mActionBinding[MoveUp].action        = derivedAction<Player>([](Player& player, sf::Time dt) {
-        player.move(sf::Vector2i(0, 1), dt);
+        player.move(sf::Vector2i(0, -1), dt);
     });
     mActionBinding[MoveDown].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
         player.move(sf::Vector2i(0, 1), dt);
     });
     mActionBinding[MoveUpLeft].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
-        player.move(sf::Vector2i(-1, 1), dt);
+        player.move(sf::Vector2i(-1, -1), dt);
     });
     mActionBinding[MoveDownRight].action     = derivedAction<Player>([](Player& player, sf::Time dt) {
-        player.move(sf::Vector2i(1, -1), dt);
-    });
-    mActionBinding[MoveUpRight].action        = derivedAction<Player>([](Player& player, sf::Time dt) {
         player.move(sf::Vector2i(1, 1), dt);
     });
+    mActionBinding[MoveUpRight].action        = derivedAction<Player>([](Player& player, sf::Time dt) {
+        player.move(sf::Vector2i(1, -1), dt);
+    });
     mActionBinding[MoveDownLeft].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
-        player.move(sf::Vector2i(-1, -1), dt);
+        player.move(sf::Vector2i(-1, 1), dt);
     });
 }
 

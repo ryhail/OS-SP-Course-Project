@@ -9,15 +9,15 @@
 
 class Entity: public SceneNode{
 protected:
-    sf::Vector2i coordinates;
+    sf::Vector2f coordinates;
 public:
     Entity();
-    explicit Entity(const sf::Vector2i _coordinates);
+    explicit Entity(const sf::Vector2f _coordinates);
 
-    sf::Vector2i getCoordinates() { return coordinates; }
+    sf::Vector2f getCoordinates() { return coordinates; }
 
 private:
-    void updateCurrent(sf::Vector2i _coordinates) override;
+    void updateCurrent(sf::Vector2f _coordinates) override;
     void updateCurrent(sf::Time dt) override;
 
     //virtual Textures::ID  getResource() = 0;

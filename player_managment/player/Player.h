@@ -8,7 +8,7 @@
 #include "../../entity_managment/Bullet/Bullet.h"
 #include "../../entity_managment/Entity/EntityType.h"
 
-#define PLAYER_INIT_SPEED 5
+#define PLAYER_INIT_SPEED 100
 
 class Player : public Entity{
     sf::Vector2i    facing;

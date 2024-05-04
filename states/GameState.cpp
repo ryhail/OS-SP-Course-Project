@@ -17,9 +17,10 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
 
 void GameState::draw() {
     mLevel.draw();
-    controlledPlayer->draw(getContext().window);
-    updatedPlayer->draw(getContext().window);
-    //getContext().window->draw(sceneGraph);
+//    controlledPlayer->draw(getContext().window);
+//    updatedPlayer->draw(getContext().window);
+    getContext().window->draw(sceneGraph);
+    std::cout<<controlledPlayer->getCoordinates().x<<std::endl;
 }
 
 bool GameState::update(sf::Time dt) {
@@ -28,7 +29,6 @@ bool GameState::update(sf::Time dt) {
     }
     sceneGraph.update(dt);
     inputHandler.handleRealtimeInput(commandQueue);
-    std::cout << std::endl << controlledPlayer->getCoordinates().x << " " << controlledPlayer->getCoordinates().y << std::endl;
     return true;
 }
 

@@ -25,7 +25,7 @@ public:
 
     void            addChild(SceneNodePtr child);
     SceneNodePtr    detachChild(const SceneNode& child);
-    void            update(sf::Vector2i _coordinate);
+    void            update(sf::Vector2f _coordinate);
     void            update(sf::Time dt);
 
     void            draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -37,8 +37,8 @@ private:
 
     virtual void    drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 
-    virtual void    updateCurrent(sf::Vector2i _coordinate);
-    void            updateChildren(sf::Vector2i _coordinate);
+    virtual void    updateCurrent(sf::Vector2f _coordinate);
+    void            updateChildren(sf::Vector2f _coordinate);
     virtual void    updateCurrent(sf::Time dt);
     void            updateChildren(sf::Time dt);
 

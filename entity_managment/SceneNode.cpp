@@ -36,14 +36,14 @@ void SceneNode::update(sf::Time dt) {
     updateChildren(dt);
 }
 
-void SceneNode::update(sf::Vector2i _coordinate) {
+void SceneNode::update(sf::Vector2f _coordinate) {
     updateCurrent(_coordinate);
     updateChildren(_coordinate);
 }
-void SceneNode::updateCurrent(sf::Vector2i _coordinate) {
+void SceneNode::updateCurrent(sf::Vector2f _coordinate) {
     //  will be overloaded
 }
-void SceneNode::updateChildren(sf::Vector2i _coordinate) {
+void SceneNode::updateChildren(sf::Vector2f _coordinate) {
     for (SceneNodePtr& ptr: childSceneNodes) {
         ptr->update(_coordinate);
     }

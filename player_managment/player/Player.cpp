@@ -49,6 +49,7 @@ int Player::getSpeed() const {
 void Player::move(sf::Vector2i direction, sf::Time dt) {
     coordinates.x += direction.x * speed * dt.asSeconds();
     coordinates.y += direction.y * speed * dt.asSeconds();
+    playerSprite.setPosition(coordinates.x, coordinates.y);
 }
 
 void Player::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const {
