@@ -38,5 +38,4 @@ Command::Action derivedAction(Function fn){
         fn(static_cast<GameObject&>(node), dt);
     };
 }
-
 #endif //COURSE_COMMAND_H
