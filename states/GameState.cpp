@@ -10,12 +10,15 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
         controlledPlayer = context.player2;
         updatedPlayer = context.player1;
     }
+    buildScene();
+
 }
 
 void GameState::draw() {
     mLevel.draw();
-    controlledPlayer->draw(getContext().window);
-    updatedPlayer->draw(getContext().window);
+//    controlledPlayer->draw(getContext().window);
+//    updatedPlayer->draw(getContext().window);
+    getContext().window->draw(sceneGraph);
 }
 
 bool GameState::update(sf::Time dt) {
@@ -52,4 +55,6 @@ bool GameState::handleEvent(const sf::Event &event) {
 void GameState::buildScene() {
     SceneNode::SceneNodePtr activePlayer(controlledPlayer);
     sceneGraph.addChild(std::move(activePlayer));
+    SceneNode::SceneNodePtr passivePlayer(updatedPlayer);
+    sceneGraph.addChild(std::move(passivePlayer));
 }

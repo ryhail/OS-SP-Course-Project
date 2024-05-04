@@ -22,7 +22,7 @@ private:
     Player*         updatedPlayer;
     SceneNode       sceneGraph;
     CommandQueue    commandQueue;
-    InputHandler   inputHandler;
+    InputHandler    inputHandler;
 };
 
 

@@ -22,9 +22,14 @@ public:
     void    heal(int heal);
     void    updateFacing(int x, int y);
     void    setActive(bool value);
-    void move(sf::Vector2i direction, sf::Time time);
+    void    move(sf::Vector2i direction, sf::Time time);
     bool    isActive() const;
     void    draw(sf::RenderWindow* window);
+
+private:
+    void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const override;
+
+public:
     int     getSpeed() const;
 
     EntityType::Type getCategory() const override;

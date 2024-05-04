@@ -28,12 +28,13 @@ public:
     void            update(sf::Vector2i _coordinate);
     void            update(sf::Time dt);
 
+    void            draw(sf::RenderTarget& target, sf::RenderStates states) const override;
     void            execCommand(const Command& command, sf::Time dt);
 
     virtual EntityType::Type getCategory() const;
 
 private:
-    void            draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+
     virtual void    drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 
     virtual void    updateCurrent(sf::Vector2i _coordinate);

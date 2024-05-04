@@ -51,3 +51,7 @@ void Player::move(sf::Vector2i direction, sf::Time dt) {
     coordinates.y += direction.y * speed * dt.asSeconds();
 }
 
+void Player::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const {
+    target.draw(playerSprite, states);
+}
+
