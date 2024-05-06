@@ -15,10 +15,8 @@ public:
 
 
 private:
-    sf::RectangleShape mFrame;
-    sf::RectangleShape mChoices[2];
-    bool               mChoice;
     sf::RectangleShape mConnectButton;
+    sf::Text           mEnterIpText;
     sf::Text           mConnectText;
     sf::Text           mServerIp;
     std::string        mUserInput;

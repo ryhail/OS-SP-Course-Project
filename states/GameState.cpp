@@ -3,6 +3,8 @@
 #include "../server/client.c"
 GameState::GameState(StateStack &stack, State::Context context) : State(stack, context),
     mLevel(context.window)
+    , sockfd(context.sockfd)
+    , server_adr(context.server_adr)
 {
     if(context.player1->isActive()) {
         controlledPlayer = context.player1;
@@ -21,10 +23,7 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
 
 void GameState::draw() {
     mLevel.draw();
-//    controlledPlayer->draw(getContext().window);
-//    updatedPlayer->draw(getContext().window);
     getContext().window->draw(sceneGraph);
-    std::cout<<controlledPlayer->getCoordinates().x<<std::endl;
 }
 
 bool GameState::update(sf::Time dt) {

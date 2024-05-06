@@ -9,6 +9,7 @@ namespace States
         Title,
         Menu,
         Connect,
+        Lobby,
         Game,
         Loading,
         Pause,

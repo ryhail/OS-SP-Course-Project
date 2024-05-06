@@ -44,4 +44,9 @@ State::Context State::getContext() const
     return mContext;
 }
 
+void State::setServerParams(int sockfd, sockaddr_in server_adr) {
+    mContext.sockfd = sockfd;
+    mContext.server_adr = server_adr;
+}
+
 

@@ -49,5 +49,7 @@ add_executable(game main.cpp
         input_handler/InputHandler.cpp
         levelDesign/Tile.h
         levelDesign/Tile.cpp
+        states/LobbyState.h
+        states/LobbyState.cpp
 )
 target_link_libraries(game sfml-graphics sfml-audio)
