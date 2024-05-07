@@ -79,15 +79,8 @@ bool ConnectState::handleEvent(const sf::Event &event) {
                     struct sockaddr_in server_addr;
                     int sockfd = initialize_client(PORT);
                     initialize_server(SERVER_PORT,mUserInput.c_str(),&server_addr);
-
-                    char signal = '0';
                     setServerParams(sockfd, server_addr); // вот так записать данные в контекст
-                    if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) &server_addr,
-                               sizeof(server_addr)) == -1) {
-                        perror("Sendto failed");
-                        close(sockfd);
-                        exit(EXIT_FAILURE);
-                    }
+
                     requestStackPop();
                     requestStackPush(States::Lobby);
                     break;
