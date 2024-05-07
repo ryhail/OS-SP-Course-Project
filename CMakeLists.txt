@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.27)
 project(sfml)
 
 set(CMAKE_CXX_STANDARD 17)
-find_package(SFML 2.6.1 COMPONENTS graphics audio)
+find_package(SFML 2.5.1 COMPONENTS graphics audio)
 add_executable(game main.cpp
         server/client.c
         TestServer.h

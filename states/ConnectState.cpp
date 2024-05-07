@@ -1,5 +1,6 @@
 #include "ConnectState.h"
 #include "utility.h"
+#include "../server/client.c"
 ConnectState::ConnectState(StateStack &stack, State::Context context)
     : State(stack, context) {
     sf::Vector2f windowSize = context.window->getView().getSize();
@@ -74,7 +75,19 @@ bool ConnectState::handleEvent(const sf::Event &event) {
                 }
                 else {
                     // здесь инициализировать сервак
-                    //setServerParams(1, server_adr); // вот так записать данные в контекст
+                    char server_ip[256] = "127.0.0.1";
+                    struct sockaddr_in server_addr;
+                    int sockfd = initialize_client(PORT);
+                    initialize_server(SERVER_PORT,mUserInput.c_str(),&server_addr);
+
+                    char signal = '0';
+                    setServerParams(sockfd, server_addr); // вот так записать данные в контекст
+                    if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) &server_addr,
+                               sizeof(server_addr)) == -1) {
+                        perror("Sendto failed");
+                        close(sockfd);
+                        exit(EXIT_FAILURE);
+                    }
                     requestStackPop();
                     requestStackPush(States::Lobby);
                     break;
