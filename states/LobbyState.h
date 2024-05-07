@@ -8,6 +8,7 @@
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Window.hpp>
+#include <SFML/Graphics/Text.hpp>
 #include "State.h"
 
 class LobbyState : public State {
@@ -19,10 +20,13 @@ public:
     virtual bool            handleEvent(const sf::Event& event);
 
 private:
+    sf::Text                mLobbyText;
+    sf::Text                mReady;
     sf::RectangleShape      mFrame;
     sf::RectangleShape      mChoices[2];
     bool                    mChoice;
-
+    bool                    readyState;
+    char                    available;
 };
 
 #endif //SFML_LOBBYSTATE_H
