@@ -1,6 +1,6 @@
 #include "ConnectState.h"
 #include "utility.h"
-#include "../server/client.c"
+#include "../server/client.h"
 ConnectState::ConnectState(StateStack &stack, State::Context context)
     : State(stack, context) {
     sf::Vector2f windowSize = context.window->getView().getSize();

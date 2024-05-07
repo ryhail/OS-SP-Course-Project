@@ -1,5 +1,4 @@
-#ifndef CLIENT_H
-#define CLIENT_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,9 +6,7 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "sever_structures.h"
-#define PORT 12344
-#define SERVER_PORT 12345
+#include "client.h"
 
 int initialize_client(int port){
     int sockfd;
@@ -86,5 +83,4 @@ void receive_game_data(game_data_t * data, int sockfd, struct sockaddr_in server
         printf("Received response from server: %d\n", data->player1.coordinates.x);
     }
 }
-#endif
 

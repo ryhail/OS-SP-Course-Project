@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include "State.h"
 
+
 class ConnectState : public State {
 public:
     ConnectState(StateStack& stack,
