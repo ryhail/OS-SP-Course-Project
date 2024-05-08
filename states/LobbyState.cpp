@@ -97,9 +97,11 @@ bool LobbyState::update(sf::Time dt) {
     sendto(sockfd, &available, sizeof(available), 0, (const sockaddr*)(&server_addr), sizeof(server_addr));
     recv(sockfd,&available, sizeof(available), 0);
     std::cout<<available<<std::endl;
-    if(available == 'r') {
-        requestStackPop();
-        requestStackPush(States::Game);
+    if(available == '3') {
+        if (available == 'r') {
+            requestStackPop();
+            requestStackPush(States::Game);
+        }
     }
     return true;
 }

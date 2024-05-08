@@ -80,6 +80,8 @@ bool ConnectState::handleEvent(const sf::Event &event) {
                     struct sockaddr_in server_addr;
                     int sockfd = initialize_client(PORT);
                     initialize_server(SERVER_PORT,mUserInput.c_str(),&server_addr);
+                    make_nonblock(sockfd);
+
                     setServerParams(sockfd, server_addr); // вот так записать данные в контекст
 
                     requestStackPop();
