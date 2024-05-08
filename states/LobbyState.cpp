@@ -44,12 +44,12 @@ LobbyState::LobbyState(StateStack &stack, State::Context context)
 
 void LobbyState::draw() {
     sf::RenderWindow& window = *getContext().window;
-    window.draw(unavailable);
     window.draw(mReady);
     window.draw(mLobbyText);
     window.draw(mFrame);
     window.draw(mChoices[0]);
     window.draw(mChoices[1]);
+    window.draw(unavailable);
 }
 
 bool LobbyState::handleEvent(const sf::Event &event) {
@@ -97,7 +97,7 @@ bool LobbyState::handleEvent(const sf::Event &event) {
 
 bool LobbyState::update(sf::Time dt) {
     serverDelay += dt;
-    if(serverDelay.asSeconds() > 1.f) {
+    if(serverDelay.asSeconds() > 0.05f) {
         sendto(sockfd, &available, sizeof(available), 0, (const sockaddr *) (&server_addr), sizeof(server_addr));
         recv(sockfd, &available, sizeof(available), 0);
         std::cout << available << std::endl;
