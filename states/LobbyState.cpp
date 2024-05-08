@@ -80,10 +80,16 @@ bool LobbyState::handleEvent(const sf::Event &event) {
         case sf::Keyboard::Key::Enter: {
             readyState = true;
             mReady.setFillColor(sf::Color::Green);
-            if(mChoice)
+            if(mChoice) {
                 available = '2';
-            else
+                getContext().player2->setActive(true);
+                getContext().player1->setActive(false);
+            }
+            else {
                 available = '1';
+                getContext().player1->setActive(true);
+                getContext().player2->setActive(false);
+            }
             break;
         }
         case sf::Keyboard::Key::Escape: {
