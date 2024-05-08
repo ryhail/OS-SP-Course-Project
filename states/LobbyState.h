@@ -26,6 +26,7 @@ private:
     sf::RectangleShape      mFrame;
     sf::RectangleShape      mChoices[2];
     sockaddr_in             server_addr;
+    sf::Time                serverDelay;
     int                     sockfd;
     bool                    mChoice;
     bool                    readyState;
