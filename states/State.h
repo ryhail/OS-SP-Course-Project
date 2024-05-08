@@ -30,8 +30,8 @@ public:
         ResourceHolder<Fonts::ID, sf::Font>*                 fonts;
         Player*                                            player1;
         Player*                                            player2;
-        int                                                 sockfd;
-        sockaddr_in                                     server_adr;
+        int*                                                sockfd;
+        sockaddr_in*                                    server_adr;
     };
 public:
     State(StateStack& stack, Context context);

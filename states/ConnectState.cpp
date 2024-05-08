@@ -1,3 +1,4 @@
+#include <iostream>
 #include "ConnectState.h"
 #include "utility.h"
 #include "../server/client.h"
@@ -75,7 +76,7 @@ bool ConnectState::handleEvent(const sf::Event &event) {
                 }
                 else {
                     // здесь инициализировать сервак
-                    char server_ip[256] = "127.0.0.1";
+                    //char server_ip[256] = "127.0.0.1";
                     struct sockaddr_in server_addr;
                     int sockfd = initialize_client(PORT);
                     initialize_server(SERVER_PORT,mUserInput.c_str(),&server_addr);

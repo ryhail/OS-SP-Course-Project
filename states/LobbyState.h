@@ -22,8 +22,11 @@ public:
 private:
     sf::Text                mLobbyText;
     sf::Text                mReady;
+    sf::Sprite              unavailable;
     sf::RectangleShape      mFrame;
     sf::RectangleShape      mChoices[2];
+    sockaddr_in             server_addr;
+    int                     sockfd;
     bool                    mChoice;
     bool                    readyState;
     char                    available;

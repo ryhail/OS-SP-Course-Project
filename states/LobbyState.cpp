@@ -1,12 +1,19 @@
 
+#include <iostream>
 #include "LobbyState.h"
 
 LobbyState::LobbyState(StateStack &stack, State::Context context)
     : State(stack, context)
     , mChoice(false)
-    , readyState(false) {
-
+    , readyState(false)
+    , available('0')
+    , sockfd(*context.sockfd)
+    , server_addr(*context.server_adr){
+    server_addr = *context.server_adr;
     sf::Vector2f windowSize = context.window->getView().getSize();
+    context.textures->load(Textures::PlayerUnavailable, "resources/Textures/unavailable.png");
+
+    unavailable.setTexture(context.textures->getResource(Textures::PlayerUnavailable));
 
     mChoices[0].setPosition(windowSize.x / 2.f - 150, windowSize.y / 3);
     mChoices[0].setSize(sf::Vector2f(100, 100));
@@ -44,7 +51,7 @@ void LobbyState::draw() {
 }
 
 bool LobbyState::handleEvent(const sf::Event &event) {
-    if(!readyState) {
+    if(available == '0') {
         switch (event.key.code) {
             case sf::Keyboard::Key::Left:
                 mChoice = false;
@@ -55,16 +62,26 @@ bool LobbyState::handleEvent(const sf::Event &event) {
             default:
                 break;
         }
-    }
-    if(mChoice) {
-        mFrame.setPosition(mChoices[1].getPosition() - mChoices[1].getSize() / 8.f);
+        if (mChoice) {
+            mFrame.setPosition(mChoices[1].getPosition() - mChoices[1].getSize() / 8.f);
+        } else {
+            mFrame.setPosition(mChoices[0].getPosition() - mChoices[0].getSize() / 8.f);
+        }
     } else {
-        mFrame.setPosition(mChoices[0].getPosition() - mChoices[0].getSize() / 8.f);
+        if(available == '1') {
+            unavailable.setPosition(mChoices[0].getPosition() - mChoices[0].getSize() / 8.f);
+        } else {
+            unavailable.setPosition(mChoices[1].getPosition() - mChoices[1].getSize() / 8.f);
+        }
     }
     switch(event.key.code) {
         case sf::Keyboard::Key::Enter: {
             readyState = true;
             mReady.setFillColor(sf::Color::Green);
+            if(mChoice)
+                available = '2';
+            else
+                available = '1';
             break;
         }
         case sf::Keyboard::Key::Escape: {
@@ -77,5 +94,12 @@ bool LobbyState::handleEvent(const sf::Event &event) {
 }
 
 bool LobbyState::update(sf::Time dt) {
+    sendto(sockfd, &available, sizeof(available), 0, (const sockaddr*)(&server_addr), sizeof(server_addr));
+    recv(sockfd,&available, sizeof(available), 0);
+    std::cout<<available<<std::endl;
+    if(available == 'r') {
+        requestStackPop();
+        requestStackPush(States::Game);
+    }
     return true;
 }

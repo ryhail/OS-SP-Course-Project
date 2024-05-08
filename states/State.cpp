@@ -12,6 +12,8 @@ State::Context::Context(sf::RenderWindow& window,
     textures->load(Textures::Player1, "resources/Textures/player1.png");
     player1 = new Player(textures, Textures::Player1);
     player2 = new Player(textures, Textures::Player1);
+    sockfd = new int;
+    server_adr = new sockaddr_in;
 }
 
 State::State(StateStack& stack, Context context)
@@ -45,8 +47,8 @@ State::Context State::getContext() const
 }
 
 void State::setServerParams(int sockfd, sockaddr_in server_adr) {
-    mContext.sockfd = sockfd;
-    mContext.server_adr = server_adr;
+    *mContext.sockfd = sockfd;
+    *mContext.server_adr = server_adr;
 }
 
 
