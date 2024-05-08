@@ -98,10 +98,12 @@ bool LobbyState::update(sf::Time dt) {
     recv(sockfd,&available, sizeof(available), 0);
     std::cout<<available<<std::endl;
     if(available == '3') {
-        if (available == 'r') {
-            requestStackPop();
-            requestStackPush(States::Game);
-        }
+        recv(sockfd,&available, sizeof(available), 0);
+        std::cout<<available<<std::endl;
+    }
+    if (available == 'r') {
+        requestStackPop();
+        requestStackPush(States::Game);
     }
     return true;
 }
