@@ -1,4 +1,3 @@
-#include <cstdio>
 #include "SceneNode.h"
 
 void SceneNode::addChild(SceneNode::SceneNodePtr child) {
@@ -31,9 +30,9 @@ void SceneNode::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) c
     //  will be overloaded
 }
 
-void SceneNode::update(sf::Time dt) {
-    updateCurrent(dt);
-    updateChildren(dt);
+void SceneNode::update(sf::Time dt, CommandQueue &queue) {
+    updateCurrent(dt, queue);
+    updateChildren(dt, queue);
 }
 
 void SceneNode::update(sf::Vector2f _coordinate) {
@@ -53,13 +52,13 @@ EntityType::Type SceneNode::getCategory() const{
     return EntityType::SCENE;
 }
 
-void SceneNode::updateCurrent(sf::Time dt) {
+void SceneNode::updateCurrent(sf::Time dt, CommandQueue &queue) {
     //will be overloaded
 }
 
-void SceneNode::updateChildren(sf::Time dt) {
+void SceneNode::updateChildren(sf::Time dt, CommandQueue &queue) {
     for (SceneNodePtr& ptr: childSceneNodes) {
-        ptr->update(dt);
+        ptr->update(dt, queue);
     }
 }
 
@@ -70,4 +69,8 @@ void SceneNode::execCommand(const Command &command, sf::Time dt) {
     for(SceneNodePtr& child : childSceneNodes) {
         child->execCommand(command, dt);
     }
+}
+
+bool SceneNode::isForRemove(sf::RenderWindow &window) {
+    return false;
 }

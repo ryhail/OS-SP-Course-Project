@@ -12,13 +12,13 @@ protected:
     sf::Vector2f coordinates;
 public:
     Entity();
-    explicit Entity(const sf::Vector2f _coordinates);
+    explicit Entity(sf::Vector2f _coordinates);
 
     sf::Vector2f getCoordinates() { return coordinates; }
 
 private:
     void updateCurrent(sf::Vector2f _coordinates) override;
-    void updateCurrent(sf::Time dt) override;
+    void updateCurrent(sf::Time dt, CommandQueue &queue) override;
 
     //virtual Textures::ID  getResource() = 0;
 };

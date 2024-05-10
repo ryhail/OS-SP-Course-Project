@@ -49,5 +49,6 @@ add_executable(game main.cpp
         input_handler/InputHandler.cpp
         levelDesign/Tile.h
         levelDesign/Tile.cpp
+        entity_managment/Bullet/Bullet.cpp
 )
 target_link_libraries(game sfml-graphics sfml-audio)

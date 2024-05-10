@@ -5,20 +5,33 @@
 #include "../Entity/Entity.h"
 #include "../../resources/ResourceHolder.h"
 #include <SFML/Graphics/RenderTarget.hpp>
+#define BULLET_SPEED 5
 
 typedef ResourceHolder<Textures::ID, sf::Texture> TextureHolder;
 
 class Bullet: public Entity{
+public:
     enum Owner {
         PLAYER = 1 << 1,
         BOSS   = 1 << 2
     };
 public:
     Bullet(bullet_t bulletInfo, const TextureHolder &bulletTexture);
-    virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
+    Bullet(sf::Vector2f _facing, sf::Vector2f _coordinates, Owner _owner, const TextureHolder& textures);
+
+    bool isForRemove(sf::RenderWindow &window) override;
 
 private:
-    sf::Sprite sprite;
-    Owner owner;
+    void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
+    void updateCurrent(sf::Time dt, CommandQueue &queue) override;
+
+public:
+    EntityType::Type getCategory() const override;
+
+private:
+    sf::Sprite      sprite;
+    Owner           owner;
+    sf::Vector2f    facing;
+    int             speed;
 };
 #endif //COURSE_BULLET_H

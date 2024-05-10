@@ -10,7 +10,7 @@ void Entity::updateCurrent(const sf::Vector2f _coordinates) {
     coordinates.y = _coordinates.y;
 }
 
-void Entity::updateCurrent(sf::Time dt) {
+void Entity::updateCurrent(sf::Time dt, CommandQueue& commands) {
     //will be overriden
 }
 

@@ -7,7 +7,8 @@ namespace Textures {
         MainMenu,
         Tile,
         Border,
-        Player1
+        Player1,
+        Bullet
     };
 }
 

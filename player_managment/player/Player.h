@@ -7,31 +7,51 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include "../../entity_managment/Bullet/Bullet.h"
 #include "../../entity_managment/Entity/EntityType.h"
+#include "../../command/CommandQueue.h"
 
 #define PLAYER_INIT_SPEED 100
+#define PLAYER_FIRING_INTERVAL sf::seconds(2.0f)
+#define PLAYER_HILING_INTERVAL sf::seconds(5.0f)
 
 class Player : public Entity{
-    sf::Vector2i    facing;
+    sf::Vector2<float> facing;
     sf::Sprite      playerSprite;
     int             hitPoints;
     int             speed;
     bool            active;
 public:
-    Player(TextureHolder *textures, Textures::ID playerType);
+    Player(TextureHolder* textures, Textures::ID playerType);
     void    takeDamage(int dmg);
     void    heal(int heal);
     void    updateFacing(int x, int y);
     void    setSpritePosition(sf::Vector2f _coords);
     void    setActive(bool value);
     void    move(sf::Vector2i direction, sf::Time time);
+    void    fire();
     bool    isActive() const;
     void    draw(sf::RenderWindow* window);
+    bool    isForRemove(sf::RenderWindow &window) override;
 
 private:
     void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const override;
 
+    void checkBulletLaunch(CommandQueue& commandQueue, sf::Time dt);
+    bool firingAvailable() const;
+    void createBullet(SceneNode &node, TextureHolder &textures);
+    void decrementBulletCount();
+
+    void updateCurrent(sf::Time dt, CommandQueue &queue) override;
+
 public:
     int     getSpeed() const;
+
+private:
+    sf::Time    fireCountdown;
+    bool        isFiring;
+    Command     fireCommand;
+    int         bulletCount;
+    sf::Time    healingTime;
+
 
     EntityType::Type getCategory() const override;
 };

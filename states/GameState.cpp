@@ -21,17 +21,17 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
 
 void GameState::draw() {
     mLevel.draw();
-//    controlledPlayer->draw(getContext().window);
-//    updatedPlayer->draw(getContext().window);
+    //controlledPlayer->draw(getContext().window);
+    //updatedPlayer->draw(getContext().window);
     getContext().window->draw(sceneGraph);
-    std::cout<<controlledPlayer->getCoordinates().x<<std::endl;
+    //std::cout<<controlledPlayer->getCoordinates().x<<std::endl;
 }
 
 bool GameState::update(sf::Time dt) {
     while (!commandQueue.isEmpty()) {
         sceneGraph.execCommand(commandQueue.pop(), dt);
     }
-    sceneGraph.update(dt);
+    sceneGraph.update(dt, commandQueue);
     inputHandler.handleRealtimeInput(commandQueue);
     return true;
 }
