@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "State.h"
-#define MAX_MENU_OPTIONS 2
+#define MAX_MENU_OPTIONS 3
 
 class MenuState : public State {
 public:
