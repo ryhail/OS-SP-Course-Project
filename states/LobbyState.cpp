@@ -1,15 +1,14 @@
-
 #include <iostream>
 #include "LobbyState.h"
 
 LobbyState::LobbyState(StateStack &stack, State::Context context)
-    : State(stack, context)
-    , mChoice(false)
-    , readyState(false)
-    , available('0')
-    , sockfd(*context.sockfd)
-    , server_addr(*context.server_adr)
-    , serverDelay(sf::Time::Zero) {
+        : State(stack, context)
+        , mChoice(false)
+        , readyState(false)
+        , available('0')
+        , sockfd(*context.sockfd)
+        , server_addr(*context.server_adr)
+        , serverDelay(sf::Time::Zero) {
     server_addr = *context.server_adr;
     sf::Vector2f windowSize = context.window->getView().getSize();
     context.textures->load(Textures::PlayerUnavailable, "resources/Textures/unavailable.png");
