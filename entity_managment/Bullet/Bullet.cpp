@@ -35,11 +35,11 @@ Bullet::Bullet(sf::Vector2f _facing, sf::Vector2f _coordinates,
     sprite.setTexture(textures.getResource(Textures::Bullet));
     sf::FloatRect bounds = sprite.getLocalBounds();
     sprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
-    sprite.setPosition(coordinates);
+    sprite.setPosition(coordinates - bounds.getSize() * 0.5f);
 }
 
 void Bullet::updateCurrent(sf::Time dt, CommandQueue &queue) {
-    coordinates += facing * dt.asSeconds();
+    coordinates += facing * speed * dt.asSeconds();
     sprite.setPosition(coordinates);
 }
 

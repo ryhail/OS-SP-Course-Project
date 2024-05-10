@@ -5,7 +5,7 @@
 #include "../Entity/Entity.h"
 #include "../../resources/ResourceHolder.h"
 #include <SFML/Graphics/RenderTarget.hpp>
-#define BULLET_SPEED 5
+#define BULLET_SPEED 100.0f
 
 typedef ResourceHolder<Textures::ID, sf::Texture> TextureHolder;
 
@@ -32,6 +32,6 @@ private:
     sf::Sprite      sprite;
     Owner           owner;
     sf::Vector2f    facing;
-    int             speed;
+    float           speed;
 };
 #endif //COURSE_BULLET_H

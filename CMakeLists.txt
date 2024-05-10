@@ -6,8 +6,6 @@ find_package(SFML 2.5.1 COMPONENTS graphics audio)
 add_executable(game main.cpp
         server/client.cpp
         server/client.h
-        TestServer.h
-        TestServer.cpp
         UserInterface.h
         UserInterface.cpp
         ConnectToServer.h

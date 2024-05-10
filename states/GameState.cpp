@@ -5,9 +5,11 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     mLevel(context.window)
 {
     if(context.player1->isActive()) {
+        std::cout << "c1" << std::endl;
         controlledPlayer = context.player1;
         updatedPlayer = context.player2;
-    } else {
+    } else if(context.player2->isActive()){
+        std::cout << "c2" << std::endl;
         controlledPlayer = context.player2;
         updatedPlayer = context.player1;
     }
