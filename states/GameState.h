@@ -16,7 +16,7 @@ public:
     virtual bool handleEvent(const sf::Event& event);
 private:
     int             sockfd;
-    struct          sockaddr_in;
+    sockaddr_in     server_adr;
     Level           mLevel;
     Player*         controlledPlayer;
     Player*         updatedPlayer;

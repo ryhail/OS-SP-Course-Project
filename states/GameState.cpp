@@ -1,6 +1,6 @@
 #include <iostream>
 #include "GameState.h"
-#include "../server/client.c"
+#include "../server/client.h"
 GameState::GameState(StateStack &stack, State::Context context) : State(stack, context),
     mLevel(context.window)
 {

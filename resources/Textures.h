@@ -8,7 +8,8 @@ namespace Textures {
         Tile,
         Border,
         Player1,
-        Bullet
+        Bullet,
+        PlayerUnavailable
     };
 }
 

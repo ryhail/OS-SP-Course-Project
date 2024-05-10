@@ -13,6 +13,8 @@ State::Context::Context(sf::RenderWindow& window,
     textures->load(Textures::Bullet, "resources/Textures/bullet.png");
     player1 = new Player(textures, Textures::Player1);
     player2 = new Player(textures, Textures::Player1);
+    sockfd = new int;
+    server_adr = new sockaddr_in;
 }
 
 State::State(StateStack& stack, Context context)
@@ -43,6 +45,11 @@ void State::requestStateClear()
 State::Context State::getContext() const
 {
     return mContext;
+}
+
+void State::setServerParams(int sockfd, sockaddr_in server_adr) {
+    *mContext.sockfd = sockfd;
+    *mContext.server_adr = server_adr;
 }
 
 

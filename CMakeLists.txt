@@ -2,9 +2,10 @@ cmake_minimum_required(VERSION 3.27)
 project(sfml)
 
 set(CMAKE_CXX_STANDARD 17)
-find_package(SFML 2.6.1 COMPONENTS graphics audio)
+find_package(SFML 2.5.1 COMPONENTS graphics audio)
 add_executable(game main.cpp
-        server/client.c
+        server/client.cpp
+        server/client.h
         TestServer.h
         TestServer.cpp
         UserInterface.h
@@ -50,5 +51,7 @@ add_executable(game main.cpp
         levelDesign/Tile.h
         levelDesign/Tile.cpp
         entity_managment/Bullet/Bullet.cpp
+        states/LobbyState.h
+        states/LobbyState.cpp
 )
 target_link_libraries(game sfml-graphics sfml-audio)
