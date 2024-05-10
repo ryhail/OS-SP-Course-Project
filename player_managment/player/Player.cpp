@@ -6,6 +6,7 @@ Player::Player(TextureHolder* textures, Textures::ID playerType)
         : Entity(){
     playerSprite.setTexture(textures->getResource(playerType));
     playerSprite.setPosition(coordinates.x, coordinates.y);
+    playerSprite.setOrigin((playerSprite.getLocalBounds().height/2),playerSprite.getLocalBounds().height/1.24);
     facing.y = 0;
     facing.x = 0;
 
@@ -58,9 +59,13 @@ int Player::getSpeed() const {
  * таким образом обеспечивается перемещение по времени
  */
 void Player::move(sf::Vector2i direction, sf::Time dt) {
-    coordinates.x += direction.x * speed * dt.asSeconds();
-    coordinates.y += direction.y * speed * dt.asSeconds();
-    playerSprite.setPosition(coordinates.x, coordinates.y);
+    sf::Vector2f newCoords;
+    newCoords.x = coordinates.x + direction.x * speed * dt.asSeconds();
+    newCoords.y = coordinates.y + direction.y * speed * dt.asSeconds();
+    if(currentMapTile->getCurrentTileType(newCoords) != Tile::Type::Border) {
+        coordinates = newCoords;
+        playerSprite.setPosition(newCoords);
+    }
 }
 
 
@@ -111,5 +116,9 @@ bool Player::isForRemove(sf::RenderWindow &window) {
 
 void Player::decrementBulletCount() {
     bulletCount -= 1;
+}
+
+void Player::setCurentMapTile(MapTile* mapTile) {
+    currentMapTile = mapTile;
 }
 

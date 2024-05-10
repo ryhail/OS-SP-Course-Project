@@ -1,3 +1,4 @@
+#include <cmath>
 #include "MapTile.h"
 
 
@@ -38,3 +39,12 @@ void MapTile::draw() {
 sf::Vector2f MapTile::getSpawnPoint() {
     return mSpawnPoint;
 }
+
+Tile::Type MapTile::getCurrentTileType(sf::Vector2f _coords){
+    sf::Vector2i tile_coodinates;
+    tile_coodinates.x =  floor(_coords.x/64);
+    tile_coodinates.y = floor(_coords.y/64);
+    return (mTiles.begin() + tile_coodinates.x + (tile_coodinates.y*20))->getType();
+}
+
+
