@@ -90,22 +90,6 @@ bool LobbyState::handleEvent(const sf::Event &event) {
         }
     }
 
-    switch(available) {
-        case '0':
-            unavailable.setPosition(-125,-125);
-            break;
-        case '1':
-            if(!readyState) {
-                unavailable.setPosition(mChoices[0].getPosition() - mChoices[0].getSize() / 8.f);
-            }
-            break;
-        case '2':
-            if(!readyState) {
-                unavailable.setPosition(mChoices[1].getPosition() - mChoices[1].getSize() / 8.f);
-            }
-            break;
-    }
-
     return true;
 }
 
@@ -125,6 +109,21 @@ bool LobbyState::update(sf::Time dt) {
         std::cout << available << std::endl;
         serverDelay = sf::Time::Zero;
     }
+    switch(available) {
+        case '0':
+            unavailable.setPosition(-125,-125);
+            break;
+        case '1':
+            if(!readyState) {
+                unavailable.setPosition(mChoices[0].getPosition() - mChoices[0].getSize() / 8.f);
+            }
+            break;
+        case '2':
+            if(!readyState) {
+                unavailable.setPosition(mChoices[1].getPosition() - mChoices[1].getSize() / 8.f);
+            }
+            break;
+    }
     if (available == 's') {
         if(mChoice) {
             getContext().player2->setActive(true);
@@ -137,5 +136,6 @@ bool LobbyState::update(sf::Time dt) {
         requestStackPop();
         requestStackPush(States::Game);
     }
+
     return true;
 }
