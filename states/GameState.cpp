@@ -32,12 +32,13 @@ void GameState::draw() {
 }
 
 bool GameState::update(sf::Time dt) {
-    std::cout<<mLevel.getCurrentMapTile()->getCurrentTileType(controlledPlayer->getCoordinates())<<std::endl;
     while (!commandQueue.isEmpty()) {
         sceneGraph.execCommand(commandQueue.pop(), dt);
     }
     sceneGraph.update(dt, commandQueue);
     inputHandler.handleRealtimeInput(commandQueue);
+    if(commandQueue.isEmpty())
+        controlledPlayer->animate(Idle, dt);
     return true;
 }
 

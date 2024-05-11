@@ -51,5 +51,6 @@ add_executable(game main.cpp
         entity_managment/Bullet/Bullet.cpp
         states/LobbyState.h
         states/LobbyState.cpp
+        states/HostState.cpp
 )
 target_link_libraries(game sfml-graphics sfml-audio)
