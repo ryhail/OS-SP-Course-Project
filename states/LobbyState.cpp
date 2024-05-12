@@ -14,6 +14,7 @@ LobbyState::LobbyState(StateStack &stack, State::Context context)
     context.textures->load(Textures::PlayerUnavailable, "resources/Textures/unavailable.png");
 
     unavailable.setTexture(context.textures->getResource(Textures::PlayerUnavailable));
+    unavailable.setPosition(-125,-125);
 
     mChoices[0].setPosition(windowSize.x / 2.f - 150, windowSize.y / 3);
     mChoices[0].setSize(sf::Vector2f(100, 100));
@@ -52,7 +53,7 @@ void LobbyState::draw() {
 }
 
 bool LobbyState::handleEvent(const sf::Event &event) {
-    if(available == '0') {
+    if(!readyState) {
         switch (event.key.code) {
             case sf::Keyboard::Key::Left:
                 mChoice = false;
@@ -68,49 +69,73 @@ bool LobbyState::handleEvent(const sf::Event &event) {
         } else {
             mFrame.setPosition(mChoices[0].getPosition() - mChoices[0].getSize() / 8.f);
         }
-    } else {
-        if(available == '1') {
-            unavailable.setPosition(mChoices[0].getPosition() - mChoices[0].getSize() / 8.f);
-        } else {
-            unavailable.setPosition(mChoices[1].getPosition() - mChoices[1].getSize() / 8.f);
-        }
     }
     switch(event.key.code) {
         case sf::Keyboard::Key::Enter: {
             readyState = true;
             mReady.setFillColor(sf::Color::Green);
-            if(mChoice) {
-                available = '2';
-                getContext().player2->setActive(true);
-                getContext().player1->setActive(false);
-            }
-            else {
-                available = '1';
-                getContext().player1->setActive(true);
-                getContext().player2->setActive(false);
-            }
             break;
         }
         case sf::Keyboard::Key::Escape: {
-            readyState = false;
-            mReady.setFillColor(sf::Color::Red);
+            if(readyState) {
+                readyState = false;
+                mReady.setFillColor(sf::Color::Red);
+                available = 'r';
+            }
             break;
         }
+        case sf::Keyboard::Key::BackSpace: {
+            requestStackPop();
+            requestStackPush(States::Menu);
+        }
     }
+
     return true;
 }
 
 bool LobbyState::update(sf::Time dt) {
     serverDelay += dt;
     if(serverDelay.asSeconds() > 0.05f) {
+        if(readyState) {
+            if(mChoice) {
+                available = '2';
+            }
+            else {
+                available = '1';
+            }
+        }
         sendto(sockfd, &available, sizeof(available), 0, (const sockaddr *) (&server_addr), sizeof(server_addr));
         recv(sockfd, &available, sizeof(available), 0);
         std::cout << available << std::endl;
         serverDelay = sf::Time::Zero;
     }
+    switch(available) {
+        case '0':
+            unavailable.setPosition(-125,-125);
+            break;
+        case '1':
+            if(!readyState) {
+                unavailable.setPosition(mChoices[0].getPosition() - mChoices[0].getSize() / 8.f);
+            }
+            break;
+        case '2':
+            if(!readyState) {
+                unavailable.setPosition(mChoices[1].getPosition() - mChoices[1].getSize() / 8.f);
+            }
+            break;
+    }
     if (available == 'r') {
+        if(mChoice) {
+            getContext().player2->setActive(true);
+            getContext().player1->setActive(false);
+        }
+        else {
+            getContext().player1->setActive(true);
+            getContext().player2->setActive(false);
+        }
         requestStackPop();
         requestStackPush(States::Game);
     }
+
     return true;
 }

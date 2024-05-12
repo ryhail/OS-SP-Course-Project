@@ -12,15 +12,9 @@ class MapTile {
     sf::Vector2f                    mSpawnPoint;
 public:
     MapTile(sf::RenderWindow* window);
-    struct borders{
-        float top;
-        float bottom;
-        float right;
-        float left;
-    } borders;
     void draw();
     sf::Vector2f                    getSpawnPoint();
-
+    Tile::Type     getCurrentTileType(sf::Vector2f);
 };
 
 

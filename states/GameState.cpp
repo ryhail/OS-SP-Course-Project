@@ -1,6 +1,6 @@
 #include <iostream>
 #include "GameState.h"
-#include "../server/client.h"
+
 GameState::GameState(StateStack &stack, State::Context context) : State(stack, context),
     mLevel(context.window)
 {
@@ -15,8 +15,10 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     }
     controlledPlayer->update(mLevel.getCurrentMapTile()->getSpawnPoint());
     controlledPlayer->setSpritePosition(mLevel.getCurrentMapTile()->getSpawnPoint());
+    controlledPlayer->setCurentMapTile(mLevel.getCurrentMapTile());
     updatedPlayer->update(mLevel.getCurrentMapTile()->getSpawnPoint());
     updatedPlayer->setSpritePosition(mLevel.getCurrentMapTile()->getSpawnPoint());
+    updatedPlayer->setCurentMapTile(mLevel.getCurrentMapTile());
     buildScene();
 
 }
@@ -35,28 +37,13 @@ bool GameState::update(sf::Time dt) {
     }
     sceneGraph.update(dt, commandQueue);
     inputHandler.handleRealtimeInput(commandQueue);
+    if(commandQueue.isEmpty())
+        controlledPlayer->animate(Idle, dt);
     return true;
 }
 
 bool GameState::handleEvent(const sf::Event &event) {
-//    sf::Vector2i coordinates = controlledPlayer->getCoordinates();
-//    if(event.type == sf::Event::EventType::KeyPressed) {
-//            switch(event.key.code) {
-//                case sf::Keyboard::Key::W:
-//                    coordinates.y-=5;
-//                    break;
-//                case sf::Keyboard::Key::S:
-//                    coordinates.y+=5;
-//                    break;
-//                case sf::Keyboard::Key::D:
-//                    coordinates.x+=5;
-//                    break;
-//                case sf::Keyboard::Key::A:
-//                    coordinates.y-=5;
-//                    break;
-//            }
-//    }
-//    controlledPlayer->update(coordinates);
+
     return true;
 }
 

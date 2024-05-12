@@ -8,14 +8,26 @@
 #include "../../entity_managment/Bullet/Bullet.h"
 #include "../../entity_managment/Entity/EntityType.h"
 #include "../../command/CommandQueue.h"
+#include "../../levelDesign/MapTile.h"
 
 #define PLAYER_INIT_SPEED 100
 #define PLAYER_FIRING_INTERVAL sf::seconds(2.0f)
 #define PLAYER_HILING_INTERVAL sf::seconds(5.0f)
 
+enum Animation {
+    Idle,
+    Left,
+    Right,
+    Up,
+    Down
+};
+
 class Player : public Entity{
     sf::Vector2<float> facing;
     sf::Sprite      playerSprite;
+    MapTile*        currentMapTile;
+    sf::Time        animationDeltaTime;
+    int             animationFrame;
     int             hitPoints;
     int             speed;
     bool            active;
@@ -31,7 +43,8 @@ public:
     bool    isActive() const;
     void    draw(sf::RenderWindow* window);
     bool    isForRemove(sf::RenderWindow &window) override;
-
+    void    setCurentMapTile(MapTile*);
+    void    animate(Animation AnimType, sf::Time dt);
 private:
     void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const override;
 

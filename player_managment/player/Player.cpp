@@ -5,7 +5,11 @@
 Player::Player(TextureHolder* textures, Textures::ID playerType)
         : Entity(){
     playerSprite.setTexture(textures->getResource(playerType));
+    playerSprite.setTextureRect(sf::IntRect (0,0,64,64));
     playerSprite.setPosition(coordinates.x, coordinates.y);
+    playerSprite.setOrigin((playerSprite.getLocalBounds().height/2),playerSprite.getLocalBounds().height/1.24);
+    playerSprite.setScale(1.5, 1.5);
+
     facing.y = 0;
     facing.x = 0;
 
@@ -15,6 +19,9 @@ Player::Player(TextureHolder* textures, Textures::ID playerType)
     fireCommand.action = [this, textures](SceneNode& node, sf::Time dt) {
         createBullet(node, *textures);
     };
+
+    animationDeltaTime = sf::Time::Zero;
+    animationFrame = 0;
 
     bulletCount = 5;
     speed = PLAYER_INIT_SPEED;
@@ -58,9 +65,21 @@ int Player::getSpeed() const {
  * таким образом обеспечивается перемещение по времени
  */
 void Player::move(sf::Vector2i direction, sf::Time dt) {
-    coordinates.x += direction.x * speed * dt.asSeconds();
-    coordinates.y += direction.y * speed * dt.asSeconds();
-    playerSprite.setPosition(coordinates.x, coordinates.y);
+    sf::Vector2f newCoords;
+    newCoords.x = coordinates.x + direction.x * speed * dt.asSeconds();
+    newCoords.y = coordinates.y + direction.y * speed * dt.asSeconds();
+    if(currentMapTile->getCurrentTileType(newCoords) != Tile::Type::Border) {
+        coordinates = newCoords;
+        playerSprite.setPosition(newCoords);
+        if(direction.x == -1)
+            animate(Left, dt);
+        else if(direction.x == 1)
+            animate(Right, dt);
+        else if(direction.y == -1)
+            animate(Up, dt);
+        else if(direction.y == 1)
+            animate(Down, dt);
+    }
 }
 
 
@@ -77,8 +96,7 @@ void Player::fire() {
 }
 
 void Player::checkBulletLaunch(CommandQueue& commandQueue, sf::Time dt) {
-    std::cout << "check for fight!" << std::endl;
-    if (firingAvailable()) {
+    if (firingAvailable() && isFiring) {
         fireCountdown = PLAYER_FIRING_INTERVAL;
         commandQueue.push(fireCommand);
         isFiring = false;
@@ -100,9 +118,7 @@ void Player::createBullet(SceneNode &node, TextureHolder &textures) {
 }
 
 void Player::updateCurrent(sf::Time dt, CommandQueue &queue) {
-    if(isFiring)
-        checkBulletLaunch(queue, dt);
-    //Entity::updateCurrent(dt, queue);
+    checkBulletLaunch(queue, dt);
 }
 
 bool Player::isForRemove(sf::RenderWindow &window) {
@@ -111,5 +127,39 @@ bool Player::isForRemove(sf::RenderWindow &window) {
 
 void Player::decrementBulletCount() {
     bulletCount -= 1;
+}
+
+void Player::setCurentMapTile(MapTile* mapTile) {
+    currentMapTile = mapTile;
+}
+
+void Player::animate(Animation AnimType, sf::Time dt) {
+    animationDeltaTime+=dt;
+    if(animationDeltaTime.asSeconds() > 0.15) {
+        if(animationFrame == 0)
+            animationFrame++;
+        else
+            animationFrame--;
+        animationDeltaTime=sf::Time::Zero;
+    }
+    if(AnimType == Right)
+        playerSprite.setScale(-1,1);
+    else
+        playerSprite.setScale(1,1);
+    switch(AnimType) {
+        case Idle:
+            playerSprite.setTextureRect(sf::IntRect(0,0,64,64));
+            break;
+        case Left:
+            playerSprite.setTextureRect(sf::IntRect (animationFrame*64,64,64,64));
+            break;
+        case Right:
+            playerSprite.setTextureRect(sf::IntRect (animationFrame*64,64,64,64));
+            break;
+        case Up:
+        case Down:
+            playerSprite.setTextureRect(sf::IntRect(animationFrame*64, 128, 64,64));
+            break;
+    }
 }
 

@@ -160,15 +160,15 @@ void InputHandler::initializeActions()
         player.move(sf::Vector2i(-1, 1), dt);
     });
     mActionBinding[FireUp].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
-        player.updateFacing(0, 1);
+        player.updateFacing(0, -1);
         player.fire();
     });
     mActionBinding[FireUpRight].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
-        player.updateFacing(1, 1);
+        player.updateFacing(1, -1);
         player.fire();
     });
     mActionBinding[FireUpLeft].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
-        player.updateFacing(-1, 1);
+        player.updateFacing(-1, -1);
         player.fire();
     });
     mActionBinding[FireRight].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
@@ -180,15 +180,15 @@ void InputHandler::initializeActions()
         player.fire();
     });
     mActionBinding[FireDown].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
-        player.updateFacing(0, -1);
+        player.updateFacing(0, 1);
         player.fire();
     });
     mActionBinding[FireDownRight].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
-        player.updateFacing(1, -1);
+        player.updateFacing(1, 1);
         player.fire();
     });
     mActionBinding[FireDownLeft].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
-        player.updateFacing(-1, -1);
+        player.updateFacing(-1, 1);
         player.fire();
     });
 }
