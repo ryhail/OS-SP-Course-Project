@@ -8,8 +8,8 @@ Player::Player(TextureHolder* textures, Textures::ID playerType)
     playerSprite.setTextureRect(sf::IntRect (0,0,64,64));
     playerSprite.setPosition(coordinates.x, coordinates.y);
     playerSprite.setOrigin((playerSprite.getLocalBounds().height/2),playerSprite.getLocalBounds().height/1.24);
-    playerSprite.setScale(1.5, 1.5);
 
+    hitPoints = PLAYER_INIT_HITPOINTS;
     facing.y = 0;
     facing.x = 0;
 
@@ -49,7 +49,7 @@ bool Player::isActive() const {
 }
 
 void Player::draw(sf::RenderWindow* window) {
-    window->draw(playerSprite);
+
 }
 
 EntityType::Type Player::getCategory() const {
@@ -88,6 +88,16 @@ void Player::setSpritePosition(sf::Vector2f _coords) {
 }
 
 void Player::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const {
+    sf::RectangleShape heart = sf::RectangleShape(sf::Vector2f(10,10));
+    sf::Vector2f pos = playerSprite.getPosition();
+    heart.setFillColor(sf::Color::Green);
+    pos.x -= playerSprite.getLocalBounds().width / 1.75f;
+    pos.y -= playerSprite.getLocalBounds().height;
+    for(int i = 0; i < hitPoints; i++) {
+        heart.setPosition(pos);
+        target.draw(heart, states);
+        pos.x += 15;
+    }
     target.draw(playerSprite, states);
 }
 
