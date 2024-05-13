@@ -161,34 +161,48 @@ void InputHandler::initializeActions()
     });
     mActionBinding[FireUp].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
         player.updateFacing(0, -1);
+        player.setFiringShift(0,
+                              -1.f * player.getPlayerSpriteSize().height);
         player.fire();
     });
     mActionBinding[FireUpRight].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
         player.updateFacing(1, -1);
+        player.setFiringShift(player.getPlayerSpriteSize().width / 2,
+                              -1.f * player.getPlayerSpriteSize().height / 2);
         player.fire();
     });
     mActionBinding[FireUpLeft].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
         player.updateFacing(-1, -1);
+        player.setFiringShift(-1.f * player.getPlayerSpriteSize().width / 2,
+                              -1.f * player.getPlayerSpriteSize().height / 2);
         player.fire();
     });
     mActionBinding[FireRight].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
         player.updateFacing(1, 0);
+        player.setFiringShift(1.f * player.getPlayerSpriteSize().width + 5.f, -player.getPlayerSpriteSize().height / 2);
         player.fire();
     });
     mActionBinding[FireLeft].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
         player.updateFacing(-1, 0);
+        player.setFiringShift(-1.f * player.getPlayerSpriteSize().width + 5.f, -player.getPlayerSpriteSize().height / 2);
         player.fire();
     });
     mActionBinding[FireDown].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
         player.updateFacing(0, 1);
+        player.setFiringShift(0,
+                              1.f * player.getPlayerSpriteSize().height / 2);
         player.fire();
     });
     mActionBinding[FireDownRight].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
         player.updateFacing(1, 1);
+        player.setFiringShift(1.f * player.getPlayerSpriteSize().width  / 2,
+                              1.f * player.getPlayerSpriteSize().height / 2);
         player.fire();
     });
     mActionBinding[FireDownLeft].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
         player.updateFacing(-1, 1);
+        player.setFiringShift(-1.f * player.getPlayerSpriteSize().width / 2,
+                              1.f * player.getPlayerSpriteSize().height / 2);
         player.fire();
     });
 }

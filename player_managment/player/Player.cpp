@@ -13,6 +13,7 @@ Player::Player(TextureHolder* textures, Textures::ID playerType)
     facing.y = 0;
     facing.x = 0;
 
+    firingShift = coordinates;
     isFiring = false;
     fireCountdown = PLAYER_FIRING_INTERVAL;
     fireCommand.category = EntityType::ACTIVE_PLAYER;
@@ -35,7 +36,7 @@ void Player::heal(int heal) {
     hitPoints+=heal;
 }
 
-void Player::updateFacing(int x, int y) {
+void Player::updateFacing(float x, float y) {
     facing.x = x;
     facing.y = y;
 }
@@ -111,7 +112,7 @@ bool Player::firingAvailable() const {
 }
 
 void Player::createBullet(SceneNode &node, TextureHolder &textures) {
-    std::unique_ptr<Bullet> bullet(new Bullet(facing, coordinates, Bullet::Owner::PLAYER, textures));
+    std::unique_ptr<Bullet> bullet(new Bullet(facing, coordinates + firingShift, Bullet::Owner::PLAYER, textures));
     node.addChild(std::move(bullet));
     decrementBulletCount();
     std::cout << "bullet created!" << std::endl;
@@ -162,4 +163,13 @@ void Player::animate(Animation AnimType, sf::Time dt) {
             break;
     }
 }
+
+void Player::setFiringShift(float shiftX, float shiftY) {
+    firingShift = sf::Vector2<float>(shiftX, shiftY);;
+}
+
+sf::Rect<float> Player::getPlayerSpriteSize() const {
+    return playerSprite.getLocalBounds();
+}
+
 

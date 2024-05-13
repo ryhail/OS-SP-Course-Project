@@ -5,7 +5,7 @@
 #include "../Entity/Entity.h"
 #include "../../resources/ResourceHolder.h"
 #include <SFML/Graphics/RenderTarget.hpp>
-#define BULLET_SPEED 100.0f
+#define BULLET_SPEED 120.0f
 
 typedef ResourceHolder<Textures::ID, sf::Texture> TextureHolder;
 

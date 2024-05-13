@@ -23,19 +23,18 @@ enum Animation {
 };
 
 class Player : public Entity{
-    sf::Vector2<float> facing;
+
     sf::Sprite      playerSprite;
     MapTile*        currentMapTile;
     sf::Time        animationDeltaTime;
     int             animationFrame;
-    int             hitPoints;
-    int             speed;
-    bool            active;
+
 public:
     Player(TextureHolder* textures, Textures::ID playerType);
     void    takeDamage(int dmg);
     void    heal(int heal);
-    void    updateFacing(int x, int y);
+    void    updateFacing(float x, float y);
+    void    setFiringShift(float shiftX, float shiftY);
     void    setSpritePosition(sf::Vector2f _coords);
     void    setActive(bool value);
     void    move(sf::Vector2i direction, sf::Time time);
@@ -45,6 +44,8 @@ public:
     bool    isForRemove(sf::RenderWindow &window) override;
     void    setCurentMapTile(MapTile*);
     void    animate(Animation AnimType, sf::Time dt);
+
+    sf::Rect<float> getPlayerSpriteSize() const;
 private:
     void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const override;
 
@@ -64,7 +65,12 @@ private:
     Command     fireCommand;
     int         bulletCount;
     sf::Time    healingTime;
+    int         hitPoints;
+    int         speed;
+    bool        active;
 
+    sf::Vector2<float> facing;
+    sf::Vector2<float> firingShift;
 
     EntityType::Type getCategory() const override;
 };
