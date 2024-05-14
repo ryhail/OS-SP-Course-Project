@@ -35,6 +35,7 @@ Bullet::Bullet(sf::Vector2f _facing, sf::Vector2f _coordinates,
     level = 1;
     damage = 1;
     speed = BULLET_SPEED;
+    isUsed = false;
 
     sprite.setTexture(textures.getResource(Textures::Bullet));
     sf::FloatRect bounds = sprite.getLocalBounds();

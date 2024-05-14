@@ -25,7 +25,7 @@ public:
     typedef std::pair<SceneNode*, SceneNode*> Pair;
 
 public:
-    SceneNode() = default;
+    SceneNode() {   parent = nullptr;   }
 
     void            addChild(SceneNodePtr child);
     SceneNodePtr    detachChild(const SceneNode& child);

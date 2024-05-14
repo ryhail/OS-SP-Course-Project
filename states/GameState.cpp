@@ -73,11 +73,22 @@ void GameState::handleCollisions() {
                     bullet.use();
                 }
         }
+        //босса еще нет
         if(hasSpecifiedCategories(pair, EntityType::BOSS, EntityType::BULLET)) {
             //auto& boss = dynamic_cast<Boss&>(*pair.first);
             auto& bullet = dynamic_cast<Bullet&>(*pair.second);
             if (bullet.getVictim() & EntityType::BOSS) {
                 //boss.takeDamage(bullet.getDamage());
+                bullet.use();
+            }
+        }
+        // тестировать, что работает
+        if(hasSpecifiedCategories(pair, EntityType::ACTIVE_PLAYER, EntityType::BULLET)
+           || hasSpecifiedCategories(pair, EntityType::INACTIVE_PLAYER, EntityType::BULLET)) {
+            auto& player = dynamic_cast<Player&>(*pair.first);
+            auto& bullet = dynamic_cast<Bullet&>(*pair.second);
+            if (bullet.getVictim() & EntityType::BOSS) {
+                player.takeDamage(bullet.getDamage());
                 bullet.use();
             }
         }

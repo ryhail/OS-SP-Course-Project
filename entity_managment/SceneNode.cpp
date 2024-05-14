@@ -1,4 +1,5 @@
 
+#include <iostream>
 #include "SceneNode.h"
 
 void SceneNode::addChild(SceneNode::SceneNodePtr child) {
@@ -88,13 +89,13 @@ sf::Vector2f SceneNode::getWorldPosition() const
  * к измененному базису
  * например, rotate изменяет положение спрайта в пространстве
  */
-sf::Transform SceneNode::getWorldTransform() const
-{
+sf::Transform SceneNode::getWorldTransform() const {
     sf::Transform transform = sf::Transform::Identity;
-
-    for (const SceneNode* node = this; node != nullptr; node = node->parent)
-        transform = node->getTransform() * transform;
-
+    const SceneNode* scene = this;
+    while (scene->parent != nullptr) {
+        scene = scene->parent;
+    }
+    transform = scene->getTransform() * transform;
     return transform;
 }
 
