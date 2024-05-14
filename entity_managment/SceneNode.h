@@ -42,6 +42,7 @@ public:
     virtual sf::FloatRect	getBoundingRect() const;
     void                    checkNodeCollision(SceneNode& node, std::set<Pair>& collisionPairs);
     void                    checkSceneCollision(SceneNode& sceneGraph, std::set<Pair>& collisionPairs);
+    void                    removeWrecks();
 
 private:
     virtual void    drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;

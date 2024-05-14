@@ -141,3 +141,11 @@ bool hasSpecifiedCategories(SceneNode::Pair collidePair, EntityType::Type first,
     }
     return false;
 }
+void SceneNode::removeWrecks()
+{
+    auto wreckfieldBegin = std::remove_if(childSceneNodes.begin(),
+                                          childSceneNodes.end(), std::mem_fn(&SceneNode::isForRemove));
+    childSceneNodes.erase(wreckfieldBegin, childSceneNodes.end());
+    std::for_each(childSceneNodes.begin(), childSceneNodes.end(),
+                  std::mem_fn(&SceneNode::removeWrecks));
+}

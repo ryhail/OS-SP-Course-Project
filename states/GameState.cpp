@@ -38,6 +38,7 @@ bool GameState::update(sf::Time dt) {
     }
     sceneGraph.update(dt, commandQueue);
     handleCollisions();
+    sceneGraph.removeWrecks();
     inputHandler.handleRealtimeInput(commandQueue);
     if(commandQueue.isEmpty())
         controlledPlayer->animate(Idle, dt);
