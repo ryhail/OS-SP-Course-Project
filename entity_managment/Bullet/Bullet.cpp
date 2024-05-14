@@ -9,11 +9,12 @@ Bullet::Bullet(bullet_t bulletInfo,
         Entity(sf::Vector2f(bulletInfo.coordinates.x, bulletInfo.coordinates.y)),
         sprite(bulletTexture.getResource(Textures::Bullet)) {
     if (bulletInfo.owner == 'b') {
-        owner = BOSS;
+        owner = EntityType::BOSS;
     }
     if (bulletInfo.owner == 'p') {
-        owner = PLAYER;
+        owner = EntityType::PLAYER;
     }
+    isUsed = false;
     facing.x = 0;
     facing.y = 0;
 
@@ -26,10 +27,13 @@ void Bullet::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) cons
 }
 
 Bullet::Bullet(sf::Vector2f _facing, sf::Vector2f _coordinates,
-               Bullet::Owner _owner, const TextureHolder &textures):
+               EntityType::Type _owner, const TextureHolder &textures):
         Entity(_coordinates){
     facing = _facing;
     owner = _owner;
+
+    level = 1;
+    damage = 1;
     speed = BULLET_SPEED;
 
     sprite.setTexture(textures.getResource(Textures::Bullet));
@@ -43,12 +47,33 @@ void Bullet::updateCurrent(sf::Time dt, CommandQueue &queue) {
     sprite.setPosition(coordinates);
 }
 
-bool Bullet::isForRemove(sf::RenderWindow &window) {
+bool Bullet::isForRemove() {
 //    sf::Vector2f wind = window.getView().getSize();
 //    return coordinates.x <= 0 || coordinates.x >= wind.x || coordinates.y <= 0 || coordinates.y >= wind.y;
-    return false;
+    return isUsed;
 }
 
 EntityType::Type Bullet::getCategory() const {
     return EntityType::BULLET;
+}
+
+sf::FloatRect Bullet::getBoundingRect() const {
+    return getWorldTransform()
+            .transformRect(sprite.getGlobalBounds());
+}
+
+EntityType::Type Bullet::getVictim() const {
+    if(owner & EntityType::INACTIVE_PLAYER ||
+    owner & EntityType::ACTIVE_PLAYER) {
+        return EntityType::BOSS;
+    }
+    return EntityType::PLAYER;
+}
+
+void Bullet::use() {
+    isUsed = true;
+}
+
+int Bullet::getDamage() const {
+    return damage;
 }

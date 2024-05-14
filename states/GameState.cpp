@@ -1,4 +1,5 @@
 #include <iostream>
+#include <set>
 #include "GameState.h"
 
 GameState::GameState(StateStack &stack, State::Context context) : State(stack, context),
@@ -36,6 +37,7 @@ bool GameState::update(sf::Time dt) {
         sceneGraph.execCommand(commandQueue.pop(), dt);
     }
     sceneGraph.update(dt, commandQueue);
+    handleCollisions();
     inputHandler.handleRealtimeInput(commandQueue);
     if(commandQueue.isEmpty())
         controlledPlayer->animate(Idle, dt);
@@ -43,7 +45,6 @@ bool GameState::update(sf::Time dt) {
 }
 
 bool GameState::handleEvent(const sf::Event &event) {
-
     return true;
 }
 
@@ -52,4 +53,33 @@ void GameState::buildScene() {
     sceneGraph.addChild(std::move(activePlayer));
     SceneNode::SceneNodePtr passivePlayer(updatedPlayer);
     sceneGraph.addChild(std::move(passivePlayer));
+}
+/*
+ * обработка столкновений между сущностями
+ * (логика выстрела, подбирашек)
+ */
+void GameState::handleCollisions() {
+    std::set<SceneNode::Pair> collidePairs;
+    sceneGraph.checkSceneCollision(sceneGraph, collidePairs);
+
+    for (SceneNode::Pair pair : collidePairs) {
+        if(hasSpecifiedCategories(pair, EntityType::ACTIVE_PLAYER, EntityType::BULLET)
+        || hasSpecifiedCategories(pair, EntityType::INACTIVE_PLAYER, EntityType::BULLET)) {
+                auto& player = dynamic_cast<Player&>(*pair.first);
+                auto& bullet = dynamic_cast<Bullet&>(*pair.second);
+                if (bullet.getVictim() & EntityType::PLAYER) {
+                    player.takeDamage(bullet.getDamage());
+                    bullet.use();
+                }
+        }
+        if(hasSpecifiedCategories(pair, EntityType::BOSS, EntityType::BULLET)) {
+            //auto& boss = dynamic_cast<Boss&>(*pair.first);
+            auto& bullet = dynamic_cast<Bullet&>(*pair.second);
+            if (bullet.getVictim() & EntityType::BOSS) {
+                //boss.takeDamage(bullet.getDamage());
+                bullet.use();
+            }
+        }
+        // подбирашки
+    }
 }

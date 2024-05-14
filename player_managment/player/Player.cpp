@@ -122,7 +122,7 @@ bool Player::firingAvailable() const {
 }
 
 void Player::createBullet(SceneNode &node, TextureHolder &textures) {
-    std::unique_ptr<Bullet> bullet(new Bullet(facing, coordinates + firingShift, Bullet::Owner::PLAYER, textures));
+    std::unique_ptr<Bullet> bullet(new Bullet(facing, coordinates + firingShift, getCategory(), textures));
     node.addChild(std::move(bullet));
     decrementBulletCount();
     std::cout << "bullet created!" << std::endl;
@@ -132,7 +132,7 @@ void Player::updateCurrent(sf::Time dt, CommandQueue &queue) {
     checkBulletLaunch(queue, dt);
 }
 
-bool Player::isForRemove(sf::RenderWindow &window) {
+bool Player::isForRemove() {
     return hitPoints <= 0;
 }
 
@@ -180,6 +180,11 @@ void Player::setFiringShift(float shiftX, float shiftY) {
 
 sf::Rect<float> Player::getPlayerSpriteSize() const {
     return playerSprite.getLocalBounds();
+}
+
+sf::FloatRect Player::getBoundingRect() const {
+    return getWorldTransform()
+            .transformRect(playerSprite.getGlobalBounds());
 }
 
 

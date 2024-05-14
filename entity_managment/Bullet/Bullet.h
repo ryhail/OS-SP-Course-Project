@@ -9,17 +9,18 @@
 
 typedef ResourceHolder<Textures::ID, sf::Texture> TextureHolder;
 
-class Bullet: public Entity{
-public:
-    enum Owner {
-        PLAYER = 1 << 1,
-        BOSS   = 1 << 2
-    };
+class Bullet: public Entity {
 public:
     Bullet(bullet_t bulletInfo, const TextureHolder &bulletTexture);
-    Bullet(sf::Vector2f _facing, sf::Vector2f _coordinates, Owner _owner, const TextureHolder& textures);
+    Bullet(sf::Vector2f _facing, sf::Vector2f _coordinates, EntityType::Type _owner, const TextureHolder& textures);
 
-    bool isForRemove(sf::RenderWindow &window) override;
+    bool    isForRemove() override;
+    void    use();
+
+    EntityType::Type    getVictim() const;
+    int                 getDamage() const;
+
+    sf::FloatRect getBoundingRect() const override;
 
 private:
     void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -29,9 +30,12 @@ public:
     EntityType::Type getCategory() const override;
 
 private:
-    sf::Sprite      sprite;
-    Owner           owner;
-    sf::Vector2f    facing;
-    float           speed;
+    sf::Sprite          sprite;
+    EntityType::Type    owner;
+    sf::Vector2f        facing;
+    float               speed;
+    bool                isUsed;
+    int                 level;
+    int                 damage;
 };
 #endif //COURSE_BULLET_H

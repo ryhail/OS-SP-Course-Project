@@ -14,6 +14,10 @@ public:
     virtual void draw();
     virtual bool update(sf::Time dt);
     virtual bool handleEvent(const sf::Event& event);
+
+private:
+    void    handleCollisions();
+
 private:
     int             sockfd;
     sockaddr_in     server_adr;

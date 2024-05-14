@@ -21,6 +21,7 @@ class SceneNode: public sf::Transformable,
         private sf::NonCopyable {
 public:
     typedef std::unique_ptr<SceneNode> SceneNodePtr;
+    typedef std::pair<SceneNode*, SceneNode*> Pair;
 
 public:
     SceneNode() = default;
@@ -33,21 +34,28 @@ public:
     void            execCommand(const Command& command, sf::Time dt);
     void            draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
-    virtual bool                isForRemove(sf::RenderWindow &window);
+    virtual bool                isForRemove();
     virtual EntityType::Type    getCategory() const;
 
-private:
+    sf::Vector2f			getWorldPosition() const;
+    sf::Transform			getWorldTransform() const;
+    virtual sf::FloatRect	getBoundingRect() const;
+    void                    checkNodeCollision(SceneNode& node, std::set<Pair>& collisionPairs);
+    void                    checkSceneCollision(SceneNode& sceneGraph, std::set<Pair>& collisionPairs);
 
+private:
     virtual void    drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
     virtual void    updateCurrent(sf::Vector2f _coordinate);
     void            updateChildren(sf::Vector2f _coordinate);
     virtual void    updateCurrent(sf::Time dt, CommandQueue &queue);
     void            updateChildren(sf::Time dt, CommandQueue &queue);
 
-
 private:
     std::vector<SceneNodePtr>   childSceneNodes;
     SceneNode*                  parent;
 };
+
+bool	collision(const SceneNode& lhs, const SceneNode& rhs);
+bool    hasSpecifiedCategories(SceneNode::Pair collidePair, EntityType::Type first, EntityType::Type second);
 
 #endif //COURSE_SCENENODE_H

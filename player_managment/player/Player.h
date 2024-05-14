@@ -42,10 +42,11 @@ public:
     void    fire();
     bool    isActive() const;
     void    draw(sf::RenderWindow* window);
-    bool    isForRemove(sf::RenderWindow &window) override;
+    bool    isForRemove() override;
     void    setCurentMapTile(MapTile*);
     void    animate(Animation AnimType, sf::Time dt);
 
+    sf::FloatRect   getBoundingRect() const override;
     sf::Rect<float> getPlayerSpriteSize() const;
 private:
     void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const override;

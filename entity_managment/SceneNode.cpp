@@ -1,3 +1,4 @@
+#include <set>
 #include "SceneNode.h"
 
 void SceneNode::addChild(SceneNode::SceneNodePtr child) {
@@ -71,6 +72,72 @@ void SceneNode::execCommand(const Command &command, sf::Time dt) {
     }
 }
 
-bool SceneNode::isForRemove(sf::RenderWindow &window) {
+bool SceneNode::isForRemove() {
+    return false;
+}
+/*
+ * получить базис пространства
+ * самого базового объекта на поле (самого поля)
+ */
+sf::Vector2f SceneNode::getWorldPosition() const
+{
+    return getWorldTransform() * sf::Vector2f();
+}
+/*
+ * sf::Transform - матрица перехода
+ * к измененному базису
+ * например, rotate изменяет положение спрайта в пространстве
+ */
+sf::Transform SceneNode::getWorldTransform() const
+{
+    sf::Transform transform = sf::Transform::Identity;
+
+    for (const SceneNode* node = this; node != nullptr; node = node->parent)
+        transform = node->getTransform() * transform;
+
+    return transform;
+}
+
+sf::FloatRect SceneNode::getBoundingRect() const {
+    return {};
+}
+/*
+ * проверка на коллизии (столкновения)
+ * одной ноды с нодами всего графа
+ */
+void SceneNode::checkNodeCollision(SceneNode& node, std::set<Pair>& collisionPairs) {
+    if (this != &node && collision(*this, node)
+        && !isForRemove() && !node.isForRemove()) {
+        collisionPairs.insert(std::minmax(this, &node));
+    }
+    for (SceneNodePtr& child: childSceneNodes) {
+        child->checkNodeCollision(node, collisionPairs);
+    }
+}
+/*
+ * проверка на коллизии (столкновения)
+ * внутри всего графа (каждой ноды с каждой нодой)
+ */
+void SceneNode::checkSceneCollision(SceneNode& sceneGraph, std::set<Pair>& collisionPairs) {
+    checkNodeCollision(sceneGraph, collisionPairs);
+    for (SceneNodePtr & child: sceneGraph.childSceneNodes)
+    checkSceneCollision(*child, collisionPairs);
+}
+
+bool collision(const SceneNode& lhs, const SceneNode& rhs)
+{
+    return lhs.getBoundingRect().intersects(rhs.getBoundingRect());
+}
+bool hasSpecifiedCategories(SceneNode::Pair collidePair, EntityType::Type first, EntityType::Type second) {
+    unsigned int realFirst = collidePair.first->getCategory();
+    unsigned int realSecond = collidePair.second->getCategory();
+
+    if (realFirst & first && realSecond & second) {
+        return true;
+    }
+    if (realFirst & second && realSecond & first) {
+        std::swap(collidePair.first, collidePair.second);
+        return true;
+    }
     return false;
 }
