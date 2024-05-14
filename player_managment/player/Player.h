@@ -10,6 +10,7 @@
 #include "../../command/CommandQueue.h"
 #include "../../levelDesign/MapTile.h"
 
+
 #define PLAYER_INIT_SPEED 100
 #define PLAYER_INIT_HITPOINTS 5
 #define PLAYER_FIRING_INTERVAL sf::seconds(2.0f)

@@ -21,7 +21,8 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     updatedPlayer->setSpritePosition(mLevel.getCurrentMapTile()->getSpawnPoint());
     updatedPlayer->setCurentMapTile(mLevel.getCurrentMapTile());
     buildScene();
-
+    msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
+    msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
 }
 
 void GameState::draw() {
@@ -33,6 +34,8 @@ void GameState::draw() {
 }
 
 bool GameState::update(sf::Time dt) {
+    sendto(sockfd, &msgToServer, sizeof(msgToServer), 0, (const sockaddr *) (&server_adr), sizeof(server_adr));
+    recv(sockfd, &msgFromServer, sizeof(msgFromServer), 0);
     while (!commandQueue.isEmpty()) {
         sceneGraph.execCommand(commandQueue.pop(), dt);
     }
