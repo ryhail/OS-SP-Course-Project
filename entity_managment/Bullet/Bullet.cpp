@@ -27,11 +27,11 @@ void Bullet::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) cons
 }
 
 Bullet::Bullet(sf::Vector2f _facing, sf::Vector2f _coordinates,
-               EntityType::Type _owner, const TextureHolder &textures):
+               EntityType::Type _owner, const TextureHolder &textures, MapTile* _currentMapTile):
         Entity(_coordinates){
     facing = _facing;
     owner = _owner;
-
+    currentMapTile = _currentMapTile;
     level = 1;
     damage = 1;
     speed = BULLET_SPEED;
@@ -48,9 +48,10 @@ void Bullet::updateCurrent(sf::Time dt, CommandQueue &queue) {
 }
 
 bool Bullet::isForRemove() {
-//    sf::Vector2f wind = window.getView().getSize();
-//    return coordinates.x <= 0 || coordinates.x >= wind.x || coordinates.y <= 0 || coordinates.y >= wind.y;
-    return isUsed;
+    if(currentMapTile->getCurrentTileType(coordinates) == Tile::Border)
+        return true;
+    else
+        return isUsed;
 }
 
 EntityType::Type Bullet::getCategory() const {

@@ -4,6 +4,7 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include "../Entity/Entity.h"
 #include "../../resources/ResourceHolder.h"
+#include "../../levelDesign/MapTile.h"
 #include <SFML/Graphics/RenderTarget.hpp>
 #define BULLET_SPEED 120.0f
 
@@ -12,7 +13,7 @@ typedef ResourceHolder<Textures::ID, sf::Texture> TextureHolder;
 class Bullet: public Entity {
 public:
     Bullet(bullet_t bulletInfo, const TextureHolder &bulletTexture);
-    Bullet(sf::Vector2f _facing, sf::Vector2f _coordinates, EntityType::Type _owner, const TextureHolder& textures);
+    Bullet(sf::Vector2f _facing, sf::Vector2f _coordinates, EntityType::Type _owner, const TextureHolder& textures, MapTile* _currentMapTile);
 
     bool    isForRemove() override;
     void    use();
@@ -37,5 +38,6 @@ private:
     bool                isUsed;
     int                 level;
     int                 damage;
+    MapTile*            currentMapTile;
 };
 #endif //COURSE_BULLET_H

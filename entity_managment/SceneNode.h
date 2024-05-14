@@ -15,6 +15,7 @@
 #include "Entity/EntityType.h"
 #include "../command/Command.h"
 #include "../command/CommandQueue.h"
+#include <set>
 
 class SceneNode: public sf::Transformable,
         public sf::Drawable,

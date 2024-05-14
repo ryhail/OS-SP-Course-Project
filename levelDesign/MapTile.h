@@ -2,8 +2,10 @@
 #define SFML_MAPTILE_H
 
 #include <SFML/Graphics.hpp>
-#include "../entity_managment/Bullet/Bullet.h"
 #include "Tile.h"
+#include "../resources/ResourceHolder.h"
+
+typedef ResourceHolder<Textures::ID, sf::Texture> TextureHolder;
 
 class MapTile {
     std::vector<Tile>               mTiles;

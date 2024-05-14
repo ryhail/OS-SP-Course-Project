@@ -122,7 +122,7 @@ bool Player::firingAvailable() const {
 }
 
 void Player::createBullet(SceneNode &node, TextureHolder &textures) {
-    std::unique_ptr<Bullet> bullet(new Bullet(facing, coordinates + firingShift, getCategory(), textures));
+    std::unique_ptr<Bullet> bullet(new Bullet(facing, coordinates + firingShift, getCategory(), textures, currentMapTile));
     node.addChild(std::move(bullet));
     decrementBulletCount();
     std::cout << "bullet created!" << std::endl;

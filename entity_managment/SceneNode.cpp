@@ -1,4 +1,4 @@
-#include <set>
+
 #include "SceneNode.h"
 
 void SceneNode::addChild(SceneNode::SceneNodePtr child) {
