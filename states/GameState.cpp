@@ -34,8 +34,8 @@ void GameState::draw() {
 }
 
 bool GameState::update(sf::Time dt) {
-    sendto(sockfd, &msgToServer, sizeof(msgToServer), 0, (const sockaddr *) (&server_adr), sizeof(server_adr));
-    recv(sockfd, &msgFromServer, sizeof(msgFromServer), 0);
+    send_client_data(msgToServer, sockfd, server_adr);
+    receive_game_data(&msgFromServer, sockfd, server_adr);
     while (!commandQueue.isEmpty()) {
         sceneGraph.execCommand(commandQueue.pop(), dt);
     }

@@ -96,7 +96,7 @@ bool LobbyState::handleEvent(const sf::Event &event) {
 
 bool LobbyState::update(sf::Time dt) {
     serverDelay += dt;
-    if(serverDelay.asSeconds() > 0.05f) {
+    if(serverDelay.asSeconds() > 0.5f) {
         if(readyState) {
             if(mChoice) {
                 available = '2';
