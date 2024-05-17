@@ -5,6 +5,8 @@
 GameState::GameState(StateStack &stack, State::Context context) : State(stack, context),
     mLevel(context.window)
 {
+    sockfd = *context.sockfd;
+    server_adr = *context.server_adr;
     if(context.player1->isActive()) {
         std::cout << "c1" << std::endl;
         controlledPlayer = context.player1;
