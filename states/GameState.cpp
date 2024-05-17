@@ -41,11 +41,12 @@ void GameState::draw() {
 bool GameState::update(sf::Time dt) {
     serverDelay += dt;
     if(serverDelay.asSeconds() > 0.6f) {
-        //make_nonblock(sockfd);
+
         send_client_data(msgToServer, sockfd, server_adr);
-        receive_game_data(&msgFromServer, sockfd, server_adr);
+
         serverDelay = sf::Time::Zero;
     }
+    receive_game_data(&msgFromServer, sockfd, server_adr);
     while (!commandQueue.isEmpty()) {
         sceneGraph.execCommand(commandQueue.pop(), dt);
     }
