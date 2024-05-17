@@ -7,6 +7,8 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
 {
     sockfd = *context.sockfd;
     server_adr = *context.server_adr;
+    serverDelay =sf::Time::Zero;
+
     if(context.player1->isActive()) {
         std::cout << "c1" << std::endl;
         controlledPlayer = context.player1;
@@ -36,8 +38,11 @@ void GameState::draw() {
 }
 
 bool GameState::update(sf::Time dt) {
-    send_client_data(msgToServer, sockfd, server_adr);
-    receive_game_data(&msgFromServer, sockfd, server_adr);
+    serverDelay += dt;
+    if(serverDelay.asSeconds() > 0.01f) {
+        send_client_data(msgToServer, sockfd, server_adr);
+        receive_game_data(&msgFromServer, sockfd, server_adr);
+    }
     while (!commandQueue.isEmpty()) {
         sceneGraph.execCommand(commandQueue.pop(), dt);
     }

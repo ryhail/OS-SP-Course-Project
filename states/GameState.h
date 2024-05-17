@@ -29,6 +29,7 @@ private:
     SceneNode       sceneGraph;
     CommandQueue    commandQueue;
     InputHandler    inputHandler;
+    sf::Time        serverDelay;
 };
 
 
