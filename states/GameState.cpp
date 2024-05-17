@@ -18,11 +18,9 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
         controlledPlayer = context.player2;
         updatedPlayer = context.player1;
     }
-    controlledPlayer->update(mLevel.getCurrentMapTile()->getSpawnPoint());
-    controlledPlayer->setSpritePosition(mLevel.getCurrentMapTile()->getSpawnPoint());
+    controlledPlayer->setPosition(mLevel.getCurrentMapTile()->getSpawnPoint());
     controlledPlayer->setCurentMapTile(mLevel.getCurrentMapTile());
-    updatedPlayer->update(mLevel.getCurrentMapTile()->getSpawnPoint());
-    updatedPlayer->setSpritePosition(mLevel.getCurrentMapTile()->getSpawnPoint());
+    updatedPlayer->setPosition(mLevel.getCurrentMapTile()->getSpawnPoint());
     updatedPlayer->setCurentMapTile(mLevel.getCurrentMapTile());
     buildScene();
     msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
@@ -41,12 +39,13 @@ void GameState::draw() {
 bool GameState::update(sf::Time dt) {
     serverDelay += dt;
     if(serverDelay.asSeconds() > 0.6f) {
-
+        msgToServer.player.coordinates.x = (int16_t)controlledPlayer->getCoordinates().x;
+        msgToServer.player.coordinates.x = (int16_t)controlledPlayer->getCoordinates().y;
         send_client_data(msgToServer, sockfd, server_adr);
-
         serverDelay = sf::Time::Zero;
     }
     receive_game_data(&msgFromServer, sockfd, server_adr);
+    updatedPlayer->setPosition(msgFromServer.player2.coordinates.x, msgFromServer.player2.coordinates.y);
     while (!commandQueue.isEmpty()) {
         sceneGraph.execCommand(commandQueue.pop(), dt);
     }

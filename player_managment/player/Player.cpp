@@ -70,8 +70,7 @@ void Player::move(sf::Vector2i direction, sf::Time dt) {
     newCoords.x = coordinates.x + direction.x * speed * dt.asSeconds();
     newCoords.y = coordinates.y + direction.y * speed * dt.asSeconds();
     if(currentMapTile->getCurrentTileType(newCoords) != Tile::Type::Border) {
-        coordinates = newCoords;
-        playerSprite.setPosition(newCoords);
+        setPosition(newCoords.x, newCoords.y);
         if(direction.x == -1)
             animate(Left, dt);
         else if(direction.x == 1)
@@ -81,11 +80,6 @@ void Player::move(sf::Vector2i direction, sf::Time dt) {
         else if(direction.y == 1)
             animate(Down, dt);
     }
-}
-
-
-void Player::setSpritePosition(sf::Vector2f _coords) {
-    playerSprite.setPosition(_coords);
 }
 
 void Player::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const {
@@ -185,6 +179,16 @@ sf::Rect<float> Player::getPlayerSpriteSize() const {
 sf::FloatRect Player::getBoundingRect() const {
     return getWorldTransform()
             .transformRect(playerSprite.getGlobalBounds());
+}
+
+void Player::setPosition(float x, float y) {
+    Transformable::setPosition(x, y);
+    playerSprite.setPosition(x, y);
+}
+
+void Player::setPosition(sf::Vector2f pos) {
+    Transformable::setPosition(pos);
+    playerSprite.setPosition(pos);
 }
 
 

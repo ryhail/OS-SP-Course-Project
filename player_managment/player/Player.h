@@ -37,7 +37,6 @@ public:
     void    heal(int heal);
     void    updateFacing(float x, float y);
     void    setFiringShift(float shiftX, float shiftY);
-    void    setSpritePosition(sf::Vector2f _coords);
     void    setActive(bool value);
     void    move(sf::Vector2i direction, sf::Time time);
     void    fire();
@@ -46,6 +45,8 @@ public:
     bool    isForRemove() override;
     void    setCurentMapTile(MapTile*);
     void    animate(Animation AnimType, sf::Time dt);
+    void    setPosition(float x, float y);
+    void    setPosition(sf::Vector2f pos);
 
     sf::FloatRect   getBoundingRect() const override;
     sf::Rect<float> getPlayerSpriteSize() const;
