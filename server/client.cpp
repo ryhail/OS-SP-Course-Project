@@ -34,7 +34,7 @@ int initialize_client(int port){
 }
 void make_nonblock(int sockfd){
     if(fcntl(sockfd,F_SETFL, O_NONBLOCK) == -1)
-        perror("NON_BLOCK er ror");
+        perror("NON_BLOCK error");
 }
 
 void initialize_server(int port,const char* server_ip, struct sockaddr_in* server_addr){

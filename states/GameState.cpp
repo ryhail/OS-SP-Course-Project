@@ -27,6 +27,7 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     buildScene();
     msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
     msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
+    std::cout << controlledPlayer->getCoordinates().x << std::endl;
 }
 
 void GameState::draw() {
@@ -39,7 +40,8 @@ void GameState::draw() {
 
 bool GameState::update(sf::Time dt) {
     serverDelay += dt;
-    if(serverDelay.asSeconds() > 0.2f) {
+    if(serverDelay.asSeconds() > 0.6f) {
+        make_nonblock(sockfd);
         send_client_data(msgToServer, sockfd, server_adr);
         receive_game_data(&msgFromServer, sockfd, server_adr);
     }
