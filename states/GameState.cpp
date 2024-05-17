@@ -39,7 +39,7 @@ void GameState::draw() {
 
 bool GameState::update(sf::Time dt) {
     serverDelay += dt;
-    if(serverDelay.asSeconds() > 0.01f) {
+    if(serverDelay.asSeconds() > 0.2f) {
         send_client_data(msgToServer, sockfd, server_adr);
         receive_game_data(&msgFromServer, sockfd, server_adr);
     }

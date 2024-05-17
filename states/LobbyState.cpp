@@ -135,7 +135,6 @@ bool LobbyState::update(sf::Time dt) {
             getContext().player1->setActive(true);
             getContext().player2->setActive(false);
         }
-        make_nonblock(sockfd);
         requestStackPop();
 
         requestStackPush(States::Game);
