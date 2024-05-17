@@ -32,7 +32,6 @@ add_executable(game main.cpp
         player_managment/player/Player.h
         player_managment/player/Player.cpp
         entity_managment/Bullet/Bullet.h
-        entity_managment/sever_structures.h
         entity_managment/SceneNode.h
         entity_managment/SceneNode.cpp
         levelDesign/Level.h

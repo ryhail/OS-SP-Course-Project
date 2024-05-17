@@ -5,9 +5,8 @@
 
 #include <functional>
 #include <cassert>
-#include "../entity_managment/sever_structures.h"
 #include "../entity_managment/Entity/EntityType.h"
-
+#include "../server/sever_structures.h"
 
 class SceneNode;
 
