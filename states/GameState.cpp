@@ -13,10 +13,12 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
         std::cout << "c1" << std::endl;
         controlledPlayer = context.player1;
         updatedPlayer = context.player2;
+        msgToServer.player.type = '1';
     } else if(context.player2->isActive()){
         std::cout << "c2" << std::endl;
         controlledPlayer = context.player2;
         updatedPlayer = context.player1;
+        msgToServer.player.type = '2';
     }
     controlledPlayer->setPosition(mLevel.getCurrentMapTile()->getSpawnPoint());
     controlledPlayer->setCurentMapTile(mLevel.getCurrentMapTile());
@@ -39,12 +41,15 @@ void GameState::draw() {
 bool GameState::update(sf::Time dt) {
     serverDelay += dt;
     if(serverDelay.asSeconds() > 0.6f) {
-        msgToServer.player.coordinates.x = (int16_t)controlledPlayer->getCoordinates().x;
-        msgToServer.player.coordinates.x = (int16_t)controlledPlayer->getCoordinates().y;
+
+        msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
+        msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().y;
+        std::cout<<msgToServer.player.coordinates.x<<' '<<msgToServer.player.coordinates.y<<std::endl;
         send_client_data(msgToServer, sockfd, server_adr);
         serverDelay = sf::Time::Zero;
     }
     receive_game_data(&msgFromServer, sockfd, server_adr);
+    std::cout<<msgFromServer.player2.coordinates.x<<' '<<msgFromServer.player2.coordinates.y<<std::endl;
     updatedPlayer->setPosition(msgFromServer.player2.coordinates.x, msgFromServer.player2.coordinates.y);
     while (!commandQueue.isEmpty()) {
         sceneGraph.execCommand(commandQueue.pop(), dt);
