@@ -1,6 +1,6 @@
 #include <iostream>
 #include "LobbyState.h"
-
+#include "../server/client.h"
 LobbyState::LobbyState(StateStack &stack, State::Context context)
         : State(stack, context)
         , mChoice(false)
@@ -79,6 +79,7 @@ bool LobbyState::handleEvent(const sf::Event &event) {
         case sf::Keyboard::Key::Escape: {
             if(readyState) {
                 readyState = false;
+                std::cout << "Escape pressed!!!" << std::endl;
                 mReady.setFillColor(sf::Color::Red);
                 available = 'r';
             }
@@ -104,9 +105,10 @@ bool LobbyState::update(sf::Time dt) {
                 available = '1';
             }
         }
+        std::cout << "Send" << available << std::endl;
         sendto(sockfd, &available, sizeof(available), 0, (const sockaddr *) (&server_addr), sizeof(server_addr));
         recv(sockfd, &available, sizeof(available), 0);
-        std::cout << available << std::endl;
+        std::cout << "Recieved" <<available << std::endl;
         serverDelay = sf::Time::Zero;
     }
     switch(available) {
@@ -133,7 +135,9 @@ bool LobbyState::update(sf::Time dt) {
             getContext().player1->setActive(true);
             getContext().player2->setActive(false);
         }
+
         requestStackPop();
+        make_nonblock(sockfd);
         requestStackPush(States::Game);
     }
 

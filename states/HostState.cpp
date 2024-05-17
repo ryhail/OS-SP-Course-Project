@@ -5,7 +5,6 @@ HostState::HostState(StateStack &stack, State::Context context) : State(stack, c
     struct sockaddr_in server_addr;
     int sockfd = initialize_client(PORT);
     initialize_server(SERVER_PORT,"127.0.0.1",&server_addr);
-    make_nonblock(sockfd);
     setServerParams(sockfd, server_addr);
 }
 
