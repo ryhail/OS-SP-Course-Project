@@ -54,8 +54,3 @@ add_executable(game main.cpp
         states/HostState.cpp
 )
 target_link_libraries(game sfml-graphics sfml-audio)
-
-set(CMAKE_C_STANDARD 11)
-add_executable(server server/server.c
-        server/structures.h)
-target_link_libraries(server m)
