@@ -182,12 +182,13 @@ sf::FloatRect Player::getBoundingRect() const {
 }
 
 void Player::setPosition(float x, float y) {
-    Transformable::setPosition(x, y);
+    coordinates.x = x;
+    coordinates.y = y;
     playerSprite.setPosition(x, y);
 }
 
 void Player::setPosition(sf::Vector2f pos) {
-    Transformable::setPosition(pos);
+    coordinates = pos;
     playerSprite.setPosition(pos);
 }
 
