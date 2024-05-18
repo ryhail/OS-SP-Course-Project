@@ -7,8 +7,8 @@
 
 #define MAX_BULLETS 128
 struct  coordinate {
-    float x;
-    float y;
+    int16_t x;
+    int16_t y;
 };
 
 struct bullet {
