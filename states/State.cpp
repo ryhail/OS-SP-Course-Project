@@ -10,9 +10,11 @@ State::Context::Context(sf::RenderWindow& window,
 {
     textures->load(Textures::MainMenu, "resources/Textures/menubg.png");
     textures->load(Textures::Player1, "resources/Textures/player1.png");
+    textures->load(Textures::Player2, "resources/Textures/player2.png");
     textures->load(Textures::Bullet, "resources/Textures/bullet.png");
+    textures->load(Textures::Heart, "resources/Textures/heart.png");
     player1 = new Player(textures, Textures::Player1);
-    player2 = new Player(textures, Textures::Player1);
+    player2 = new Player(textures, Textures::Player2);
     sockfd = new int;
     server_adr = new sockaddr_in;
 }

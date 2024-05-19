@@ -8,7 +8,7 @@
 #include "../resources/ResourceHolder.h"
 #include "../resources/Fonts.h"
 #include "../player_managment/player/Player.h"
-
+#include "../server/client.h"
 namespace sf
 {
     class RenderWindow;

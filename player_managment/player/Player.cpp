@@ -1,14 +1,13 @@
 #include <iostream>
 #include "Player.h"
 #include "../../command/CommandQueue.h"
-#include "../../entity_managment/PickUp/Pickup.h"
 
 Player::Player(TextureHolder* textures, Textures::ID playerType)
-        : Entity(){
+        : Entity(), mTextures(textures) {
     playerSprite.setTexture(textures->getResource(playerType));
-    playerSprite.setTextureRect(sf::IntRect (0,0,64,64));
+    playerSprite.setTextureRect(sf::IntRect (0,0,43,64));
     playerSprite.setPosition(coordinates.x, coordinates.y);
-    playerSprite.setOrigin((playerSprite.getLocalBounds().height/2),playerSprite.getLocalBounds().height/1.24);
+    playerSprite.setOrigin((playerSprite.getLocalBounds().width/2),playerSprite.getLocalBounds().height);
 
     hitPoints = PLAYER_INIT_HITPOINTS;
     facing.y = 0;
@@ -71,8 +70,7 @@ void Player::move(sf::Vector2i direction, sf::Time dt) {
     newCoords.x = coordinates.x + direction.x * speed * dt.asSeconds();
     newCoords.y = coordinates.y + direction.y * speed * dt.asSeconds();
     if(currentMapTile->getCurrentTileType(newCoords) != Tile::Type::Border) {
-        coordinates = newCoords;
-        playerSprite.setPosition(newCoords);
+        setPosition(newCoords.x, newCoords.y);
         if(direction.x == -1)
             animate(Left, dt);
         else if(direction.x == 1)
@@ -84,22 +82,8 @@ void Player::move(sf::Vector2i direction, sf::Time dt) {
     }
 }
 
-
-void Player::setSpritePosition(sf::Vector2f _coords) {
-    playerSprite.setPosition(_coords);
-}
-
 void Player::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const {
-    sf::RectangleShape heart = sf::RectangleShape(sf::Vector2f(10,10));
-    sf::Vector2f pos = playerSprite.getPosition();
-    heart.setFillColor(sf::Color::Green);
-    pos.x -= playerSprite.getLocalBounds().width / 1.75f;
-    pos.y -= playerSprite.getLocalBounds().height;
-    for(int i = 0; i < hitPoints; i++) {
-        heart.setPosition(pos);
-        target.draw(heart, states);
-        pos.x += 15;
-    }
+
     target.draw(playerSprite, states);
 }
 
@@ -160,17 +144,17 @@ void Player::animate(Animation AnimType, sf::Time dt) {
         playerSprite.setScale(1,1);
     switch(AnimType) {
         case Idle:
-            playerSprite.setTextureRect(sf::IntRect(0,0,64,64));
+            playerSprite.setTextureRect(sf::IntRect(0,0,43,64));
             break;
         case Left:
-            playerSprite.setTextureRect(sf::IntRect (animationFrame*64,64,64,64));
+            playerSprite.setTextureRect(sf::IntRect (animationFrame*43,64,43,64));
             break;
         case Right:
-            playerSprite.setTextureRect(sf::IntRect (animationFrame*64,64,64,64));
+            playerSprite.setTextureRect(sf::IntRect (animationFrame*43,64,43,64));
             break;
         case Up:
         case Down:
-            playerSprite.setTextureRect(sf::IntRect(animationFrame*64, 128, 64,64));
+            playerSprite.setTextureRect(sf::IntRect(animationFrame*43, 128, 43,64));
             break;
     }
 }
@@ -206,11 +190,20 @@ MapTile *Player::getCurrentMapTile() const {
     return currentMapTile;
 }
 
-void Player::createPickUps(SceneNode &node, TextureHolder &textures) {
-    std::unique_ptr<Pickup> puckUp(new Pickup(facing, coordinates + firingShift, getCategory(), textures, currentMapTile));
-    node.addChild(std::move(bullet));
-    decrementBulletCount();
-    std::cout << "bullet created!" << std::endl;
+
+void Player::setPosition(float x, float y) {
+    coordinates.x = x;
+    coordinates.y = y;
+    playerSprite.setPosition(x, y);
+}
+
+void Player::setPosition(sf::Vector2f pos) {
+    coordinates = pos;
+    playerSprite.setPosition(pos);
+}
+
+int Player::getHitPoints() {
+    return hitPoints;
 }
 
 

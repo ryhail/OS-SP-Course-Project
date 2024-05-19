@@ -3,7 +3,6 @@
 
 
 #include <SFML/System/Vector2.hpp>
-#include "../sever_structures.h"
 #include "../SceneNode.h"
 
 class Entity: public SceneNode{

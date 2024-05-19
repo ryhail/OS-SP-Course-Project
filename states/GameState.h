@@ -14,6 +14,7 @@ public:
     virtual void draw();
     virtual bool update(sf::Time dt);
     virtual bool handleEvent(const sf::Event& event);
+    void drawHeart(Player* player, sf::RenderWindow* window);
 
 private:
     void    handleCollisions();
@@ -21,12 +22,16 @@ private:
 private:
     int             sockfd;
     sockaddr_in     server_adr;
+    client_data_t   msgToServer;
+    game_data_t     msgFromServer;
     Level           mLevel;
     Player*         controlledPlayer;
     Player*         updatedPlayer;
     SceneNode       sceneGraph;
     CommandQueue    commandQueue;
     InputHandler    inputHandler;
+    sf::Time        serverDelay;
+    sf::Sprite      heart;
 };
 
 

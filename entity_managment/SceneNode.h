@@ -11,7 +11,6 @@
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/System/Time.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
-#include "sever_structures.h"
 #include "Entity/EntityType.h"
 #include "../command/Command.h"
 #include "../command/CommandQueue.h"

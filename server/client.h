@@ -11,5 +11,6 @@ int initialize_client(int port);
 void initialize_server(int port,const char* server_ip, struct sockaddr_in* server_addr);
 void send_client_data(client_data_t data, int sockfd, struct sockaddr_in server_addr);
 void receive_game_data(game_data_t * data, int sockfd, struct sockaddr_in server_addr);
+
 void make_nonblock(int sockfd);
 #endif //SFML_CLIENT_H
