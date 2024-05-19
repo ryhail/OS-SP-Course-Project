@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Player.h"
 #include "../../command/CommandQueue.h"
+#include "../../entity_managment/PickUp/Pickup.h"
 
 Player::Player(TextureHolder* textures, Textures::ID playerType)
         : Entity(){
@@ -32,8 +33,8 @@ void Player::takeDamage(int dmg) {
     hitPoints-=dmg;
 }
 
-void Player::heal(int heal) {
-    hitPoints+=heal;
+void Player::heal() {
+    hitPoints+=1;
 }
 
 void Player::updateFacing(float x, float y) {
@@ -112,7 +113,6 @@ void Player::checkBulletLaunch(CommandQueue& commandQueue, sf::Time dt) {
         commandQueue.push(fireCommand);
         isFiring = false;
     } else if (fireCountdown > sf::Time::Zero) {
-        fireCountdown -= dt;
         isFiring = false;
     }
 }
@@ -130,6 +130,7 @@ void Player::createBullet(SceneNode &node, TextureHolder &textures) {
 
 void Player::updateCurrent(sf::Time dt, CommandQueue &queue) {
     checkBulletLaunch(queue, dt);
+    fireCountdown -= dt;
 }
 
 bool Player::isForRemove() {
@@ -185,6 +186,31 @@ sf::Rect<float> Player::getPlayerSpriteSize() const {
 sf::FloatRect Player::getBoundingRect() const {
     return getWorldTransform()
             .transformRect(playerSprite.getGlobalBounds());
+}
+
+void Player::takeBullets(int bullets) {
+    bulletCount += bullets;
+}
+
+//void Player::increaseFiringStrength() {
+//    if(firingStrenth > 0)
+//        --firingStrenth;
+//}
+//
+//void Player::decreaseFiringStrength() {
+//    if(firingStrenth < 5)
+//        ++firingStrenth;
+//}
+
+MapTile *Player::getCurrentMapTile() const {
+    return currentMapTile;
+}
+
+void Player::createPickUps(SceneNode &node, TextureHolder &textures) {
+    std::unique_ptr<Pickup> puckUp(new Pickup(facing, coordinates + firingShift, getCategory(), textures, currentMapTile));
+    node.addChild(std::move(bullet));
+    decrementBulletCount();
+    std::cout << "bullet created!" << std::endl;
 }
 
 

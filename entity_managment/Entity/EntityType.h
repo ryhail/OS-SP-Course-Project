@@ -9,7 +9,8 @@ namespace EntityType {
         PLAYER          = ACTIVE_PLAYER | INACTIVE_PLAYER,
         BOSS            = 1 << 3,
         BULLET          = 1 << 4,
-        SCENE           = 1 << 5
+        PICKUP          = 1 << 5,
+        SCENE           = 1 << 6
     };
 }
 

@@ -52,5 +52,9 @@ add_executable(game main.cpp
         states/LobbyState.h
         states/LobbyState.cpp
         states/HostState.cpp
+        entity_managment/PickUp/Pickup.cpp
+        entity_managment/PickUp/Pickup.h
+        entity_managment/Data.cpp
+        entity_managment/Data.h
 )
 target_link_libraries(game sfml-graphics sfml-audio)

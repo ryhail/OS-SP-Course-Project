@@ -33,7 +33,8 @@ class Player : public Entity{
 public:
     Player(TextureHolder* textures, Textures::ID playerType);
     void    takeDamage(int dmg);
-    void    heal(int heal);
+    void    heal();
+    void    takeBullets(int bullets);
     void    updateFacing(float x, float y);
     void    setFiringShift(float shiftX, float shiftY);
     void    setSpritePosition(sf::Vector2f _coords);
@@ -45,6 +46,9 @@ public:
     bool    isForRemove() override;
     void    setCurentMapTile(MapTile*);
     void    animate(Animation AnimType, sf::Time dt);
+//    void    increaseFiringStrength();
+//    void    decreaseFiringStrength();
+    MapTile*    getCurrentMapTile() const;
 
     sf::FloatRect   getBoundingRect() const override;
     sf::Rect<float> getPlayerSpriteSize() const;
@@ -55,8 +59,11 @@ private:
     bool firingAvailable() const;
     void createBullet(SceneNode &node, TextureHolder &textures);
     void decrementBulletCount();
+    void createPickUps(SceneNode& node, TextureHolder& textures);
+
 
     void updateCurrent(sf::Time dt, CommandQueue &queue) override;
+    EntityType::Type getCategory() const override;
 
 public:
     int     getSpeed() const;
@@ -70,11 +77,11 @@ private:
     int         hitPoints;
     int         speed;
     bool        active;
+    int         firingStrenth;
 
     sf::Vector2<float> facing;
     sf::Vector2<float> firingShift;
 
-    EntityType::Type getCategory() const override;
 };
 
 

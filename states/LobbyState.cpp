@@ -124,7 +124,7 @@ bool LobbyState::update(sf::Time dt) {
             }
             break;
     }
-    if (available == 'r') {
+    if (readyState) {
         if(mChoice) {
             getContext().player2->setActive(true);
             getContext().player1->setActive(false);

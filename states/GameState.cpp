@@ -1,6 +1,7 @@
 #include <iostream>
 #include <set>
 #include "GameState.h"
+#include "../entity_managment/PickUp/Pickup.h"
 
 GameState::GameState(StateStack &stack, State::Context context) : State(stack, context),
     mLevel(context.window)
@@ -82,6 +83,12 @@ void GameState::handleCollisions() {
                 bullet.use();
             }
         }
+        if(hasSpecifiedCategories(pair, EntityType::PLAYER, EntityType::PICKUP)) {
+            auto& player = dynamic_cast<Player&>(*pair.first);
+            auto& pickup = dynamic_cast<Pickup&>(*pair.second);
+            pickup.pickup(player);
+            pickup.use();
+        }
         // тестировать, что работает
         if(hasSpecifiedCategories(pair, EntityType::ACTIVE_PLAYER, EntityType::BULLET)
            || hasSpecifiedCategories(pair, EntityType::INACTIVE_PLAYER, EntityType::BULLET)) {
@@ -92,6 +99,5 @@ void GameState::handleCollisions() {
                 bullet.use();
             }
         }
-        // подбирашки
     }
 }

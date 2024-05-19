@@ -9,7 +9,9 @@ namespace Textures {
         Border,
         Player1,
         Bullet,
-        PlayerUnavailable
+        PlayerUnavailable,
+        PickUpIncreaseBullet,
+        PickUpRefillHealth
     };
 }
 

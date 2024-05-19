@@ -6,7 +6,7 @@
 #include "../../resources/ResourceHolder.h"
 #include "../../levelDesign/MapTile.h"
 #include <SFML/Graphics/RenderTarget.hpp>
-#define BULLET_SPEED 120.0f
+#define BULLET_SPEED 180.0f
 
 typedef ResourceHolder<Textures::ID, sf::Texture> TextureHolder;
 
