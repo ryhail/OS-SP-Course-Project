@@ -25,12 +25,11 @@ enum Animation {
 };
 
 class Player : public Entity{
-
+    TextureHolder*  mTextures;
     sf::Sprite      playerSprite;
     MapTile*        currentMapTile;
     sf::Time        animationDeltaTime;
     int             animationFrame;
-
 public:
     Player(TextureHolder* textures, Textures::ID playerType);
     void    takeDamage(int dmg);
@@ -62,6 +61,7 @@ private:
 
 public:
     int     getSpeed() const;
+    int     getHitPoints();
 
 private:
     sf::Time    fireCountdown;

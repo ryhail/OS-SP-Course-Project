@@ -14,6 +14,7 @@ public:
     virtual void draw();
     virtual bool update(sf::Time dt);
     virtual bool handleEvent(const sf::Event& event);
+    void drawHeart(Player* player, sf::RenderWindow* window);
 
 private:
     void    handleCollisions();
@@ -30,6 +31,7 @@ private:
     CommandQueue    commandQueue;
     InputHandler    inputHandler;
     sf::Time        serverDelay;
+    sf::Sprite      heart;
 };
 
 

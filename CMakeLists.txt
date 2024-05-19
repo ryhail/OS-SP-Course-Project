@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.27)
 project(sfml)
 
 set(CMAKE_CXX_STANDARD 17)
-set(SFML_DIR /home/iceloca/CLionProjects/SFML-2.6.1/lib/cmake/SFML)
+#set(SFML_DIR /home/iceloca/CLionProjects/SFML-2.6.1/lib/cmake/SFML)
 find_package(SFML 2.6.1 COMPONENTS graphics audio)
 add_executable(game main.cpp
         server/client.cpp

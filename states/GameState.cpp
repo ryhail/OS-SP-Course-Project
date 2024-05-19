@@ -20,6 +20,7 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
         updatedPlayer = context.player1;
         msgToServer.player.type = '2';
     }
+    heart.setTexture(context.textures->getResource(Textures::Heart));
     controlledPlayer->setPosition(mLevel.getCurrentMapTile()->getSpawnPoint());
     controlledPlayer->setCurentMapTile(mLevel.getCurrentMapTile());
     updatedPlayer->setPosition(mLevel.getCurrentMapTile()->getSpawnPoint());
@@ -31,23 +32,33 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
 
 void GameState::draw() {
     mLevel.draw();
-    //controlledPlayer->draw(getContext().window);
-    //updatedPlayer->draw(getContext().window);
     getContext().window->draw(sceneGraph);
-    //std::cout<<controlledPlayer->getCoordinates().x<<std::endl;
+    drawHeart(controlledPlayer, getContext().window);
+    drawHeart(updatedPlayer, getContext().window);
+}
+void GameState::drawHeart(Player* player, sf::RenderWindow* window) {
+    sf::Vector2f pos = player->getCoordinates();
+    pos.x -= player->getBoundingRect().width / 1.25f;
+    pos.y -= player->getBoundingRect().height / 0.8f;
+    int hp = player->getHitPoints();
+    for(int i = 0; i < hp; i++) {
+        heart.setPosition(pos);
+        window->draw(heart);
+        pos.x += 15;
+    }
 }
 
 bool GameState::update(sf::Time dt) {
     serverDelay += dt;
-    if(serverDelay.asSeconds() > 0.2f) {
-        std::cout<<controlledPlayer->getPosition().x<<' '<<controlledPlayer->getPosition().y<<std::endl;
-        msgToServer.player.coordinates.x = controlledPlayer->getPosition().x;
-        msgToServer.player.coordinates.x = controlledPlayer->getPosition().y;
-        send_client_data(msgToServer, sockfd, server_adr);
-        serverDelay = sf::Time::Zero;
-    }
-    receive_game_data(&msgFromServer, sockfd, server_adr);
-    updatedPlayer->setPosition(msgFromServer.player2.coordinates.x, msgFromServer.player2.coordinates.y);
+//    if(serverDelay.asSeconds() > 0.2f) {
+//        std::cout<<controlledPlayer->getPosition().x<<' '<<controlledPlayer->getPosition().y<<std::endl;
+//        msgToServer.player.coordinates.x = controlledPlayer->getPosition().x;
+//        msgToServer.player.coordinates.x = controlledPlayer->getPosition().y;
+//        send_client_data(msgToServer, sockfd, server_adr);
+//        serverDelay = sf::Time::Zero;
+//    }
+//    receive_game_data(&msgFromServer, sockfd, server_adr);
+   // updatedPlayer->setPosition(msgFromServer.player2.coordinates.x, msgFromServer.player2.coordinates.y);
     while (!commandQueue.isEmpty()) {
         sceneGraph.execCommand(commandQueue.pop(), dt);
     }

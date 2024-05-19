@@ -7,7 +7,9 @@ namespace Textures {
         MainMenu,
         Tile,
         Border,
+        Heart,
         Player1,
+        Player2,
         Bullet,
         PlayerUnavailable
     };
