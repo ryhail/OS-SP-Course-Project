@@ -29,7 +29,7 @@ public:
 
     MapTile*    getCurrentMapTile() const;
     void            use();
-    Pickup::Type    getPickUpType()
+    Pickup::Type    getPickUpType();
 
 private:
 

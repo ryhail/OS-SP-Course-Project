@@ -13,4 +13,5 @@ std::vector<PickUpData> fillPickUp() {
 
     data[Pickup::Type::BulletRefill].texture = Textures::PickUpIncreaseBullet;
     data[Pickup::Type::BulletRefill].pickupDoing = [](Player& player) { player.takeBullets(1); };
+    return data;
 }

@@ -55,5 +55,7 @@ add_executable(game main.cpp
         entity_managment/PickUp/Pickup.h
         entity_managment/Data.cpp
         entity_managment/Data.h
+        player_managment/Heart.cpp
+        player_managment/Heart.h
 )
 target_link_libraries(game sfml-graphics sfml-audio)

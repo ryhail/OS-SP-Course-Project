@@ -10,7 +10,8 @@ namespace EntityType {
         BOSS            = 1 << 3,
         BULLET          = 1 << 4,
         PICKUP          = 1 << 5,
-        SCENE           = 1 << 6
+        HEART           = 1 << 6,
+        SCENE           = 1 << 7
     };
 }
 

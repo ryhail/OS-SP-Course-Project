@@ -3,13 +3,21 @@
 #include "../../command/CommandQueue.h"
 
 Player::Player(TextureHolder* textures, Textures::ID playerType)
-        : Entity(), mTextures(textures) {
+        : Entity(), mTextures(textures){
     playerSprite.setTexture(textures->getResource(playerType));
     playerSprite.setTextureRect(sf::IntRect (0,0,43,64));
     playerSprite.setPosition(coordinates.x, coordinates.y);
     playerSprite.setOrigin((playerSprite.getLocalBounds().width/2),playerSprite.getLocalBounds().height);
 
     hitPoints = PLAYER_INIT_HITPOINTS;
+    sf::Vector2f pos(10.f, 10.f);
+   for(int i = 0; i < PLAYER_INIT_HITPOINTS; i++) {
+        std::unique_ptr<Heart> health(new Heart(*textures));
+        healthForDisplay.push_back(health.get());
+        addChild(std::move(health));
+    }
+    updateHealthDisplay();
+
     facing.y = 0;
     facing.x = 0;
 
@@ -28,7 +36,20 @@ Player::Player(TextureHolder* textures, Textures::ID playerType)
     speed = PLAYER_INIT_SPEED;
 }
 
+
+void Player::updateHealthDisplay() {
+    sf::Vector2f pos(getCoordinates().x - getBoundingRect().width / 1.25f, getCoordinates().y - getBoundingRect().height / 0.8f);
+    for(auto & heart : healthForDisplay) {
+        heart->setPosition(pos);
+        pos.x+=15.f;
+    }
+}
+
 void Player::takeDamage(int dmg) {
+    for(int i = 0; i < dmg; i++) {
+        healthForDisplay.back()->broke();
+        healthForDisplay.pop_back();
+    }
     hitPoints-=dmg;
 }
 
@@ -66,6 +87,7 @@ int Player::getSpeed() const {
  * таким образом обеспечивается перемещение по времени
  */
 void Player::move(sf::Vector2i direction, sf::Time dt) {
+    if(isDead()) return;
     sf::Vector2f newCoords;
     newCoords.x = coordinates.x + direction.x * speed * dt.asSeconds();
     newCoords.y = coordinates.y + direction.y * speed * dt.asSeconds();
@@ -83,7 +105,6 @@ void Player::move(sf::Vector2i direction, sf::Time dt) {
 }
 
 void Player::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const {
-
     target.draw(playerSprite, states);
 }
 
@@ -97,6 +118,7 @@ void Player::checkBulletLaunch(CommandQueue& commandQueue, sf::Time dt) {
         commandQueue.push(fireCommand);
         isFiring = false;
     } else if (fireCountdown > sf::Time::Zero) {
+        fireCountdown -= dt;
         isFiring = false;
     }
 }
@@ -113,12 +135,13 @@ void Player::createBullet(SceneNode &node, TextureHolder &textures) {
 }
 
 void Player::updateCurrent(sf::Time dt, CommandQueue &queue) {
+    if(isDead()) return;
     checkBulletLaunch(queue, dt);
-    fireCountdown -= dt;
+    updateHealthDisplay();
 }
 
 bool Player::isForRemove() {
-    return hitPoints <= 0;
+    return false;
 }
 
 void Player::decrementBulletCount() {
@@ -172,25 +195,6 @@ sf::FloatRect Player::getBoundingRect() const {
             .transformRect(playerSprite.getGlobalBounds());
 }
 
-void Player::takeBullets(int bullets) {
-    bulletCount += bullets;
-}
-
-//void Player::increaseFiringStrength() {
-//    if(firingStrenth > 0)
-//        --firingStrenth;
-//}
-//
-//void Player::decreaseFiringStrength() {
-//    if(firingStrenth < 5)
-//        ++firingStrenth;
-//}
-
-MapTile *Player::getCurrentMapTile() const {
-    return currentMapTile;
-}
-
-
 void Player::setPosition(float x, float y) {
     coordinates.x = x;
     coordinates.y = y;
@@ -202,8 +206,14 @@ void Player::setPosition(sf::Vector2f pos) {
     playerSprite.setPosition(pos);
 }
 
-int Player::getHitPoints() {
+int Player::getHitPoints() const {
     return hitPoints;
 }
 
+void Player::takeBullets(int bullets) {
+    bulletCount += bullets;
+}
 
+bool Player::isDead() {
+    return hitPoints <= 0;
+}

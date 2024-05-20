@@ -13,6 +13,8 @@ State::Context::Context(sf::RenderWindow& window,
     textures->load(Textures::Player2, "resources/Textures/player2.png");
     textures->load(Textures::Bullet, "resources/Textures/bullet.png");
     textures->load(Textures::Heart, "resources/Textures/heart.png");
+    textures->load(Textures::PickUpIncreaseBullet, "resources/Textures/bullet.png");
+    textures->load(Textures::PickUpRefillHealth, "resources/Textures/heart.png");
     player1 = new Player(textures, Textures::Player1);
     player2 = new Player(textures, Textures::Player2);
     sockfd = new int;
