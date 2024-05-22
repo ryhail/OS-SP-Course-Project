@@ -55,9 +55,9 @@ bool GameState::update(sf::Time dt) {
         msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
         msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
         send_client_data(msgToServer, sockfd, server_adr);
+        receive_game_data(&msgFromServer, sockfd, server_adr);
         msgToServer.bullet = {0};
         serverDelay = sf::Time::Zero;
-        receive_game_data(&msgFromServer, sockfd, server_adr);
     }
 
     std::cout << msgFromServer.player1.coordinates.x << ' ' << msgFromServer.player1.coordinates.x << std::endl;

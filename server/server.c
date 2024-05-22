@@ -68,7 +68,7 @@ void send_server_data(int sockfd,game_data_t game_data, struct sockaddr_in clien
     if (sendto(sockfd, &game_data, sizeof(game_data), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) ==
         -1) {
         perror("Sendto failed");
-        printf("%d", errno);
+        //printf("%d", errno);
     }
     return;
     int received_number;
@@ -142,7 +142,7 @@ void process_bullets(game_data_t* gamedata) {
     for(i = 0; (i + step < MAX_BULLETS) && !bullet_empty(gamedata->bullets[i + step]); i ++) {
         gamedata->bullets[i] = gamedata->bullets[i+step];
         if (gamedata->bullets[i + step].owner != 'b') {
-            printf("%c", gamedata->bullets[i+ step].owner);
+            //printf("%c", gamedata->bullets[i+ step].owner);
             step += process_bullet_hit(&gamedata->boss, gamedata->bullets[i+step]);
             i--;
         }
@@ -244,7 +244,6 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_1,
                        sizeof(*client_addr_1)) == -1) {
                 perror("Sendto failed");
-                printf("%d", errno);
                 close(sockfd);
                 exit(EXIT_FAILURE);
             }
@@ -252,7 +251,6 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_2,
                        sizeof(*client_addr_2)) == -1) {
                 perror("Sendto failed");
-                printf("%d", errno);
                 close(sockfd);
                 exit(EXIT_FAILURE);
             }
@@ -260,7 +258,6 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
         }else{
             if (sendto(sockfd, &player, sizeof(player), 0, (struct sockaddr *) &new_client_addr,
                        sizeof(new_client_addr)) == -1) {
-                printf("%d", errno);
                 perror("Sendto failed");
                 close(sockfd);
                 exit(EXIT_FAILURE);
@@ -319,7 +316,7 @@ int main() {
     //if(fcntl(sockfd,F_SETFL, O_NONBLOCK) == -1)
     //    perror("NON_BLOCK error");
     printf("Server listening on port %d...\n", PORT);
-    sleep(2);
+    //sleep(2);
     while(1) {
         // Receive number from client
         size = recvfrom(sockfd, &clientdata, sizeof(clientdata), 0, (struct sockaddr *)&client_addr, &client_addr_len);
@@ -334,7 +331,6 @@ int main() {
             if (sendto(sockfd, &success_signal, sizeof(success_signal), 0, (struct sockaddr *) &client_addr,
                        client_addr_len) == -1) {
                 perror("Sendto failed check");
-                printf("%d", errno);
                 //exit(EXIT_FAILURE);
             }
         }
