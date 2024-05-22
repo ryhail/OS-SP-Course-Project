@@ -50,15 +50,15 @@ void GameState::drawHeart(Player* player, sf::RenderWindow* window) {
 
 bool GameState::update(sf::Time dt) {
     serverDelay += dt;
-//    if(serverDelay.asSeconds() > 0.2f) {
-//        std::cout<<controlledPlayer->getPosition().x<<' '<<controlledPlayer->getPosition().y<<std::endl;
-//        msgToServer.player.coordinates.x = controlledPlayer->getPosition().x;
-//        msgToServer.player.coordinates.x = controlledPlayer->getPosition().y;
-//        send_client_data(msgToServer, sockfd, server_adr);
-//        serverDelay = sf::Time::Zero;
-//    }
-//    receive_game_data(&msgFromServer, sockfd, server_adr);
-   // updatedPlayer->setPosition(msgFromServer.player2.coordinates.x, msgFromServer.player2.coordinates.y);
+    if(serverDelay.asSeconds() > 0.2f) {
+        std::cout<<controlledPlayer->getPosition().x<<' '<<controlledPlayer->getPosition().y<<std::endl;
+        msgToServer.player.coordinates.x = controlledPlayer->getPosition().x;
+        msgToServer.player.coordinates.x = controlledPlayer->getPosition().y;
+        send_client_data(msgToServer, sockfd, server_adr);
+        serverDelay = sf::Time::Zero;
+    }
+    receive_game_data(&msgFromServer, sockfd, server_adr);
+    updatedPlayer->setPosition(msgFromServer.player2.coordinates.x, msgFromServer.player2.coordinates.y);
     while (!commandQueue.isEmpty()) {
         sceneGraph.execCommand(commandQueue.pop(), dt);
     }
