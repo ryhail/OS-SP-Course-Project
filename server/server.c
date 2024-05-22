@@ -239,7 +239,7 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
         }
 
 
-        if (player == '3' ) {
+        if (player == '1' ) {
             signal = 's';
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_1,
                        sizeof(*client_addr_1)) == -1) {
@@ -248,7 +248,7 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
                 close(sockfd);
                 exit(EXIT_FAILURE);
             }
-            //continue;
+            continue;
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_2,
                        sizeof(*client_addr_2)) == -1) {
                 perror("Sendto failed");
@@ -346,7 +346,7 @@ int main() {
         //int pid = fork();
         //if(pid==0)
         send_server_data(sockfd,gamedata,client_addr_1);
-        send_server_data(sockfd,gamedata,client_addr_2);
+        //send_server_data(sockfd,gamedata,client_addr_2);
         continue;
         if (sendto(sockfd, &gamedata, sizeof(gamedata), 0, (struct sockaddr *) &client_addr_2,
                    sizeof(client_addr_2)) == -1) {
