@@ -9,7 +9,7 @@
 #include "../../entity_managment/Entity/EntityType.h"
 #include "../../command/CommandQueue.h"
 #include "../../levelDesign/MapTile.h"
-
+#include "../Heart.h"
 
 #define PLAYER_INIT_SPEED 100
 #define PLAYER_INIT_HITPOINTS 5
@@ -33,7 +33,7 @@ class Player : public Entity{
 public:
     Player(TextureHolder* textures, Textures::ID playerType);
     void    takeDamage(int dmg);
-    void    heal(int heal);
+    void    heal();
     void    updateFacing(float x, float y);
     void    setFiringShift(float shiftX, float shiftY);
     void    setActive(bool value);
@@ -46,6 +46,8 @@ public:
     void    animate(Animation AnimType, sf::Time dt);
     void    setPosition(float x, float y);
     void    setPosition(sf::Vector2f pos);
+    void    takeBullets(int bullets);
+    bool    isDead();
 
     sf::FloatRect   getBoundingRect() const override;
     sf::Rect<float> getPlayerSpriteSize() const;
@@ -58,18 +60,22 @@ private:
     void decrementBulletCount();
 
     void updateCurrent(sf::Time dt, CommandQueue &queue) override;
+    void updateHealthDisplay();
 
 public:
     int     getSpeed() const;
-    int     getHitPoints();
+    int     getHitPoints() const;
 
 private:
     sf::Time    fireCountdown;
     bool        isFiring;
     Command     fireCommand;
     int         bulletCount;
-    sf::Time    healingTime;
+
     int         hitPoints;
+    sf::Time    healingTime;
+    std::vector<Heart*>      healthForDisplay;
+
     int         speed;
     bool        active;
 

@@ -162,19 +162,19 @@ void InputHandler::initializeActions()
     mActionBinding[FireUp].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
         player.updateFacing(0, -1);
         player.setFiringShift(0,
-                              -1.f * player.getPlayerSpriteSize().height);
+                              -1.5f * player.getPlayerSpriteSize().height);
         player.fire();
     });
     mActionBinding[FireUpRight].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
         player.updateFacing(1, -1);
-        player.setFiringShift(player.getPlayerSpriteSize().width / 2,
-                              -1.f * player.getPlayerSpriteSize().height / 2);
+        player.setFiringShift(1.5f * player.getPlayerSpriteSize().width / 2,
+                              -1.5f * player.getPlayerSpriteSize().height / 2);
         player.fire();
     });
     mActionBinding[FireUpLeft].action      = derivedAction<Player>([](Player& player, sf::Time dt) {
         player.updateFacing(-1, -1);
-        player.setFiringShift(-1.f * player.getPlayerSpriteSize().width / 2,
-                              -1.f * player.getPlayerSpriteSize().height / 2);
+        player.setFiringShift(-1.5f * player.getPlayerSpriteSize().width / 2,
+                              -1.5f * player.getPlayerSpriteSize().height / 2);
         player.fire();
     });
     mActionBinding[FireRight].action      = derivedAction<Player>([](Player& player, sf::Time dt) {

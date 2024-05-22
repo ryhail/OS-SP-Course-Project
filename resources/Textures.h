@@ -11,7 +11,9 @@ namespace Textures {
         Player1,
         Player2,
         Bullet,
-        PlayerUnavailable
+        PlayerUnavailable,
+        PickUpIncreaseBullet,
+        PickUpRefillHealth
     };
 }
 

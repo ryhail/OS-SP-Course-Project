@@ -4,7 +4,7 @@
 
 #ifndef SFML_CLIENT_H
 #define SFML_CLIENT_H
-#include "sever_structures.h"
+#include "server_structures.h"
 #define PORT 12344
 #define SERVER_PORT 12345
 int initialize_client(int port);

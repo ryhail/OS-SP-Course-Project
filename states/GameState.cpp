@@ -1,13 +1,14 @@
 #include <iostream>
 #include <set>
 #include "GameState.h"
+#include "../entity_managment/PickUp/Pickup.h"
 
 GameState::GameState(StateStack &stack, State::Context context) : State(stack, context),
     mLevel(context.window)
 {
     sockfd = *context.sockfd;
     server_adr = *context.server_adr;
-    serverDelay =sf::Time::Zero;
+    serverDelay = sf::Time::Zero;
 
     if(context.player1->isActive()) {
         std::cout << "c1" << std::endl;
@@ -33,20 +34,20 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
 void GameState::draw() {
     mLevel.draw();
     getContext().window->draw(sceneGraph);
-    drawHeart(controlledPlayer, getContext().window);
-    drawHeart(updatedPlayer, getContext().window);
+    //drawHeart(controlledPlayer, getContext().window);
+    //drawHeart(updatedPlayer, getContext().window);
 }
-void GameState::drawHeart(Player* player, sf::RenderWindow* window) {
-    sf::Vector2f pos = player->getCoordinates();
-    pos.x -= player->getBoundingRect().width / 1.25f;
-    pos.y -= player->getBoundingRect().height / 0.8f;
-    int hp = player->getHitPoints();
-    for(int i = 0; i < hp; i++) {
-        heart.setPosition(pos);
-        window->draw(heart);
-        pos.x += 15;
-    }
-}
+//void GameState::drawHeart(Player* player, sf::RenderWindow* window) {
+//    sf::Vector2f pos = player->getCoordinates();
+//    pos.x -= player->getBoundingRect().width / 1.25f;
+//    pos.y -= player->getBoundingRect().height / 0.8f;
+//    int hp = player->getHitPoints();
+//    for(int i = 0; i < hp; i++) {
+//        heart.setPosition(pos);
+//        window->draw(heart);
+//        pos.x += 15;
+//    }
+//}
 
 bool GameState::update(sf::Time dt) {
     serverDelay += dt;
@@ -66,7 +67,7 @@ bool GameState::update(sf::Time dt) {
     handleCollisions();
     sceneGraph.removeWrecks();
     inputHandler.handleRealtimeInput(commandQueue);
-    if(commandQueue.isEmpty())
+    if(commandQueue.isEmpty() && !controlledPlayer->isForRemove())
         controlledPlayer->animate(Idle, dt);
     return true;
 }
@@ -100,13 +101,19 @@ void GameState::handleCollisions() {
                 }
         }
         //босса еще нет
-        if(hasSpecifiedCategories(pair, EntityType::BOSS, EntityType::BULLET)) {
-            //auto& boss = dynamic_cast<Boss&>(*pair.first);
-            auto& bullet = dynamic_cast<Bullet&>(*pair.second);
-            if (bullet.getVictim() & EntityType::BOSS) {
-                //boss.takeDamage(bullet.getDamage());
-                bullet.use();
-            }
+//        if(hasSpecifiedCategories(pair, EntityType::BOSS, EntityType::BULLET)) {
+//            //auto& boss = dynamic_cast<Boss&>(*pair.first);
+//            auto& bullet = dynamic_cast<Bullet&>(*pair.second);
+//            if (bullet.getVictim() & EntityType::BOSS) {
+//                //boss.takeDamage(bullet.getDamage());
+//                bullet.use();
+//            }
+//        }
+        if(hasSpecifiedCategories(pair, EntityType::PLAYER, EntityType::PICKUP)) {
+            auto& player = dynamic_cast<Player&>(*pair.first);
+            auto& pickup = dynamic_cast<Pickup&>(*pair.second);
+            pickup.pickup(player);
+            pickup.use();
         }
         // тестировать, что работает
         if(hasSpecifiedCategories(pair, EntityType::ACTIVE_PLAYER, EntityType::BULLET)
@@ -118,6 +125,5 @@ void GameState::handleCollisions() {
                 bullet.use();
             }
         }
-        // подбирашки
     }
 }

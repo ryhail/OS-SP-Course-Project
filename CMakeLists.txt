@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.27)
 project(sfml)
 
 set(CMAKE_CXX_STANDARD 17)
-#set(SFML_DIR /home/iceloca/CLionProjects/SFML-2.6.1/lib/cmake/SFML)
+set(SFML_DIR /home/iceloca/CLionProjects/SFML-2.6.1/lib/cmake/SFML)
 find_package(SFML 2.6.1 COMPONENTS graphics audio)
 add_executable(game main.cpp
         server/client.cpp
@@ -52,5 +52,14 @@ add_executable(game main.cpp
         states/LobbyState.h
         states/LobbyState.cpp
         states/HostState.cpp
+        entity_managment/PickUp/Pickup.cpp
+        entity_managment/PickUp/Pickup.h
+        entity_managment/Data.cpp
+        entity_managment/Data.h
+        player_managment/Heart.cpp
+        player_managment/Heart.h
 )
 target_link_libraries(game sfml-graphics sfml-audio)
+add_executable(server server/server.c
+        server/server_structures.h)
+target_link_libraries(server m)
