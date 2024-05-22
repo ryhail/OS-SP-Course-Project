@@ -9,6 +9,8 @@
 #include "server_structures.h"
 #define PORT 12345
 #define BUFFER_SIZE 1024
+#define BORDER_MIN_SIZE_Y 1028
+#define BORDER_MIN_SIZE_X 1920
 #define BORDER_MAX_SIZE_Y 1028
 #define BORDER_MAX_SIZE_X 1920
 #define UPDATE_INTERVAL 6 // Интервал обновления
@@ -42,8 +44,6 @@ void move_boss(entity_t* boss) {
         angle = ((float)rand() / RAND_MAX) * 2 * M_PI;
         speed = ((float)rand() / RAND_MAX) * MAX_BOSS_SPEED;
         update_interval = rand() % UPDATE_INTERVAL;
-        printf("speed :%f \n", speed);
-        printf("%ld \n", last_rand_update_time);
         last_rand_update_time = current_time;
     }
     // Вычисление новых координат босса
@@ -56,7 +56,6 @@ void move_boss(entity_t* boss) {
         if (boss->coordinates.x > BORDER_MAX_SIZE_X) boss->coordinates.x = BORDER_MAX_SIZE_X;
         if (boss->coordinates.y < 0) boss->coordinates.y = 0;
         if (boss->coordinates.y > BORDER_MAX_SIZE_Y) boss->coordinates.y = BORDER_MAX_SIZE_Y;
-        printf("x: %f  y: %f \n", boss->coordinates.x, boss->coordinates.x);
     }
 }
 
@@ -73,7 +72,8 @@ game_data_t initialise(void) {
 }
 
 int bullet_empty(bullet_t bullet) {
-    return  bullet.owner == 0;
+    int var = bullet.owner == 0;
+    return  var;
 }
 int check_hit(bullet_t bullet, entity_t entity, int radius) {
     float distanse = 0;
@@ -82,6 +82,7 @@ int check_hit(bullet_t bullet, entity_t entity, int radius) {
     distanse = sqrt(pow(dif_x,2) + pow(dif_y,2));
     return distanse < radius;
 }
+//43 Ширина 64 высота
 int process_bullet_hit(entity_t* entity, bullet_t bullet) {
     if ((entity->hp>0) && (bullet.owner != entity->type) && (check_hit(bullet,* entity,   15))) {
         entity->hp--;
@@ -107,15 +108,16 @@ void process_bullets(game_data_t* gamedata) {
     last_update_time_ms = current_time_ms;
     int step = 0;
     int i ;
-    for(i = 0; (i + step < MAX_BULLETS) && bullet_empty(gamedata->bullets[i + step]); i ++) {
+    for(i = 0; (i + step < MAX_BULLETS) && !bullet_empty(gamedata->bullets[i + step]); i ++) {
         gamedata->bullets[i] = gamedata->bullets[i+step];
-        if (gamedata->bullets[i].owner != 'b') {
-            step += process_bullet_hit(&gamedata->boss, gamedata->bullets[i]);
+        if (gamedata->bullets[i + step].owner != 'b') {
+            printf("%c", gamedata->bullets[i+ step].owner);
+            step += process_bullet_hit(&gamedata->boss, gamedata->bullets[i+step]);
             i--;
         }
-        else if(process_bullet_hit(&gamedata->player1,gamedata->bullets[i]) ||
-                   process_bullet_hit(&gamedata->player2,gamedata->bullets[i]) ||
-                        move_bullet(&gamedata->bullets[i])){
+        else if(process_bullet_hit(&gamedata->player1,gamedata->bullets[i+step]) ||
+                   process_bullet_hit(&gamedata->player2,gamedata->bullets[i+step]) ||
+                        move_bullet(&gamedata->bullets[i+step])){
                 step++;
                 i--;
             }
@@ -134,9 +136,9 @@ void push_bullet(bullet_t* bullets,bullet_t bullet) {
 
 void procces_client_data (game_data_t* gamedata, client_data_t clientdata) {
     if (clientdata.player.type == '1')
-        gamedata->player1 = clientdata.player;
+        gamedata->player1.coordinates = clientdata.player.coordinates;
     if (clientdata.player.type == '2')
-        gamedata->player2 = clientdata.player;
+        gamedata->player2.coordinates = clientdata.player.coordinates;
     if(!bullet_empty(clientdata.bullet))
         push_bullet(gamedata->bullets,clientdata.bullet);
 }
@@ -188,9 +190,8 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
             case '1':
                 if (player != '1' && player < '3') {
                     player += 1;
-
+                    *client_addr_1 = new_client_addr;
                 }
-                *client_addr_1 = new_client_addr;
                 break;
             case '2':
                 if (player != '2' && player < '3') {
@@ -207,7 +208,7 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
         }
 
 
-        if (player == '3') {
+        if (player == '1' ) {
             signal = 's';
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_1,
                        sizeof(*client_addr_1)) == -1) {
@@ -216,6 +217,7 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
                 close(sockfd);
                 exit(EXIT_FAILURE);
             }
+            continue;
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_2,
                        sizeof(*client_addr_2)) == -1) {
                 perror("Sendto failed");
@@ -239,7 +241,7 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
 
 }
 
-void shoot_bullet(game_data_t* gamedata, entity_t* shooter, entity_t* target) {
+bullet_t shoot_bullet(game_data_t* gamedata, entity_t* shooter, entity_t* target) {
     float dx = target->coordinates.x - shooter->coordinates.x;
     float dy = target->coordinates.y - shooter->coordinates.y;
     float distance = sqrt(dx * dx + dy * dy);
@@ -247,21 +249,26 @@ void shoot_bullet(game_data_t* gamedata, entity_t* shooter, entity_t* target) {
     bullet_t bullet;
     bullet.coordinates.x = shooter->coordinates.x;
     bullet.coordinates.y = shooter->coordinates.y;
-    bullet.vector.x = (dx / distance) * BULLET_SPEED;
-    bullet.vector.y = (dy / distance) * BULLET_SPEED;
+    bullet.vector.x = (dx / (dx+dy)) * BULLET_SPEED;
+    bullet.vector.y = (dy / (dx+dy)) * BULLET_SPEED;
     bullet.owner = shooter->type;
 
-    push_bullet(gamedata->bullets, bullet);
+    return bullet;
 }
 
-void boss_shoot(game_data_t* gamedata) {
+void boss_shoot_player(game_data_t* gamedata, bullet_t* new_bullets) {
+    bullet_t bullet = {0};
     if(gamedata->boss.hp < 0)
         return;
     if (gamedata->player1.hp > 0) {
         shoot_bullet(gamedata, &gamedata->boss, &gamedata->player1);
+        push_bullet(gamedata->bullets, bullet);
+        push_bullet(new_bullets, bullet);
     }
     if (gamedata->player2.hp > 0) {
         shoot_bullet(gamedata, &gamedata->boss, &gamedata->player2);
+        push_bullet(gamedata->bullets, bullet);
+        push_bullet(new_bullets, bullet);
     }
 }
 
@@ -274,15 +281,16 @@ int main() {
     game_data_t gamedata;
     client_data_t clientdata;
     size_t size = 0;
+    bullet_t  new_bullets[MAX_BULLETS] = {0};
     sockfd = init_server_socket();
     gamedata = initialise();
     start_lobby(sockfd, &client_addr_1, &client_addr_2);
     //if(fcntl(sockfd,F_SETFL, O_NONBLOCK) == -1)
     //    perror("NON_BLOCK error");
     printf("Server listening on port %d...\n", PORT);
+    sleep(2);
     while(1) {
         // Receive number from client
-
         size = recvfrom(sockfd, &clientdata, sizeof(clientdata), 0, (struct sockaddr *)&client_addr, &client_addr_len);
         if (size == -1) {
             if( errno != EWOULDBLOCK) {
@@ -300,28 +308,23 @@ int main() {
             }
         }
         procces_client_data(&gamedata,clientdata);
+        printf(" %f , %f \n", clientdata.player.coordinates.x, clientdata.player.coordinates.y);
         process_bullets(&gamedata);
         move_boss(&gamedata.boss);
-//        if (sendto(sockfd, &gamedata, sizeof(gamedata), 0, (struct sockaddr *) &client_addr, client_addr_len) ==
-//            -1) {
-//            perror("Sendto failed player 1");
-//            printf("%d", errno);
-//        }
-
+        boss_shoot_player(&gamedata, new_bullets);
         if (sendto(sockfd, &gamedata, sizeof(gamedata), 0, (struct sockaddr *) &client_addr_1, sizeof(client_addr_1)) ==
             -1) {
             perror("Sendto failed player 1");
             printf("%d", errno);
         }
 
-        printf(" %d , %d \n", gamedata.player1.coordinates.x, gamedata.player1.coordinates.y);
-
+        continue;
         if (sendto(sockfd, &gamedata, sizeof(gamedata), 0, (struct sockaddr *) &client_addr_2,
                    sizeof(client_addr_2)) == -1) {
             perror("Sendto failed player 2");
             printf("%d", errno);
         }
-        printf(" %d , %d \n", gamedata.player2.coordinates.x, gamedata.player2.coordinates.y);
+        printf(" %f , %f \n", gamedata.player2.coordinates.x, gamedata.player2.coordinates.y);
 
 
     }

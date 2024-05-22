@@ -56,14 +56,10 @@ void send_client_data(client_data_t data, int sockfd, struct sockaddr_in server_
         if (sendto(sockfd, &data, sizeof(data), 0, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
             if(errno != EAGAIN)
                 perror("Sendto failed");
-            //close(sockfd);
-            //exit(EXIT_FAILURE);
         }
         if (recv(sockfd, &received_number, sizeof(received_number), 0) == -1) {
             if(errno != EWOULDBLOCK) {
                 perror("Check error");
-                //close(sockfd);
-                //exit(EXIT_FAILURE);
             }
         } else {
             printf("Received response from server: %d\n", received_number);
@@ -80,11 +76,7 @@ void receive_game_data(game_data_t * data, int sockfd, struct sockaddr_in server
     if (count == -1) {
         if(errno != EWOULDBLOCK) {
             perror("Receive error");
-            //close(sockfd);
-            //exit(EXIT_FAILURE);
         }
-    } else if(count > 0) {
-        printf("Received response from server: %f\n", data->player1.coordinates.x);
     }
 }
 

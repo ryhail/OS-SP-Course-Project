@@ -51,15 +51,17 @@ void GameState::draw() {
 
 bool GameState::update(sf::Time dt) {
     serverDelay += dt;
-    if(serverDelay.asSeconds() > 0.2f) {
-        std::cout<<controlledPlayer->getPosition().x<<' '<<controlledPlayer->getPosition().y<<std::endl;
-        msgToServer.player.coordinates.x = controlledPlayer->getPosition().x;
-        msgToServer.player.coordinates.x = controlledPlayer->getPosition().y;
+    if(serverDelay.asSeconds() > 0.001f) {
+        msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
+        msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
         send_client_data(msgToServer, sockfd, server_adr);
+        msgToServer.bullet = {0};
         serverDelay = sf::Time::Zero;
+        receive_game_data(&msgFromServer, sockfd, server_adr);
     }
-    receive_game_data(&msgFromServer, sockfd, server_adr);
-    updatedPlayer->setPosition(msgFromServer.player2.coordinates.x, msgFromServer.player2.coordinates.y);
+
+    std::cout << msgFromServer.player1.coordinates.x << ' ' << msgFromServer.player1.coordinates.x << std::endl;
+    updatedPlayer->setPosition(msgFromServer.player1.coordinates.x, msgFromServer.player1.coordinates.y);
     while (!commandQueue.isEmpty()) {
         sceneGraph.execCommand(commandQueue.pop(), dt);
     }
