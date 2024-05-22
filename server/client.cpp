@@ -84,7 +84,7 @@ void receive_game_data(game_data_t * data, int sockfd, struct sockaddr_in server
             //exit(EXIT_FAILURE);
         }
     } else if(count > 0) {
-        printf("Received response from server: %d\n", data->player1.coordinates.x);
+        printf("Received response from server: %f\n", data->player1.coordinates.x);
     }
 }
 
