@@ -77,6 +77,12 @@ void receive_game_data(game_data_t * data, int sockfd, struct sockaddr_in server
         if(errno != EWOULDBLOCK) {
             perror("Receive error");
         }
+    }else if(count >0) {
+        int success_signal = 0;
+        if (sendto(sockfd, &success_signal, sizeof(success_signal), 0, (struct sockaddr *) &server_addr,
+                   sizeof (server_addr)) == -1) {
+            perror("Sendto failed check");
+        }
     }
 }
 

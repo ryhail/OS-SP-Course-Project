@@ -20,7 +20,13 @@
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/wait.h>
+
 #define BULLET_SPEED 4.0
+void func(int signum)
+{
+    wait(NULL);
+}
 long get_current_time_ms() {
     struct timeval tv;
     gettimeofday(&tv, NULL);
@@ -58,9 +64,34 @@ void move_boss(entity_t* boss) {
         if (boss->coordinates.y > BORDER_MAX_SIZE_Y) boss->coordinates.y = BORDER_MAX_SIZE_Y;
     }
 }
-
+void send_server_data(int sockfd,game_data_t game_data, struct sockaddr_in client_addr){
+    if (sendto(sockfd, &game_data, sizeof(game_data), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) ==
+        -1) {
+        perror("Sendto failed");
+        printf("%d", errno);
+    }
+    return;
+    int received_number;
+    do{
+        // Send number to server
+        received_number = - 1;
+        if (sendto(sockfd, &game_data, sizeof(game_data), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) ==
+            -1) {
+            perror("Sendto failed player 1");
+            printf("%d", errno);
+        }
+        if (recv(sockfd, &received_number, sizeof(received_number),0) == -1) {
+            if(errno != EWOULDBLOCK) {
+                perror("Check error");
+            }
+        } else {
+        }
+    }while(received_number != 0 );
+    exit(0);
+}
 
 game_data_t initialise(void) {
+    signal(SIGCHLD, func);
     game_data_t gamedata = {0};
     gamedata.boss.type = 'b';
     gamedata.boss.coordinates = (struct  coordinate){256,256};
@@ -208,7 +239,7 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
         }
 
 
-        if (player == '1' ) {
+        if (player == '3' ) {
             signal = 's';
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_1,
                        sizeof(*client_addr_1)) == -1) {
@@ -217,7 +248,7 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
                 close(sockfd);
                 exit(EXIT_FAILURE);
             }
-            continue;
+            //continue;
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_2,
                        sizeof(*client_addr_2)) == -1) {
                 perror("Sendto failed");
@@ -312,12 +343,10 @@ int main() {
         process_bullets(&gamedata);
         move_boss(&gamedata.boss);
         boss_shoot_player(&gamedata, new_bullets);
-        if (sendto(sockfd, &gamedata, sizeof(gamedata), 0, (struct sockaddr *) &client_addr_1, sizeof(client_addr_1)) ==
-            -1) {
-            perror("Sendto failed player 1");
-            printf("%d", errno);
-        }
-
+        //int pid = fork();
+        //if(pid==0)
+        send_server_data(sockfd,gamedata,client_addr_1);
+        send_server_data(sockfd,gamedata,client_addr_2);
         continue;
         if (sendto(sockfd, &gamedata, sizeof(gamedata), 0, (struct sockaddr *) &client_addr_2,
                    sizeof(client_addr_2)) == -1) {
