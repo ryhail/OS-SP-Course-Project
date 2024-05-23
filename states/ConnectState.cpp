@@ -11,6 +11,8 @@ ConnectState::ConnectState(StateStack &stack, State::Context context)
                                - mConnectButton.getSize().x / 2,
                                windowSize.y / 1.5f);
 
+    mBackgroundSprite.setTexture(context.textures->getResource(Textures::Lobby));
+
     mConnectText.setFont(context.fonts->getResource(Fonts::MainLetters));
     mConnectText.setString("enter");
     mConnectText.setPosition(mConnectButton.getPosition() +
@@ -35,6 +37,7 @@ ConnectState::ConnectState(StateStack &stack, State::Context context)
 
 void ConnectState::draw() {
     sf::RenderWindow& window = *getContext().window;
+    window.draw(mBackgroundSprite);
     window.draw(mConnectButton);
     window.draw(mEnterIpText);
     window.draw(mConnectText);
@@ -42,7 +45,6 @@ void ConnectState::draw() {
 }
 
 bool ConnectState::update(sf::Time dt) {
-
     return true;
 }
 

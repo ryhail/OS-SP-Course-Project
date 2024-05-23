@@ -16,6 +16,7 @@ public:
 
 
 private:
+    sf::Sprite         mBackgroundSprite;
     sf::RectangleShape mConnectButton;
     sf::Text           mEnterIpText;
     sf::Text           mConnectText;

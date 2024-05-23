@@ -12,7 +12,7 @@ LobbyState::LobbyState(StateStack &stack, State::Context context)
     server_addr = *context.server_adr;
     sf::Vector2f windowSize = context.window->getView().getSize();
     context.textures->load(Textures::PlayerUnavailable, "resources/Textures/unavailable.png");
-
+    mBackgroundSprite.setTexture(context.textures->getResource(Textures::Lobby));
     unavailable.setTexture(context.textures->getResource(Textures::PlayerUnavailable));
     unavailable.setPosition(-125,-125);
 
@@ -44,6 +44,7 @@ LobbyState::LobbyState(StateStack &stack, State::Context context)
 
 void LobbyState::draw() {
     sf::RenderWindow& window = *getContext().window;
+    window.draw(mBackgroundSprite);
     window.draw(mReady);
     window.draw(mLobbyText);
     window.draw(mFrame);

@@ -9,6 +9,7 @@ State::Context::Context(sf::RenderWindow& window,
         fonts(fonts)
 {
     textures->load(Textures::MainMenu, "resources/Textures/menubg.png");
+    textures->load(Textures::Lobby, "resources/Textures/lobbybg.png");
     textures->load(Textures::Player1, "resources/Textures/player1.png");
     textures->load(Textures::Player2, "resources/Textures/player2.png");
     textures->load(Textures::Bullet, "resources/Textures/bullet.png");

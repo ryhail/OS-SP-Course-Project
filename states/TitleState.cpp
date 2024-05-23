@@ -13,13 +13,18 @@ TitleState::TitleState(StateStack& stack, Context context)
     sf::FloatRect bounds = mText.getLocalBounds();
     mText.setOrigin(std::floor(bounds.left + bounds.width / 2.f), std::floor(bounds.top + bounds.height / 2.f));
     mText.setPosition(context.window->getView().getSize() / 2.f);
+    mTitles.setFont(context.fonts->getResource(Fonts::MainLetters));
+    mTitles.setString("25050! Shlyapa gaming\nPresents: CUBHEAD");
+    bounds = mTitles.getLocalBounds();
+    mTitles.setOrigin(std::floor(bounds.left + bounds.width / 2.f), std::floor(bounds.top + bounds.height / 2.f));
+    mTitles.setPosition(context.window->getView().getSize().x/2, context.window->getView().getSize().y/3);
 }
 
 void TitleState::draw()
 {
     sf::RenderWindow& window = *getContext().window;
     window.draw(mBackgroundSprite);
-
+    window.draw(mTitles);
     if (mShowText)
         window.draw(mText);
 }

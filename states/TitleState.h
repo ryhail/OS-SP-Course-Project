@@ -17,6 +17,7 @@ public:
 private:
     sf::Sprite          mBackgroundSprite;
     sf::Text            mText;
+    sf::Text            mTitles;
     bool                mShowText;
     sf::Time            mTextEffectTime;
 };

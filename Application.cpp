@@ -11,7 +11,7 @@
 const sf::Time Application::TimePerFrame = sf::seconds(1.f/60.f);
 
 Application::Application()
-        : mWindow(sf::VideoMode(1280, 720), "States", sf::Style::Close)
+        : mWindow(sf::VideoMode(1280, 720), "CubHead", sf::Style::Close)
         , mFonts()
         , mTextures()
         , mStateStack(State::Context(mWindow, &mTextures, &mFonts))
