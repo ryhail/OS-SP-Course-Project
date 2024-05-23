@@ -29,7 +29,9 @@ class Player : public Entity{
     sf::Sprite      playerSprite;
     MapTile*        currentMapTile;
     sf::Time        animationDeltaTime;
+    sf::Time        surfaceDeltaTime;
     int             animationFrame;
+    Animation       currentAnimation;
 public:
     Player(TextureHolder* textures, Textures::ID playerType);
     void    takeDamage(int dmg);
@@ -48,6 +50,7 @@ public:
     void    setPosition(sf::Vector2f pos);
     void    takeBullets(int bullets);
     bool    isDead();
+    void updateSurface(sf::Time dt);
 
     sf::FloatRect   getBoundingRect() const override;
     sf::Rect<float> getPlayerSpriteSize() const;

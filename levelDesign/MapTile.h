@@ -14,6 +14,7 @@ class MapTile {
     sf::Vector2f                    mSpawnPoint;
 public:
     MapTile(sf::RenderWindow* window);
+    MapTile(sf::RenderWindow* windowm, char schema[11][21]);
     void draw();
     sf::Vector2f                    getSpawnPoint();
     Tile::Type     getCurrentTileType(sf::Vector2f);
