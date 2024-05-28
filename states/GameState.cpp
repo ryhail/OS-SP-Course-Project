@@ -61,17 +61,17 @@ void GameState::draw() {
 bool GameState::update(sf::Time dt) {
     serverDelay += dt;
     animateBoss(dt);
-//    if(serverDelay.asSeconds() > 0.001f) {
-//        msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
-//        msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
-//        send_client_data(msgToServer, sockfd, server_adr);
-//        msgToServer.bullet = {0};
-//        serverDelay = sf::Time::Zero;
-//        receive_game_data(&msgFromServer, sockfd, server_adr);
-//    }
-//
-//    std::cout << msgFromServer.player1.coordinates.x << ' ' << msgFromServer.player1.coordinates.x << std::endl;
-//    updatedPlayer->setPosition(msgFromServer.player1.coordinates.x, msgFromServer.player1.coordinates.y);
+    if(serverDelay.asSeconds() > 0.001f) {
+        msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
+        msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
+        send_client_data(msgToServer, sockfd, server_adr);
+        msgToServer.bullet = {0};
+        serverDelay = sf::Time::Zero;
+        receive_game_data(&msgFromServer, sockfd, server_adr);
+    }
+
+    std::cout << msgFromServer.player.coordinates.x << ' ' << msgFromServer.player.coordinates.x << std::endl;
+    updatedPlayer->setPosition(msgFromServer.player.coordinates.x, msgFromServer.player.coordinates.y);
     while (!commandQueue.isEmpty()) {
         sceneGraph.execCommand(commandQueue.pop(), dt);
     }

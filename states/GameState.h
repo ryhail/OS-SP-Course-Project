@@ -14,7 +14,7 @@ public:
     virtual void draw();
     virtual bool update(sf::Time dt);
     virtual bool handleEvent(const sf::Event& event);
-    void drawHeart(Player* player, sf::RenderWindow* window);
+    void         drawHeart(Player* player, sf::RenderWindow* window);
 private:
     void    handleCollisions();
     void animateBoss(sf::Time dt); //todo: убрать
@@ -28,7 +28,7 @@ private:
     sockaddr_in     server_adr;
     int seed;
     client_data_t   msgToServer;
-    game_data_t     msgFromServer;
+    send_data       msgFromServer;
     Level*          mLevel;
     Player*         controlledPlayer;
     Player*         updatedPlayer;
