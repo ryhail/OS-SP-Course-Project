@@ -384,11 +384,11 @@ int main() {
     sockfd = init_server_socket();
     printf("Server listening on port %d...\n", PORT);
     sleep(2);
-    bullet_t bullet = {};
-    bullet.coordinates = (struct coordinate){100,100};
-    bullet.vector = (struct coordinate){1,1};
-    bullet.owner = 'p';
-    push_bullet(gamedata.bullets,bullet);
+//    bullet_t bullet = {};
+//    bullet.coordinates = (struct coordinate){100,100};
+//    bullet.vector = (struct coordinate){1,1};
+//    bullet.owner = 'p';
+//    push_bullet(gamedata.bullets,bullet);
     while(1) {
         // Receive number from client
         type = recieve_client_data(sockfd, &gamedata, &client_addr, &client_addr_len);
