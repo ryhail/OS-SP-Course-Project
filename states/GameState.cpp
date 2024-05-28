@@ -10,8 +10,7 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     serverDelay = sf::Time::Zero;
     recv(sockfd,&seed,sizeof(seed),0);
     mLevel = new Level(context.window, seed);
-    // todo: убрать нахуй
-    getContext().textures->load(Textures::Boss, "resources/Textures/bossSprite.png");
+
     if(context.player1->isActive()) {
         std::cout << "c1" << std::endl;
         controlledPlayer = context.player1;
@@ -32,13 +31,12 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     boss = new Boss(sf::Vector2f(400.f, 200.f), 5, *context.textures);
     buildScene();
     msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
-    msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;\
+    msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
 }
 
 void GameState::draw() {
     mLevel->draw();
     getContext().window->draw(sceneGraph);
-    getContext().window->draw(bossSprite);
     //drawHeart(controlledPlayer, getContext().window);
     //drawHeart(updatedPlayer, getContext().window);
 }
@@ -56,12 +54,11 @@ void GameState::drawHeart(Entity *entity, sf::RenderWindow* window) {
 
 bool GameState::update(sf::Time dt) {
     serverDelay += dt;
-    animateBoss(dt);
     if(serverDelay.asSeconds() > 0.1f) {
         msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
         msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
-        send_client_data(msgToServer, sockfd, server_adr);
         msgToServer.bullet = {0};
+        send_client_data(msgToServer, sockfd, server_adr);
         serverDelay = sf::Time::Zero;
         receive_game_data(&msgFromServer, sockfd, server_adr);
     }
@@ -111,46 +108,22 @@ void GameState::handleCollisions() {
                 auto& player = dynamic_cast<Player&>(*pair.first);
                 auto& bullet = dynamic_cast<Bullet&>(*pair.second);
                 if (bullet.getVictim() & EntityType::PLAYER) {
-                    player.takeDamage(bullet.getDamage());
                     bullet.use();
                 }
         }
-        //босса еще нет
-//        if(hasSpecifiedCategories(pair, EntityType::BOSS, EntityType::BULLET)) {
-//            //auto& bossSprite = dynamic_cast<Boss&>(*pair.first);
-//            auto& bullet = dynamic_cast<Bullet&>(*pair.second);
-//            if (bullet.getVictim() & EntityType::BOSS) {
-//                //bossSprite.takeDamage(bullet.getDamage());
-//                bullet.use();
-//            }
-//        }
+        if(hasSpecifiedCategories(pair, EntityType::BOSS, EntityType::BULLET)) {
+            //auto& boss = dynamic_cast<Boss&>(*pair.first);
+            auto& bullet = dynamic_cast<Bullet&>(*pair.second);
+            if (bullet.getVictim() & EntityType::BOSS) {
+                bullet.use();
+            }
+        }
         if(hasSpecifiedCategories(pair, EntityType::PLAYER, EntityType::PICKUP)) {
             auto& player = dynamic_cast<Player&>(*pair.first);
             auto& pickup = dynamic_cast<Pickup&>(*pair.second);
             pickup.pickup(player);
             pickup.use();
         }
-        // тестировать, что работает
-        if(hasSpecifiedCategories(pair, EntityType::ACTIVE_PLAYER, EntityType::BULLET)
-           || hasSpecifiedCategories(pair, EntityType::INACTIVE_PLAYER, EntityType::BULLET)) {
-            auto& player = dynamic_cast<Player&>(*pair.first);
-            auto& bullet = dynamic_cast<Bullet&>(*pair.second);
-            if (bullet.getVictim() & EntityType::BOSS) {
-                player.takeDamage(bullet.getDamage());
-                bullet.use();
-            }
-        }
     }
 }
 
-void GameState::animateBoss(sf::Time dt) {
-    animationBoss+=dt;
-    if(animationBoss.asSeconds() > 0.15) {
-        if(currentFrame == 3)
-            currentFrame = 0;
-        else
-            currentFrame++;
-        animationBoss=sf::Time::Zero;
-    }
-    bossSprite.setTextureRect(sf::IntRect(currentFrame * 69, 0, 69, 94));
-}

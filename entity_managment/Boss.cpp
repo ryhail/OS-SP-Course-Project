@@ -7,11 +7,15 @@
 #include "../states/utility.h"
 
 Boss::Boss(sf::Vector2f _coordinates, int _hitPoints, TextureHolder& textures) {
+    textures.load(Textures::Boss, "resources/Textures/boss.png");
     sprite.setTexture(textures.getResource(Textures::Boss));
-    sprite.setPosition(_coordinates);
+    sprite.setTextureRect(sf::IntRect(0,0,69,94));
     centerOrigin(sprite);
     coordinates = _coordinates;
     hitPoints = _hitPoints;
+    currentFrame = 0;
+    animationDeltaTime = sf::Time::Zero;
+
     for(int i = 0; i < hitPoints; i++) {
         std::unique_ptr<Heart> health(new Heart(textures));
         healthForDisplay.push_back(health.get());
@@ -47,6 +51,7 @@ void Boss::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const 
 
 void Boss::updateCurrent(sf::Time dt, CommandQueue &queue) {
     updateHealthDisplay();
+    animate(dt);
 }
 
 void Boss::takeDamage(int dmg) {
@@ -68,4 +73,16 @@ int Boss::getHitPoints() {
 void Boss::move(sf::Vector2f coordinates) {
     this->coordinates = coordinates;
     sprite.setPosition(coordinates);
+}
+
+void Boss::animate(sf::Time dt) {
+    animationDeltaTime+=dt;
+    if(animationDeltaTime.asSeconds() > 0.15) {
+        if(currentFrame == 3)
+            currentFrame = 0;
+        else
+            currentFrame++;
+        animationDeltaTime=sf::Time::Zero;
+    }
+    sprite.setTextureRect(sf::IntRect(currentFrame*69, 0, 69,94));
 }
