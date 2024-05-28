@@ -11,7 +11,7 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     recv(sockfd,&seed,sizeof(seed),0);
     mLevel = new Level(context.window, seed);
     // todo: убрать нахуй
-    getContext().textures->load(Textures::Boss, "resources/Textures/boss.png");
+    getContext().textures->load(Textures::Boss, "resources/Textures/bossSprite.png");
     if(context.player1->isActive()) {
         std::cout << "c1" << std::endl;
         controlledPlayer = context.player1;
@@ -29,7 +29,7 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     updatedPlayer->setPosition(mLevel->getCurrentMapTile()->getSpawnPoint());
     updatedPlayer->setCurentMapTile(mLevel->getCurrentMapTile());
 
-    bossEntity= new Boss(sf::Vector2f(400.f, 200.f), 5, *context.textures);
+    boss = new Boss(sf::Vector2f(400.f, 200.f), 5, *context.textures);
     buildScene();
     msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
     msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;\
@@ -38,7 +38,7 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
 void GameState::draw() {
     mLevel->draw();
     getContext().window->draw(sceneGraph);
-    getContext().window->draw(boss);
+    getContext().window->draw(bossSprite);
     //drawHeart(controlledPlayer, getContext().window);
     //drawHeart(updatedPlayer, getContext().window);
 }
@@ -94,7 +94,7 @@ void GameState::buildScene() {
     sceneGraph.addChild(std::move(activePlayer));
     SceneNode::SceneNodePtr passivePlayer(updatedPlayer);
     sceneGraph.addChild(std::move(passivePlayer));
-    SceneNode::SceneNodePtr updatedBoss(bossEntity);
+    SceneNode::SceneNodePtr updatedBoss(boss);
     sceneGraph.addChild(std::move(updatedBoss));
 }
 /*
@@ -117,10 +117,10 @@ void GameState::handleCollisions() {
         }
         //босса еще нет
 //        if(hasSpecifiedCategories(pair, EntityType::BOSS, EntityType::BULLET)) {
-//            //auto& boss = dynamic_cast<Boss&>(*pair.first);
+//            //auto& bossSprite = dynamic_cast<Boss&>(*pair.first);
 //            auto& bullet = dynamic_cast<Bullet&>(*pair.second);
 //            if (bullet.getVictim() & EntityType::BOSS) {
-//                //boss.takeDamage(bullet.getDamage());
+//                //bossSprite.takeDamage(bullet.getDamage());
 //                bullet.use();
 //            }
 //        }
@@ -152,5 +152,5 @@ void GameState::animateBoss(sf::Time dt) {
             currentFrame++;
         animationBoss=sf::Time::Zero;
     }
-    boss.setTextureRect(sf::IntRect(currentFrame*69, 0, 69,94));
+    bossSprite.setTextureRect(sf::IntRect(currentFrame * 69, 0, 69, 94));
 }

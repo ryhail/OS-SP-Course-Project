@@ -22,7 +22,7 @@ private:
     void animateBoss(sf::Time dt); //todo: убрать
 private:
     //todo: убрать
-    sf::Sprite      boss;
+    sf::Sprite      bossSprite;
     sf::Time        animationBoss;
     int currentFrame;
     //
@@ -34,7 +34,7 @@ private:
     Level*          mLevel;
     Player*         controlledPlayer;
     Player*         updatedPlayer;
-    Boss*           bossEntity;
+    Boss*           boss;
     SceneNode       sceneGraph;
     CommandQueue    commandQueue;
     InputHandler    inputHandler;

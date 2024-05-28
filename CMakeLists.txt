@@ -58,6 +58,7 @@ add_executable(game main.cpp
         player_managment/Heart.cpp
         player_managment/Heart.h
         states/IngameMenuState.cpp
+        entity_managment/Boss.cpp
 )
 target_link_libraries(game sfml-graphics sfml-audio)
 
