@@ -10,6 +10,7 @@
 
 int initialize_client(int port){
     int sockfd;
+    int buffer_size = 128000;
     struct sockaddr_in local_addr;
     // Create UDP socket
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
@@ -28,7 +29,11 @@ int initialize_client(int port){
         close(sockfd);
         exit(EXIT_FAILURE);
     }
-
+    if (setsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &buffer_size, sizeof(buffer_size)) == -1) {
+        perror("setsockopt");
+        close(sockfd);
+        exit(EXIT_FAILURE);
+    }
 
     return sockfd;
 }
