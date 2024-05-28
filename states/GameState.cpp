@@ -9,6 +9,8 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     sockfd = *context.sockfd;
     server_adr = *context.server_adr;
     serverDelay = sf::Time::Zero;
+    int seed;
+    recv(sockfd,&seed,sizeof(seed),0);
     // todo: убрать нахуй
     getContext().textures->load(Textures::Boss, "resources/Textures/boss.png");
     boss.setTexture(getContext().textures->getResource(Textures::Boss));
