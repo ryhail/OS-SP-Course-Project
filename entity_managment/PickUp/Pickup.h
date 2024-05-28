@@ -20,7 +20,7 @@ public:
         TypeCount
     };
 public:
-    Pickup(sf::Vector2f _coordinates, MapTile *_currentMapTile, Pickup::Type _type, TextureHolder &textures);
+    Pickup(sf::Vector2f _coordinates, MapTile *_currentMapTile, int _type, TextureHolder &textures);
     void                pickup(Player& player);
 
     bool                isForRemove() override;

@@ -24,6 +24,7 @@ public:
     sf::FloatRect getBoundingRect() const override;
 
     sf::Vector2f getCoordinates() override;
+    sf::Vector2f getFacing();
 
 private:
     void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;

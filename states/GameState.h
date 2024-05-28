@@ -7,6 +7,8 @@
 #include "../input_handler/InputHandler.h"
 #include "../entity_managment/Boss.h"
 
+#define PICKUPDELAY sf::seconds(2)
+
 class GameState : public State {
 public:
     GameState(StateStack& stack,
@@ -23,7 +25,7 @@ private:
 private:
     int             sockfd;
     sockaddr_in     server_adr;
-    int seed;
+    int             seed;
     client_data_t   msgToServer;
     send_data       msgFromServer;
     Level*          mLevel;
@@ -34,7 +36,9 @@ private:
     CommandQueue    commandQueue;
     InputHandler    inputHandler;
     sf::Time        serverDelay;
+    sf::Time        pickupDelay;
     sf::Sprite      heart;
+    TextureHolder   textureHolder;
 };
 
 

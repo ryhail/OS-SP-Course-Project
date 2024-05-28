@@ -28,10 +28,13 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     updatedPlayer->setPosition(mLevel->getCurrentMapTile()->getSpawnPoint());
     updatedPlayer->setCurentMapTile(mLevel->getCurrentMapTile());
 
-    boss = new Boss(sf::Vector2f(400.f, 200.f), 5, *context.textures);
-    buildScene();
+
     msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
     msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
+    boss = new Boss(*context.textures);
+    buildScene();
+    textureHolder = *context.textures;
+    pickupDelay = PICKUPDELAY;
 }
 
 void GameState::draw() {
@@ -58,7 +61,10 @@ bool GameState::update(sf::Time dt) {
     if(serverDelay.asSeconds() > 0.1f) {
         msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
         msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
-        msgToServer.bullet = {0};
+        bullet_t* last = controlledPlayer->getLastBullet();
+        if(last == nullptr) {
+            msgToServer.bullet = {0};
+        } else msgToServer.bullet = *last;
         send_client_data(msgToServer, sockfd, server_adr);
         serverDelay = sf::Time::Zero;
         receive_game_data(&msgFromServer, sockfd, server_adr);
@@ -66,6 +72,9 @@ bool GameState::update(sf::Time dt) {
 
     std::cout << msgFromServer.player.coordinates.x << ' ' << msgFromServer.player.coordinates.x << std::endl;
     updatedPlayer->setPosition(msgFromServer.player.coordinates.x, msgFromServer.player.coordinates.y);
+    boss->setCoordinates(sf::Vector2f (msgFromServer.boss.coordinates.x, msgFromServer.boss.coordinates.y));
+    boss->setHitPoints(msgFromServer.boss.hp);
+    boss->create();
     while (!commandQueue.isEmpty()) {
         sceneGraph.execCommand(commandQueue.pop(), dt);
     }
@@ -73,6 +82,15 @@ bool GameState::update(sf::Time dt) {
     handleCollisions();
     sceneGraph.removeWrecks();
     inputHandler.handleRealtimeInput(commandQueue);
+    pickupDelay -= dt;
+    if(pickupDelay <= sf::Time::Zero) {
+        float x = rand() % (780 - 64 + 1) + 64;
+        float y = rand() % (1280 - 64 + 1) + 64;
+        sf::Vector2f coord(x, y);
+        std::unique_ptr<Pickup> pickup(new Pickup(coord, mLevel->getCurrentMapTile(), rand() % 2, textureHolder));
+        sceneGraph.addChild(std::move(pickup));
+        pickupDelay = PICKUPDELAY;
+    }
     if(commandQueue.isEmpty() && !controlledPlayer->isForRemove())
         controlledPlayer->animate(Idle, dt);
     return true;

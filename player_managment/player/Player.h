@@ -50,7 +50,7 @@ public:
     void    setPosition(sf::Vector2f pos);
     void    takeBullets(int bullets);
     bool    isDead();
-    void updateSurface(sf::Time dt);
+    void    updateSurface(sf::Time dt);
 
     sf::Vector2f getCoordinates() override;
 
@@ -58,6 +58,8 @@ public:
     sf::Rect<float> getPlayerSpriteSize() const;
 
     int getHitPoints() override;
+
+    bullet_t * getLastBullet();
 
 private:
     void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const override;
@@ -87,6 +89,9 @@ private:
 
     sf::Vector2<float> facing;
     sf::Vector2<float> firingShift;
+
+    bullet_t*     lastBulletCreated;
+    bool        lastBulletAccessed;
 
     EntityType::Type getCategory() const override;
 };

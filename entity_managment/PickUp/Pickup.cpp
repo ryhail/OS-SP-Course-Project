@@ -43,7 +43,7 @@ sf::FloatRect Pickup::getBoundingRect() const {
     return getWorldTransform().transformRect(sprite.getGlobalBounds());
 }
 
-Pickup::Pickup(sf::Vector2f _coordinates, MapTile *_currentMapTile, Pickup::Type _type, TextureHolder &textures){
+Pickup::Pickup(sf::Vector2f _coordinates, MapTile *_currentMapTile, int _type, TextureHolder &textures){
 
     coordinates = _coordinates;
     currentMapTile = _currentMapTile;

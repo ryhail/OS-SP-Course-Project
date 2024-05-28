@@ -83,3 +83,7 @@ int Bullet::getDamage() const {
 sf::Vector2f Bullet::getCoordinates() {
     return coordinates;
 }
+
+sf::Vector2f Bullet::getFacing() {
+    return facing;
+}

@@ -16,10 +16,24 @@ Boss::Boss(sf::Vector2f _coordinates, int _hitPoints, TextureHolder& textures) {
     hitPoints = _hitPoints;
     currentFrame = 0;
     animationDeltaTime = sf::Time::Zero;
+    created = true;
+}
+
+Boss::Boss(TextureHolder& textures) {
+    textures.load(Textures::Boss, "resources/Textures/boss.png");
+    sprite.setTexture(textures.getResource(Textures::Boss));
+    sprite.setTextureRect(sf::IntRect(0,0,69,94));
+    sprite.setPosition(coordinates);
+    centerOrigin(sprite);
+    currentFrame = 0;
+    animationDeltaTime = sf::Time::Zero;
+    coordinates = sf::Vector2f(0,0);
+    hitPoints = 0;
+    created = false;
 }
 
 bool Boss::isForRemove() {
-    return hitPoints <= 0;
+    return created && hitPoints <= 0;
 }
 
 EntityType::Type Boss::getCategory() const {
@@ -66,3 +80,17 @@ void Boss::animate(sf::Time dt) {
     }
     sprite.setTextureRect(sf::IntRect(currentFrame*69, 0, 69,94));
 }
+
+void Boss::setCoordinates(sf::Vector2f coord) {
+    coordinates = coord;
+}
+
+void Boss::setHitPoints(int hp) {
+    hitPoints = hp;
+}
+
+void Boss::create() {
+    created = true;
+}
+
+

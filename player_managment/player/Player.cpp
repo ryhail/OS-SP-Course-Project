@@ -27,6 +27,7 @@ Player::Player(TextureHolder* textures, Textures::ID playerType)
 
     bulletCount = 5;
     speed = PLAYER_INIT_SPEED;
+    lastBulletCreated = nullptr;
 }
 
 void Player::takeDamage(int dmg) {
@@ -111,6 +112,9 @@ void Player::createBullet(SceneNode &node, TextureHolder &textures) {
     std::unique_ptr<Bullet> bullet(new Bullet(facing, coordinates + firingShift, getCategory(), textures, currentMapTile));
     node.addChild(std::move(bullet));
     decrementBulletCount();
+    lastBulletCreated = new bullet_t {{bullet->getCoordinates().x, bullet->getCoordinates().y},
+                                                       {bullet->getFacing().x, bullet->getFacing().y},
+                                                       'p'};
 }
 
 void Player::updateCurrent(sf::Time dt, CommandQueue &queue) {
@@ -229,4 +233,12 @@ sf::Vector2f Player::getCoordinates() {
 
 int Player::getHitPoints() {
     return hitPoints;
+}
+
+bullet_t * Player::getLastBullet() {
+    if(!lastBulletAccessed) {
+        lastBulletAccessed = true;
+        return lastBulletCreated;
+    }
+    return nullptr;
 }
