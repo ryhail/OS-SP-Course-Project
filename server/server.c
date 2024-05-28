@@ -71,7 +71,7 @@ void send_server_data(int sockfd, send_data_t send_data, struct sockaddr_in clie
         }
         return;
     }
-    printf("%d", send_data.bullets_count);
+    printf("%Bullets : d", send_data.bullets_count);
     struct sockaddr_in client_addr_new;
     socklen_t size = sizeof(client_addr_new);
     //if(fcntl(sockfd,F_SETFL, O_NONBLOCK) == -1)
