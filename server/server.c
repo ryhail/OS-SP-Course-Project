@@ -237,7 +237,7 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
         }
 
 
-        if (player == '1' ) {
+        if (player == '3' ) {
             signal = 's';
             int seed = time(NULL);
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_1,
