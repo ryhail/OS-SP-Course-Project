@@ -32,8 +32,12 @@ int initialize_client(int port){
 
     return sockfd;
 }
-void make_nonblock(int sockfd){
+void make_non_block(int sockfd){
     if(fcntl(sockfd,F_SETFL, O_NONBLOCK) == -1)
+        perror("NON_BLOCK error");
+}
+void make_block(int sockfd){
+    if(fcntl(sockfd,F_SETFL, 0) == -1)
         perror("NON_BLOCK error");
 }
 
@@ -64,6 +68,7 @@ void    send_client_data(client_data_t data, int sockfd, struct sockaddr_in serv
         } else {
             printf("Received response from server: %d\n", received_number);
         }
+        usleep(10000);
     }while(received_number != 0 );
     printf("Number sent to server.\n");
 
@@ -84,5 +89,6 @@ void receive_game_data(send_data_t * data, int sockfd, struct sockaddr_in server
             perror("Sendto failed check");
         }
     }
+    usleep(10000);
 
 }
