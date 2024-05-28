@@ -32,11 +32,19 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     buildScene();
     msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
     msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
+    msgToServer.bullet = {0};
 }
 
 void GameState::draw() {
     mLevel->draw();
     getContext().window->draw(sceneGraph);
+    game_data buletTest;
+    for(int i = 0; i < 10; i++) {
+        buletTest.bullets[i].owner = 'p';
+        buletTest.bullets[i].coordinates.x = rand()%1280;
+        buletTest.bullets[i].coordinates.y = rand()%720;
+    }
+    drawBullets(buletTest);
     //drawHeart(controlledPlayer, getContext().window);
     //drawHeart(updatedPlayer, getContext().window);
 }
@@ -140,3 +148,11 @@ void GameState::handleCollisions() {
     }
 }
 
+void GameState::drawBullets(game_data_t& game_data) {
+    for(int i = 0; i < MAX_BULLETS*10; i++) {
+        if(game_data.bullets[i].owner != 0) {
+            Bullet bull = Bullet(game_data.bullets[i], getContext().textures);
+            bull.drawSprite(getContext().window);
+        }
+    }
+}

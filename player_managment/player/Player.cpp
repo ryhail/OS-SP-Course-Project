@@ -231,3 +231,7 @@ sf::Vector2f Player::getCoordinates() {
 int Player::getHitPoints() {
     return hitPoints;
 }
+
+Animation Player::getCurrentAnimation() {
+    return currentAnimation;
+}

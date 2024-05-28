@@ -15,11 +15,10 @@ public:
     void         draw() override;
     bool         update(sf::Time dt) override;
     bool         handleEvent(const sf::Event& event) override;
-    void drawHeart(Entity *entity, sf::RenderWindow* window);
-
+    void         drawHeart(Entity *entity, sf::RenderWindow* window);
+    void         drawBullets(game_data_t& game_data);
 private:
     void    handleCollisions();
-    void animateBoss(sf::Time dt); //todo: убрать
 private:
     int             sockfd;
     sockaddr_in     server_adr;

@@ -1,7 +1,3 @@
-//
-// Created by hvorostok on 22.05.2024.
-//
-
 #include <iostream>
 #include "Boss.h"
 #include "../states/utility.h"
@@ -9,8 +5,9 @@
 Boss::Boss(sf::Vector2f _coordinates, int _hitPoints, TextureHolder& textures) {
     sprite.setTexture(textures.getResource(Textures::Boss));
     sprite.setTextureRect(sf::IntRect(0,0,69,94));
-    centerOrigin(sprite);
-    coordinates = _coordinates;
+    sprite.setOrigin(sprite.getLocalBounds().width / 2.0f, sprite.getLocalBounds().height);
+
+    move(_coordinates);
     hitPoints = _hitPoints;
     currentFrame = 0;
     animationDeltaTime = sf::Time::Zero;
@@ -24,7 +21,6 @@ Boss::Boss(sf::Vector2f _coordinates, int _hitPoints, TextureHolder& textures) {
 }
 
 void Boss::updateHealthDisplay() {
-    std::cout << "heart updated!" << std::endl;
     sf::Vector2f pos(getCoordinates().x - getBoundingRect().width / 1.25f, getCoordinates().y - getBoundingRect().height / 0.8f);
     for(auto & heart : healthForDisplay) {
         heart->setPosition(pos);

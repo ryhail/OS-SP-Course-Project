@@ -51,6 +51,7 @@ public:
     void    takeBullets(int bullets);
     bool    isDead();
     void updateSurface(sf::Time dt);
+    Animation getCurrentAnimation();
 
     sf::Vector2f getCoordinates() override;
 
