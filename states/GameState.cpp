@@ -71,13 +71,14 @@ bool GameState::update(sf::Time dt) {
         std::cout << msgFromServer.player.coordinates.x << ' ' << msgFromServer.player.coordinates.x << std::endl;
         updatedPlayer->setPosition(msgFromServer.player.coordinates.x, msgFromServer.player.coordinates.y);
         updatedPlayer->setCurrentAnimation(static_cast<Animation>(msgFromServer.player.animation));
+        bossEntity->move(sf::Vector2f (msgFromServer.boss.coordinates.x, msgFromServer.boss.coordinates.y));
     }
     updatedPlayer->animate(updatedPlayer->getCurrentAnimation(), dt);
     while (!commandQueue.isEmpty()) {
         sceneGraph.execCommand(commandQueue.pop(), dt);
     }
     sceneGraph.update(dt, commandQueue);
-    handleCollisions();
+    //handleCollisions();
     sceneGraph.removeWrecks();
     inputHandler.handleRealtimeInput(commandQueue);
     if(commandQueue.isEmpty() && !controlledPlayer->isForRemove())
@@ -106,38 +107,38 @@ void GameState::buildScene() {
  * обработка столкновений между сущностями
  * (логика выстрела, подбирашек)
  */
-void GameState::handleCollisions() {
-    std::set<SceneNode::Pair> collidePairs;
-    sceneGraph.checkSceneCollision(sceneGraph, collidePairs);
-
-    for (SceneNode::Pair pair : collidePairs) {
-        if(hasSpecifiedCategories(pair, EntityType::ACTIVE_PLAYER, EntityType::BULLET)
-        || hasSpecifiedCategories(pair, EntityType::INACTIVE_PLAYER, EntityType::BULLET)) {
-                auto& player = dynamic_cast<Player&>(*pair.first);
-                auto& bullet = dynamic_cast<Bullet&>(*pair.second);
-                if (bullet.getVictim() & EntityType::PLAYER) {
-                    player.takeDamage(bullet.getDamage());
-                    bullet.use();
-                }
-        }
-        if(hasSpecifiedCategories(pair, EntityType::PLAYER, EntityType::PICKUP)) {
-            auto& player = dynamic_cast<Player&>(*pair.first);
-            auto& pickup = dynamic_cast<Pickup&>(*pair.second);
-            pickup.pickup(player);
-            pickup.use();
-        }
-        // тестировать, что работает
-        if(hasSpecifiedCategories(pair, EntityType::ACTIVE_PLAYER, EntityType::BULLET)
-           || hasSpecifiedCategories(pair, EntityType::INACTIVE_PLAYER, EntityType::BULLET)) {
-            auto& player = dynamic_cast<Player&>(*pair.first);
-            auto& bullet = dynamic_cast<Bullet&>(*pair.second);
-            if (bullet.getVictim() & EntityType::BOSS) {
-                player.takeDamage(bullet.getDamage());
-                bullet.use();
-            }
-        }
-    }
-}
+//void GameState::handleCollisions() {
+//    std::set<SceneNode::Pair> collidePairs;
+//    sceneGraph.checkSceneCollision(sceneGraph, collidePairs);
+//
+//    for (SceneNode::Pair pair : collidePairs) {
+//        if(hasSpecifiedCategories(pair, EntityType::ACTIVE_PLAYER, EntityType::BULLET)
+//        || hasSpecifiedCategories(pair, EntityType::INACTIVE_PLAYER, EntityType::BULLET)) {
+//                auto& player = dynamic_cast<Player&>(*pair.first);
+//                auto& bullet = dynamic_cast<Bullet&>(*pair.second);
+//                if (bullet.getVictim() & EntityType::PLAYER) {
+//                    player.takeDamage(bullet.getDamage());
+//                    bullet.use();
+//                }
+//        }
+//        if(hasSpecifiedCategories(pair, EntityType::PLAYER, EntityType::PICKUP)) {
+//            auto& player = dynamic_cast<Player&>(*pair.first);
+//            auto& pickup = dynamic_cast<Pickup&>(*pair.second);
+//            pickup.pickup(player);
+//            pickup.use();
+//        }
+//        // тестировать, что работает
+//        if(hasSpecifiedCategories(pair, EntityType::ACTIVE_PLAYER, EntityType::BULLET)
+//           || hasSpecifiedCategories(pair, EntityType::INACTIVE_PLAYER, EntityType::BULLET)) {
+//            auto& player = dynamic_cast<Player&>(*pair.first);
+//            auto& bullet = dynamic_cast<Bullet&>(*pair.second);
+//            if (bullet.getVictim() & EntityType::BOSS) {
+//                player.takeDamage(bullet.getDamage());
+//                bullet.use();
+//            }
+//        }
+//    }
+//}
 
 void GameState::drawBullets(send_data &game_data) {
     for(int i = 0; i < MAX_BULLETS; i++) {
