@@ -9,9 +9,9 @@
 #include "server_structures.h"
 #define PORT 52345
 #define BUFFER_SIZE 1024
-#define BORDER_MIN_SIZE_Y 1028
-#define BORDER_MIN_SIZE_X 1920
-#define BORDER_MAX_SIZE_Y 1028
+#define BORDER_MIN_SIZE_Y 60
+#define BORDER_MIN_SIZE_X 60
+#define BORDER_MAX_SIZE_Y 1080
 #define BORDER_MAX_SIZE_X 1920
 #define UPDATE_INTERVAL 6 // Интервал обновления
 #define MAX_BOSS_SPEED 3.0 // Максимальная скорость босса
@@ -125,7 +125,9 @@ int check_hit(bullet_t bullet, entity_t entity, int radius) {
 }
 //43 Ширина 64 высота
 int process_bullet_hit(entity_t* entity, bullet_t bullet) {
-    if ((entity->hp>0) && (bullet.owner != entity->type) && (check_hit(bullet,* entity,   15))) {
+    if ((entity->hp>0) && ((entity->type == 'b' && bullet.owner != entity->type )||
+            (entity->type != 'b' && bullet.owner == 'b' ))&&
+        (check_hit(bullet,* entity,   15))) {
         entity->hp--;
         return 1;
     }
@@ -134,9 +136,9 @@ int process_bullet_hit(entity_t* entity, bullet_t bullet) {
 int move_bullet(bullet_t* bullet) {
     bullet->coordinates.x += bullet->vector.x;
     bullet->coordinates.y += bullet->vector.y;
-    if (bullet->coordinates.x < 0 || bullet->coordinates.x < BORDER_MAX_SIZE_X )
+    if (bullet->coordinates.x < BORDER_MIN_SIZE_X || bullet->coordinates.x > BORDER_MAX_SIZE_X )
         return 1;
-    if (bullet->coordinates.y < 0 || bullet->coordinates.y < BORDER_MAX_SIZE_Y )
+    if (bullet->coordinates.y < BORDER_MIN_SIZE_Y || bullet->coordinates.y > BORDER_MAX_SIZE_Y )
         return 1;
     return  0;
 }
@@ -151,18 +153,16 @@ void process_bullets(game_data_t* gamedata) {
     int i ;
     for(i = 0; (i + step < MAX_BULLETS) && !bullet_empty(gamedata->bullets[i + step]); i ++) {
         gamedata->bullets[i] = gamedata->bullets[i+step];
-        if (gamedata->bullets[i + step].owner != 'b') {
-            printf("%c", gamedata->bullets[i+ step].owner);
-            step += process_bullet_hit(&gamedata->boss, gamedata->bullets[i+step]);
-            i--;
-        }
-        else if(process_bullet_hit(&gamedata->player1,gamedata->bullets[i+step]) ||
-                process_bullet_hit(&gamedata->player2,gamedata->bullets[i+step]) ||
-                move_bullet(&gamedata->bullets[i+step])){
+       if(process_bullet_hit(&gamedata->boss, gamedata->bullets[i])||
+            process_bullet_hit(&gamedata->player1,gamedata->bullets[i]) ||
+            process_bullet_hit(&gamedata->player2,gamedata->bullets[i]) ||
+            move_bullet(&gamedata->bullets[i+step])){
             step++;
             i--;
         }
     }
+    for(; (i <MAX_BULLETS) ; i ++)
+        gamedata->bullets[i] = (bullet_t){0};
     for(i = 0; (i < MAX_BULLETS) && bullet_empty(gamedata->bullets[i]); i ++)
         gamedata->bullets[i] = (bullet_t){0};
 }
@@ -315,7 +315,7 @@ bullet_t shoot_bullet(game_data_t* gamedata, entity_t* shooter, entity_t* target
     return bullet;
 }
 
-void boss_shoot_player(game_data_t* gamedata, bullet_t* new_bullets) {
+void boss_shoot_player(game_data_t* gamedata) {
     bullet_t bullet = {0};
     static long last_update_time_ms = 0;
     // Получение текущего времени в миллисекундах
@@ -328,13 +328,11 @@ void boss_shoot_player(game_data_t* gamedata, bullet_t* new_bullets) {
     if (gamedata->player1.hp > 0) {
         bullet = shoot_bullet(gamedata, &gamedata->boss, &gamedata->player1);
         push_bullet(gamedata->bullets, bullet);
-        push_bullet(new_bullets, bullet);
         printf("Bam\n");
     }
     if (gamedata->player2.hp > 0) {
         bullet = shoot_bullet(gamedata, &gamedata->boss, &gamedata->player2);
         push_bullet(gamedata->bullets, bullet);
-        push_bullet(new_bullets, bullet);
     }
 }
 
@@ -377,7 +375,6 @@ int main() {
     socklen_t client_addr_len = sizeof(client_addr);
     char type;
     game_data_t gamedata;
-    bullet_t  new_bullets[MAX_BULLETS] = {0};
     sockfd = init_server_socket();
     gamedata = initialise();
     start_lobby(sockfd, &client_addr_1, &client_addr_2);
@@ -387,6 +384,11 @@ int main() {
     sockfd = init_server_socket();
     printf("Server listening on port %d...\n", PORT);
     sleep(2);
+    bullet_t bullet = {};
+    bullet.coordinates = (struct coordinate){100,100};
+    bullet.vector = (struct coordinate){1,1};
+    bullet.owner = 'p';
+    push_bullet(gamedata.bullets,bullet);
     while(1) {
         // Receive number from client
         type = recieve_client_data(sockfd, &gamedata, &client_addr, &client_addr_len);
@@ -394,7 +396,7 @@ int main() {
         printf("New Iteration\n");
         process_bullets(&gamedata);
         move_boss(&gamedata.boss);
-        boss_shoot_player(&gamedata, new_bullets);
+        boss_shoot_player(&gamedata);
         //usleep(10000);
         send_server_data(sockfd, make_send_data(gamedata, type),client_addr);
 
