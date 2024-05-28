@@ -54,7 +54,7 @@ public:
     void updateSurface(sf::Time dt);
     Animation getCurrentAnimation();
     void setCurrentAnimation(Animation animType);
-    bullet_t * getLastBullet();
+    bullet_t getLastBullet();
 
     sf::Vector2f getCoordinates() override;
 

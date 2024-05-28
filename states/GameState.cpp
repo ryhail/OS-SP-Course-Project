@@ -57,15 +57,14 @@ void GameState::drawHeart(Entity *entity, sf::RenderWindow* window) {
 
 bool GameState::update(sf::Time dt) {
     serverDelay += dt;
-    if(serverDelay.asSeconds() > 0.1f) {
+    if(serverDelay.asSeconds() >= 0.0f) {
         msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
         msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
         msgToServer.player.animation = controlledPlayer->getCurrentAnimation();
         msgToServer.player.hp = controlledPlayer->getHitPoints();
-        if(controlledPlayer->getLastBullet() != nullptr)
-            msgToServer.bullet = *controlledPlayer->getLastBullet();
-        else
-            msgToServer.bullet = {0};
+
+        msgToServer.bullet = controlledPlayer->getLastBullet();
+
         send_client_data(msgToServer, sockfd, server_adr);
         serverDelay = sf::Time::Zero;
         receive_game_data(&msgFromServer, sockfd, server_adr);
