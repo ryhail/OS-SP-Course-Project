@@ -24,7 +24,7 @@ Player::Player(TextureHolder* textures, Textures::ID playerType)
     surfaceDeltaTime = sf::Time::Zero;
     animationDeltaTime = sf::Time::Zero;
     animationFrame = 0;
-
+    lastBulletCreated = nullptr;
     bulletCount = 5;
     speed = PLAYER_INIT_SPEED;
 }
@@ -108,10 +108,20 @@ bool Player::firingAvailable() const {
 }
 
 void Player::createBullet(SceneNode &node, TextureHolder &textures) {
-    std::unique_ptr<Bullet> bullet(new Bullet(facing, coordinates + firingShift, getCategory(), textures, currentMapTile));
-    node.addChild(std::move(bullet));
+   // std::unique_ptr<Bullet> bullet(new Bullet(facing, coordinates + firingShift, getCategory(), textures, currentMapTile));
+    //node.addChild(std::move(bullet));
+    sf::Vector2f coords = coordinates + firingShift;
     decrementBulletCount();
-    std::cout << "bullet created!" << std::endl;
+    lastBulletCreated = new bullet_t {{coords.x, coords.y},
+                                      {facing.x, facing.y},
+                                      'p'};
+}
+
+}
+bullet_t * Player::getLastBullet() {
+    bullet_t* buf = lastBulletCreated;
+    lastBulletCreated = nullptr;
+    return buf;
 }
 
 void Player::updateCurrent(sf::Time dt, CommandQueue &queue) {
@@ -235,3 +245,8 @@ int Player::getHitPoints() {
 Animation Player::getCurrentAnimation() {
     return currentAnimation;
 }
+
+void Player::setCurrentAnimation(Animation animType) {
+    currentAnimation = animType;
+}
+
