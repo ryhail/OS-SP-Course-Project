@@ -10,27 +10,12 @@ Boss::Boss(sf::Vector2f _coordinates, int _hitPoints, TextureHolder& textures) {
     textures.load(Textures::Boss, "resources/Textures/boss.png");
     sprite.setTexture(textures.getResource(Textures::Boss));
     sprite.setTextureRect(sf::IntRect(0,0,69,94));
+    sprite.setPosition(coordinates);
     centerOrigin(sprite);
     coordinates = _coordinates;
     hitPoints = _hitPoints;
     currentFrame = 0;
     animationDeltaTime = sf::Time::Zero;
-
-    for(int i = 0; i < hitPoints; i++) {
-        std::unique_ptr<Heart> health(new Heart(textures));
-        healthForDisplay.push_back(health.get());
-        this->addChild(std::move(health));
-    }
-    updateHealthDisplay();
-}
-
-void Boss::updateHealthDisplay() {
-    std::cout << "heart updated!" << std::endl;
-    sf::Vector2f pos(getCoordinates().x - getBoundingRect().width / 1.25f, getCoordinates().y - getBoundingRect().height / 0.8f);
-    for(auto & heart : healthForDisplay) {
-        heart->setPosition(pos);
-        pos.x+=15.f;
-    }
 }
 
 bool Boss::isForRemove() {
@@ -50,15 +35,10 @@ void Boss::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const 
 }
 
 void Boss::updateCurrent(sf::Time dt, CommandQueue &queue) {
-    updateHealthDisplay();
     animate(dt);
 }
 
 void Boss::takeDamage(int dmg) {
-    for(int i = 0; i < dmg; i++) {
-        healthForDisplay.back()->broke();
-        healthForDisplay.pop_back();
-    }
     hitPoints-=dmg;
 }
 

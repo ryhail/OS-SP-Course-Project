@@ -31,7 +31,6 @@ public:
 private:
     void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const override;
     void updateCurrent(sf::Time dt, CommandQueue &queue) override;
-    void updateHealthDisplay();
     void animate(sf::Time dt);
 
 private:
@@ -40,7 +39,6 @@ private:
     sf::Time        animationDeltaTime;
     int             currentFrame;
     int             hitPoints;
-    std::vector<Heart*>      healthForDisplay;
 };
 
 

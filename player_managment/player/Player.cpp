@@ -111,7 +111,6 @@ void Player::createBullet(SceneNode &node, TextureHolder &textures) {
     std::unique_ptr<Bullet> bullet(new Bullet(facing, coordinates + firingShift, getCategory(), textures, currentMapTile));
     node.addChild(std::move(bullet));
     decrementBulletCount();
-    std::cout << "bullet created!" << std::endl;
 }
 
 void Player::updateCurrent(sf::Time dt, CommandQueue &queue) {

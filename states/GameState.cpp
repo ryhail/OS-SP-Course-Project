@@ -37,8 +37,9 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
 void GameState::draw() {
     mLevel->draw();
     getContext().window->draw(sceneGraph);
-    //drawHeart(controlledPlayer, getContext().window);
-    //drawHeart(updatedPlayer, getContext().window);
+    drawHeart(controlledPlayer, getContext().window);
+    drawHeart(updatedPlayer, getContext().window);
+    drawHeart(boss, getContext().window);
 }
 void GameState::drawHeart(Entity *entity, sf::RenderWindow* window) {
     sf::Vector2f pos = entity->getCoordinates();
