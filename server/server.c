@@ -63,19 +63,19 @@ void move_boss(entity_t* boss) {
     }
 }
 void send_server_data(int sockfd, send_data_t send_data, struct sockaddr_in client_addr){
-    if (sendto(sockfd, &send_data, sizeof(send_data), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) ==
-        -1) {
-        perror("Sendto failed");
-        //printf("%d", errno);
-    }
-    return;
+//    if (sendto(sockfd, &send_data, sizeof(send_data), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) ==
+//        -1) {
+//        perror("Sendto failed");
+//        //printf("%d", errno);
+//    }
+//    return;
     int received_number;
     do{
         // Send number to server
         received_number = - 1;
         if (sendto(sockfd, &send_data, sizeof(send_data), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) ==
             -1) {
-            perror("Sendto failed player 1");
+            perror("Sendto failed player");
             printf("%d", errno);
         }
         if (recv(sockfd, &received_number, sizeof(received_number),0) == -1) {

@@ -21,6 +21,7 @@ struct entity {
     struct coordinate coordinates;
     int8_t hp;
     char type;
+    unsigned char animation;
 } typedef entity_t;
 
 struct game_data {
