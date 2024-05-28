@@ -7,7 +7,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include "server_structures.h"
-#define PORT 12345
+#define PORT 52345
 #define BUFFER_SIZE 1024
 #define BORDER_MIN_SIZE_Y 1028
 #define BORDER_MIN_SIZE_X 1920
@@ -85,7 +85,6 @@ void send_server_data(int sockfd, send_data_t send_data, struct sockaddr_in clie
         } else {
         }
     }while(received_number != 0 );
-    exit(0);
 }
 
 game_data_t initialise(void) {
@@ -94,9 +93,9 @@ game_data_t initialise(void) {
     gamedata.boss.type = 'b';
     gamedata.boss.coordinates = (struct  coordinate){256,256};
     gamedata.player1.type = '1';
-    gamedata.player1.coordinates = (struct coordinate){0,0};
-    gamedata.player2.type = '1';
-    gamedata.player2.coordinates = (struct coordinate){0,0};
+    gamedata.player1.coordinates = (struct  coordinate){56,56};
+    gamedata.player2.type = '2';
+    gamedata.player2.coordinates = (struct  coordinate){56,56};
     return  gamedata;
 }
 
@@ -247,6 +246,14 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
                 exit(EXIT_FAILURE);
             }
 
+//            sleep(1);
+//            if (sendto(sockfd, &seed, sizeof(seed), 0, (struct sockaddr *) client_addr_1,
+//                       sizeof(*client_addr_1)) == -1) {
+//                perror("Sendto failed");
+//                close(sockfd);
+//                exit(EXIT_FAILURE);
+//            }
+//            return;
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_2,
                        sizeof(*client_addr_2)) == -1) {
                 perror("Sendto failed");
@@ -363,7 +370,7 @@ int main() {
     //if(fcntl(sockfd,F_SETFL, O_NONBLOCK) == -1)
     //    perror("NON_BLOCK error");
     printf("Server listening on port %d...\n", PORT);
-    //sleep(2);
+    sleep(2);
     while(1) {
         // Receive number from client
         recieve_client_data(sockfd, &gamedata);

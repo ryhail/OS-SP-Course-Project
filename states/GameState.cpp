@@ -61,7 +61,7 @@ void GameState::draw() {
 bool GameState::update(sf::Time dt) {
     serverDelay += dt;
     animateBoss(dt);
-    if(serverDelay.asSeconds() > 0.001f) {
+    if(serverDelay.asSeconds() > 0.1f) {
         msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
         msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
         send_client_data(msgToServer, sockfd, server_adr);
