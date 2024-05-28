@@ -76,7 +76,6 @@ void send_server_data(int sockfd, send_data_t send_data, struct sockaddr_in clie
         if (sendto(sockfd, &send_data, sizeof(send_data), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) ==
             -1) {
             perror("Sendto failed player");
-            printf("%d", errno);
         }
         if (recv(sockfd, &received_number, sizeof(received_number),0) == -1) {
             if(errno != EWOULDBLOCK) {
@@ -85,17 +84,21 @@ void send_server_data(int sockfd, send_data_t send_data, struct sockaddr_in clie
         } else {
         }
     }while(received_number != 0 );
+    printf("Send");
 }
 
 game_data_t initialise(void) {
     //signal(SIGCHLD, func);
     game_data_t gamedata = {0};
     gamedata.boss.type = 'b';
-    gamedata.boss.coordinates = (struct  coordinate){256,256};
+    gamedata.boss.hp = 20;
+    gamedata.boss.coordinates = (struct  coordinate){656,656};
     gamedata.player1.type = '1';
-    gamedata.player1.coordinates = (struct  coordinate){56,56};
+    gamedata.player1.hp = 5;
+    gamedata.player1.coordinates = (struct  coordinate){256,256};
     gamedata.player2.type = '2';
-    gamedata.player2.coordinates = (struct  coordinate){56,56};
+    gamedata.player2.hp = 5;
+    gamedata.player2.coordinates = (struct  coordinate){256,256};
     return  gamedata;
 }
 
@@ -318,7 +321,7 @@ void boss_shoot_player(game_data_t* gamedata, bullet_t* new_bullets) {
     }
 }
 
-void recieve_client_data(int sockfd,game_data_t* game_data){
+char recieve_client_data(int sockfd,game_data_t* game_data){
     client_data_t clientdata;
     size_t size = 0;
     struct sockaddr_in client_addr;
@@ -335,8 +338,9 @@ void recieve_client_data(int sockfd,game_data_t* game_data){
             perror("Sendto failed check");
         }
         procces_client_data(game_data, clientdata);
-        printf("%f %f", clientdata.player.coordinates.x, clientdata.player.coordinates.y);
+        printf("%c %f %f\n",clientdata.player.type ,clientdata.player.coordinates.x, clientdata.player.coordinates.y);
     }
+    return clientdata.player.type;
 }
 send_data_t make_send_data(game_data_t game_data, int number, bullet_t new_bullets [MAX_BULLETS]){
     send_data_t data_to_send = {0};
@@ -359,23 +363,26 @@ send_data_t make_send_data(game_data_t game_data, int number, bullet_t new_bulle
 int main() {
     int sockfd;
     struct sockaddr_in server_addr, client_addr, client_addr_1, client_addr_2;
-    socklen_t client_addr_len = sizeof(client_addr);
+    char answer1, answer2;
     game_data_t gamedata;
-    client_data_t clientdata;
-    size_t size = 0;
     bullet_t  new_bullets[MAX_BULLETS] = {0};
     sockfd = init_server_socket();
     gamedata = initialise();
     start_lobby(sockfd, &client_addr_1, &client_addr_2);
     //if(fcntl(sockfd,F_SETFL, O_NONBLOCK) == -1)
     //    perror("NON_BLOCK error");
+    close(sockfd);
+    sockfd = init_server_socket();
     printf("Server listening on port %d...\n", PORT);
     sleep(2);
     while(1) {
         // Receive number from client
-        recieve_client_data(sockfd, &gamedata);
-        recieve_client_data(sockfd, &gamedata);
-        printf(" %f , %f \n", clientdata.player.coordinates.x, clientdata.player.coordinates.y);
+        answer1 = recieve_client_data(sockfd, &gamedata);
+        usleep(10000);
+        do {
+            answer2 = recieve_client_data(sockfd, &gamedata);
+            printf("%c, %c \n", answer1 , answer2);
+        }while(answer1 == answer2);
         process_bullets(&gamedata);
         move_boss(&gamedata.boss);
         boss_shoot_player(&gamedata, new_bullets);
@@ -384,7 +391,6 @@ int main() {
         send_server_data(sockfd, make_send_data(gamedata, 1, new_bullets),client_addr_1);
         send_server_data(sockfd,make_send_data(gamedata, 2, new_bullets),client_addr_2);
         continue;
-        printf(" %f , %f \n", gamedata.player2.coordinates.x, gamedata.player2.coordinates.y);
 
 
     }

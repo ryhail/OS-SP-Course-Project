@@ -28,7 +28,8 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     updatedPlayer->setPosition(mLevel->getCurrentMapTile()->getSpawnPoint());
     updatedPlayer->setCurentMapTile(mLevel->getCurrentMapTile());
 
-
+    boss = new Boss(sf::Vector2f(400.f, 200.f), 5, *context.textures);
+    buildScene();
     msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
     msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
     boss = new Boss(*context.textures);
@@ -68,6 +69,10 @@ bool GameState::update(sf::Time dt) {
         send_client_data(msgToServer, sockfd, server_adr);
         serverDelay = sf::Time::Zero;
         receive_game_data(&msgFromServer, sockfd, server_adr);
+        std::cout << msgFromServer.player.coordinates.x << ' ' << msgFromServer.player.coordinates.x << std::endl;
+        updatedPlayer->setPosition(msgFromServer.player.coordinates.x, msgFromServer.player.coordinates.y);
+    }
+
     }
 
     std::cout << msgFromServer.player.coordinates.x << ' ' << msgFromServer.player.coordinates.x << std::endl;
