@@ -26,9 +26,10 @@ private:
     //
     int             sockfd;
     sockaddr_in     server_adr;
+    int seed;
     client_data_t   msgToServer;
     game_data_t     msgFromServer;
-    Level           mLevel;
+    Level*          mLevel;
     Player*         controlledPlayer;
     Player*         updatedPlayer;
     SceneNode       sceneGraph;

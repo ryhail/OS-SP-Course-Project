@@ -2,7 +2,7 @@
 #include "Level.h"
 
 
-Level::Level(sf::RenderWindow *window) :
+Level::Level(sf::RenderWindow *window, int seed) :
     mWindow(window){
     char schema[11][21];
     for(int i = 0; i < 11; i++) {
@@ -15,12 +15,11 @@ Level::Level(sf::RenderWindow *window) :
         }
     }
 
-    //srand(seed);
+    srand(seed);
     for(int i = 0; i < 40; i++) {
         schema[rand() % 9 + 1][rand() % 18 + 1] = (char)('1' + rand() % 4);
     }
     currentMapTile = new MapTile(window, schema);
-
 }
 
 void Level::update(sf::Time dt) {

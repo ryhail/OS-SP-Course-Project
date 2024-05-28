@@ -3,14 +3,13 @@
 #include "GameState.h"
 #include "../entity_managment/PickUp/Pickup.h"
 
-GameState::GameState(StateStack &stack, State::Context context) : State(stack, context),
-                                                                  mLevel(context.window)
+GameState::GameState(StateStack &stack, State::Context context) : State(stack, context)
 {
     sockfd = *context.sockfd;
     server_adr = *context.server_adr;
     serverDelay = sf::Time::Zero;
-    int seed;
     recv(sockfd,&seed,sizeof(seed),0);
+    mLevel = new Level(context.window, seed);
     // todo: убрать нахуй
     getContext().textures->load(Textures::Boss, "resources/Textures/boss.png");
     boss.setTexture(getContext().textures->getResource(Textures::Boss));
@@ -31,17 +30,17 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
         msgToServer.player.type = '2';
     }
     heart.setTexture(context.textures->getResource(Textures::Heart));
-    controlledPlayer->setPosition(mLevel.getCurrentMapTile()->getSpawnPoint());
-    controlledPlayer->setCurentMapTile(mLevel.getCurrentMapTile());
-    updatedPlayer->setPosition(mLevel.getCurrentMapTile()->getSpawnPoint());
-    updatedPlayer->setCurentMapTile(mLevel.getCurrentMapTile());
+    controlledPlayer->setPosition(mLevel->getCurrentMapTile()->getSpawnPoint());
+    controlledPlayer->setCurentMapTile(mLevel->getCurrentMapTile());
+    updatedPlayer->setPosition(mLevel->getCurrentMapTile()->getSpawnPoint());
+    updatedPlayer->setCurentMapTile(mLevel->getCurrentMapTile());
     buildScene();
     msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
     msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
 }
 
 void GameState::draw() {
-    mLevel.draw();
+    mLevel->draw();
     getContext().window->draw(sceneGraph);
     getContext().window->draw(boss);
     //drawHeart(controlledPlayer, getContext().window);
