@@ -14,7 +14,8 @@
 #define BORDER_MAX_SIZE_Y (720 - BORDER_MIN_SIZE_Y)
 #define BORDER_MAX_SIZE_X (1280 - BORDER_MIN_SIZE_X)
 #define UPDATE_INTERVAL 6 // Интервал обновления
-#define MAX_BOSS_SPEED 3.0 // Максимальная скорость босса
+#define MIN_BOSS_SPEED 2.0
+#define MAX_BOSS_SPEED (10.0 - MIN_BOSS_SPEED) // Максимальная скорость босса
 #include <sys/time.h>
 #include <math.h>
 #include <time.h>
@@ -46,7 +47,7 @@ void move_boss(entity_t* boss) {
     if (current_time - last_rand_update_time> update_interval) {
         srand(time(NULL));
         angle = ((float)rand() / RAND_MAX) * 2 * M_PI;
-        speed = ((float)rand() / RAND_MAX) * MAX_BOSS_SPEED;
+        speed =MIN_BOSS_SPEED+  ((float)rand() / RAND_MAX) * MAX_BOSS_SPEED;
         update_interval = rand() % UPDATE_INTERVAL;
         last_rand_update_time = current_time;
     }
