@@ -165,9 +165,9 @@ void push_bullet(bullet_t* bullets,bullet_t bullet) {
 
 void procces_client_data (game_data_t* gamedata, client_data_t clientdata) {
     if (clientdata.player.type == '1')
-        gamedata->player1.coordinates = clientdata.player.coordinates;
+        gamedata->player1 = clientdata.player;
     if (clientdata.player.type == '2')
-        gamedata->player2.coordinates = clientdata.player.coordinates;
+        gamedata->player2 = clientdata.player;
     if(!bullet_empty(clientdata.bullet))
         push_bullet(gamedata->bullets,clientdata.bullet);
 }
