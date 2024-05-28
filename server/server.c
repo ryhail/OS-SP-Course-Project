@@ -9,10 +9,10 @@
 #include "server_structures.h"
 #define PORT 52345
 #define BUFFER_SIZE 1024
-#define BORDER_MIN_SIZE_Y 60
-#define BORDER_MIN_SIZE_X 60
-#define BORDER_MAX_SIZE_Y 1080
-#define BORDER_MAX_SIZE_X 1920
+#define BORDER_MIN_SIZE_Y 64
+#define BORDER_MIN_SIZE_X 64
+#define BORDER_MAX_SIZE_Y (720 - BORDER_MIN_SIZE_Y)
+#define BORDER_MAX_SIZE_X (1280 - BORDER_MIN_SIZE_X)
 #define UPDATE_INTERVAL 6 // Интервал обновления
 #define MAX_BOSS_SPEED 3.0 // Максимальная скорость босса
 #include <sys/time.h>
