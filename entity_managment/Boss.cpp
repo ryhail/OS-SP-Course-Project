@@ -7,7 +7,6 @@
 #include "../states/utility.h"
 
 Boss::Boss(sf::Vector2f _coordinates, int _hitPoints, TextureHolder& textures) {
-    textures.load(Textures::Boss, "../resources/Textures/boss.png");
     sprite.setTexture(textures.getResource(Textures::Boss));
     sprite.setTextureRect(sf::IntRect(0,0,69,94));
     centerOrigin(sprite);
