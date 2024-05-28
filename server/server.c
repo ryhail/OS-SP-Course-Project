@@ -395,7 +395,7 @@ int main() {
         process_bullets(&gamedata);
         move_boss(&gamedata.boss);
         boss_shoot_player(&gamedata, new_bullets);
-        usleep(10000);
+        //usleep(10000);
         send_server_data(sockfd, make_send_data(gamedata, type),client_addr);
 
 
