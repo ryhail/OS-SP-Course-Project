@@ -39,6 +39,7 @@ void GameState::draw() {
     mLevel->draw();
     getContext().window->draw(sceneGraph);
     drawBullets(msgFromServer);
+
     //drawHeart(controlledPlayer, getContext().window);
     //drawHeart(updatedPlayer, getContext().window);
 }
