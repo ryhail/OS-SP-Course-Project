@@ -69,6 +69,8 @@ void send_server_data(int sockfd, send_data_t send_data, struct sockaddr_in clie
 //        //printf("%d", errno);
 //    }
 //    return;
+    if(fcntl(sockfd,F_SETFL, O_NONBLOCK) == -1)
+        perror("NON_BLOCK error");
     int received_number;
     do{
         // Send number to server
@@ -81,9 +83,11 @@ void send_server_data(int sockfd, send_data_t send_data, struct sockaddr_in clie
             if(errno != EWOULDBLOCK) {
                 perror("Check error");
             }
-        } else {
         }
+        usleep(10000);
     }while(received_number != 0 );
+    if(fcntl(sockfd,F_SETFL, 0) == -1)
+        perror("NON_BLOCK error");
     printf("Send");
 }
 
