@@ -7,11 +7,12 @@
 #include "states/GameState.h"
 #include "states/LobbyState.h"
 #include "states/HostState.h"
+#include "states/IngameMenuState.h"
 
 const sf::Time Application::TimePerFrame = sf::seconds(1.f/60.f);
 
 Application::Application()
-        : mWindow(sf::VideoMode(1280, 720), "States", sf::Style::Close)
+        : mWindow(sf::VideoMode(1280, 720), "CubHead", sf::Style::Close)
         , mFonts()
         , mTextures()
         , mStateStack(State::Context(mWindow, &mTextures, &mFonts))
@@ -110,4 +111,5 @@ void Application::registerStates()
     mStateStack.registerState<HostState>(States::Host);
     mStateStack.registerState<GameState>(States::Game);
     mStateStack.registerState<LobbyState>(States::Lobby);
+    mStateStack.registerState<IngameMenuState>(States::InGameMenu);
 }

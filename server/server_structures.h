@@ -4,11 +4,11 @@
 
 #ifndef STRUCTURES_H
 #define STRUCTURES_H
-
-#define MAX_BULLETS 128
+#define MAX_BULLETS 12
+#include <stdint.h>
 struct  coordinate {
-    int16_t x;
-    int16_t y;
+    float x;
+    float y;
 };
 
 struct bullet {
@@ -21,14 +21,22 @@ struct entity {
     struct coordinate coordinates;
     int8_t hp;
     char type;
+    unsigned char animation;
 } typedef entity_t;
 
 struct game_data {
     entity_t boss;
     entity_t player1;
     entity_t player2;
-    bullet_t bullets[MAX_BULLETS];
+    bullet_t bullets[MAX_BULLETS * 10];
 }typedef  game_data_t;
+
+struct send_data {
+    entity_t boss;
+    entity_t player;
+    int bullets_count;
+    bullet_t new_bullets[MAX_BULLETS];
+}typedef  send_data_t;
 
 struct client_data {
     entity_t player;

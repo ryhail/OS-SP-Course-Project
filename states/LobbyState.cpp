@@ -12,7 +12,7 @@ LobbyState::LobbyState(StateStack &stack, State::Context context)
     server_addr = *context.server_adr;
     sf::Vector2f windowSize = context.window->getView().getSize();
     context.textures->load(Textures::PlayerUnavailable, "resources/Textures/unavailable.png");
-
+    mBackgroundSprite.setTexture(context.textures->getResource(Textures::Lobby));
     unavailable.setTexture(context.textures->getResource(Textures::PlayerUnavailable));
     unavailable.setPosition(-125,-125);
 
@@ -44,6 +44,7 @@ LobbyState::LobbyState(StateStack &stack, State::Context context)
 
 void LobbyState::draw() {
     sf::RenderWindow& window = *getContext().window;
+    window.draw(mBackgroundSprite);
     window.draw(mReady);
     window.draw(mLobbyText);
     window.draw(mFrame);
@@ -106,8 +107,8 @@ bool LobbyState::update(sf::Time dt) {
             }
         }
         std::cout << "Send" << available << std::endl;
-//        sendto(sockfd, &available, sizeof(available), 0, (const sockaddr *) (&server_addr), sizeof(server_addr));
-//        recv(sockfd, &available, sizeof(available), 0);
+        sendto(sockfd, &available, sizeof(available), 0, (const sockaddr *) (&server_addr), sizeof(server_addr));
+        recv(sockfd, &available, sizeof(available), 0);
         std::cout << "Recieved" <<available << std::endl;
         serverDelay = sf::Time::Zero;
     }
@@ -126,7 +127,7 @@ bool LobbyState::update(sf::Time dt) {
             }
             break;
     }
-    if (readyState) {
+    if (available == 's') {
         if(mChoice) {
             getContext().player2->setActive(true);
             getContext().player1->setActive(false);
@@ -136,7 +137,7 @@ bool LobbyState::update(sf::Time dt) {
             getContext().player2->setActive(false);
         }
         requestStackPop();
-        make_nonblock(sockfd);
+        //make_nonblock(sockfd);
         requestStackPush(States::Game);
     }
 

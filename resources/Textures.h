@@ -5,7 +5,11 @@ namespace Textures {
     enum ID {
         TitleScreen,
         MainMenu,
+        Lobby,
         Tile,
+        Icetile,
+        Slimetile,
+        Spadestile,
         Border,
         Heart,
         Player1,

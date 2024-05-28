@@ -21,7 +21,7 @@ Player::Player(TextureHolder* textures, Textures::ID playerType)
     fireCommand.action = [this, textures](SceneNode& node, sf::Time dt) {
         createBullet(node, *textures);
     };
-
+    surfaceDeltaTime = sf::Time::Zero;
     animationDeltaTime = sf::Time::Zero;
     animationFrame = 0;
 
@@ -116,6 +116,7 @@ void Player::createBullet(SceneNode &node, TextureHolder &textures) {
 
 void Player::updateCurrent(sf::Time dt, CommandQueue &queue) {
     if(isDead()) return;
+    updateSurface(dt);
     checkBulletLaunch(queue, dt);
 }
 
@@ -133,6 +134,7 @@ void Player::setCurentMapTile(MapTile* mapTile) {
 
 void Player::animate(Animation AnimType, sf::Time dt) {
     animationDeltaTime+=dt;
+    currentAnimation = AnimType;
     if(animationDeltaTime.asSeconds() > 0.15) {
         if(animationFrame == 0)
             animationFrame++;
@@ -195,6 +197,31 @@ void Player::takeBullets(int bullets) {
 
 bool Player::isDead() {
     return hitPoints <= 0;
+}
+
+void Player::updateSurface(sf::Time dt) {
+    surfaceDeltaTime += dt;
+    Tile::Type tileType = currentMapTile->getCurrentTileType(coordinates);
+    if(surfaceDeltaTime.asSeconds() > 0.5f) {
+        switch (tileType) {
+            case (Tile::Field):
+                speed = 100;
+                break;
+            case (Tile::Ice):
+                speed = 200;
+                break;
+            case (Tile::Slime):
+                speed = 50;
+                break;
+            case (Tile::Spades):
+                if(surfaceDeltaTime.asSeconds() > 0.6f)
+                    takeDamage(1);
+                else
+                    return;
+                break;
+        }
+        surfaceDeltaTime = sf::Time::Zero;
+    }
 }
 
 sf::Vector2f Player::getCoordinates() {

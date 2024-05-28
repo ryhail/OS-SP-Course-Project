@@ -2,15 +2,16 @@
 #include <set>
 #include "GameState.h"
 #include "../entity_managment/PickUp/Pickup.h"
-#include "../entity_managment/Boss.h"
 
-GameState::GameState(StateStack &stack, State::Context context) : State(stack, context),
-    mLevel(context.window)
+GameState::GameState(StateStack &stack, State::Context context) : State(stack, context)
 {
     sockfd = *context.sockfd;
     server_adr = *context.server_adr;
     serverDelay = sf::Time::Zero;
-
+    recv(sockfd,&seed,sizeof(seed),0);
+    mLevel = new Level(context.window, seed);
+    // todo: убрать нахуй
+    getContext().textures->load(Textures::Boss, "resources/Textures/boss.png");
     if(context.player1->isActive()) {
         std::cout << "c1" << std::endl;
         controlledPlayer = context.player1;
@@ -23,10 +24,10 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
         msgToServer.player.type = '2';
     }
     heart.setTexture(context.textures->getResource(Textures::Heart));
-    controlledPlayer->setPosition(mLevel.getCurrentMapTile()->getSpawnPoint());
-    controlledPlayer->setCurentMapTile(mLevel.getCurrentMapTile());
-    updatedPlayer->setPosition(mLevel.getCurrentMapTile()->getSpawnPoint());
-    updatedPlayer->setCurentMapTile(mLevel.getCurrentMapTile());
+    controlledPlayer->setPosition(mLevel->getCurrentMapTile()->getSpawnPoint());
+    controlledPlayer->setCurentMapTile(mLevel->getCurrentMapTile());
+    updatedPlayer->setPosition(mLevel->getCurrentMapTile()->getSpawnPoint());
+    updatedPlayer->setCurentMapTile(mLevel->getCurrentMapTile());
 
     boss = new Boss(sf::Vector2f(400.f, 200.f), 5, *context.textures);
     buildScene();
@@ -35,10 +36,10 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
 }
 
 void GameState::draw() {
-    mLevel.draw();
+    mLevel->draw();
     getContext().window->draw(sceneGraph);
-    drawHeart(controlledPlayer, getContext().window);
-    drawHeart(updatedPlayer, getContext().window);
+    //drawHeart(controlledPlayer, getContext().window);
+    //drawHeart(updatedPlayer, getContext().window);
 }
 void GameState::drawHeart(Entity *entity, sf::RenderWindow* window) {
     sf::Vector2f pos = entity->getCoordinates();
@@ -54,10 +55,10 @@ void GameState::drawHeart(Entity *entity, sf::RenderWindow* window) {
 
 bool GameState::update(sf::Time dt) {
     serverDelay += dt;
-//    if(serverDelay.asSeconds() > 0.2f) {
-//        std::cout<<controlledPlayer->getPosition().x<<' '<<controlledPlayer->getPosition().y<<std::endl;
-//        msgToServer.player.coordinates.x = controlledPlayer->getPosition().x;
-//        msgToServer.player.coordinates.x = controlledPlayer->getPosition().y;
+    animateBoss(dt);
+//    if(serverDelay.asSeconds() > 0.001f) {
+//        msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
+//        msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
 //        send_client_data(msgToServer, sockfd, server_adr);
 //        serverDelay = sf::Time::Zero;
 //    }
@@ -76,6 +77,11 @@ bool GameState::update(sf::Time dt) {
 }
 
 bool GameState::handleEvent(const sf::Event &event) {
+    if(event.type == sf::Event::KeyReleased) {
+        if(event.key.code == sf::Keyboard::Escape) {
+            requestStackPush(States::InGameMenu);
+        }
+    }
     return true;
 }
 
@@ -96,20 +102,21 @@ void GameState::handleCollisions() {
     sceneGraph.checkSceneCollision(sceneGraph, collidePairs);
 
     for (SceneNode::Pair pair : collidePairs) {
-//        if(hasSpecifiedCategories(pair, EntityType::ACTIVE_PLAYER, EntityType::BULLET)
-//        || hasSpecifiedCategories(pair, EntityType::INACTIVE_PLAYER, EntityType::BULLET)) {
-//                auto& player = dynamic_cast<Player&>(*pair.first);
-//                auto& bullet = dynamic_cast<Bullet&>(*pair.second);
-//                if (bullet.getVictim() & EntityType::PLAYER) {
-//                    player.takeDamage(bullet.getDamage());
-//                    bullet.use();
-//                }
-//        }
+        if(hasSpecifiedCategories(pair, EntityType::ACTIVE_PLAYER, EntityType::BULLET)
+        || hasSpecifiedCategories(pair, EntityType::INACTIVE_PLAYER, EntityType::BULLET)) {
+                auto& player = dynamic_cast<Player&>(*pair.first);
+                auto& bullet = dynamic_cast<Bullet&>(*pair.second);
+                if (bullet.getVictim() & EntityType::PLAYER) {
+                    player.takeDamage(bullet.getDamage());
+                    bullet.use();
+                }
+        }
+        //босса еще нет
 //        if(hasSpecifiedCategories(pair, EntityType::BOSS, EntityType::BULLET)) {
-//            auto& findboss = dynamic_cast<Boss&>(*pair.first);
+//            //auto& boss = dynamic_cast<Boss&>(*pair.first);
 //            auto& bullet = dynamic_cast<Bullet&>(*pair.second);
 //            if (bullet.getVictim() & EntityType::BOSS) {
-//                findboss.takeDamage(bullet.getDamage());
+//                //boss.takeDamage(bullet.getDamage());
 //                bullet.use();
 //            }
 //        }
@@ -120,14 +127,26 @@ void GameState::handleCollisions() {
             pickup.use();
         }
         // тестировать, что работает
-//        if(hasSpecifiedCategories(pair, EntityType::ACTIVE_PLAYER, EntityType::BULLET)
-//           || hasSpecifiedCategories(pair, EntityType::INACTIVE_PLAYER, EntityType::BULLET)) {
-//            auto& player = dynamic_cast<Player&>(*pair.first);
-//            auto& bullet = dynamic_cast<Bullet&>(*pair.second);
-//            if (bullet.getVictim() & EntityType::BOSS) {
-//                player.takeDamage(bullet.getDamage());
-//                bullet.use();
-//            }
-//        }
+        if(hasSpecifiedCategories(pair, EntityType::ACTIVE_PLAYER, EntityType::BULLET)
+           || hasSpecifiedCategories(pair, EntityType::INACTIVE_PLAYER, EntityType::BULLET)) {
+            auto& player = dynamic_cast<Player&>(*pair.first);
+            auto& bullet = dynamic_cast<Bullet&>(*pair.second);
+            if (bullet.getVictim() & EntityType::BOSS) {
+                player.takeDamage(bullet.getDamage());
+                bullet.use();
+            }
+        }
     }
+}
+
+void GameState::animateBoss(sf::Time dt) {
+    animationBoss+=dt;
+    if(animationBoss.asSeconds() > 0.15) {
+        if(currentFrame == 3)
+            currentFrame = 0;
+        else
+            currentFrame++;
+        animationBoss=sf::Time::Zero;
+    }
+    boss.setTextureRect(sf::IntRect(currentFrame*69, 0, 69,94));
 }

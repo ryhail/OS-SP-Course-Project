@@ -20,6 +20,7 @@ public:
     virtual bool            handleEvent(const sf::Event& event);
 
 private:
+    sf::Sprite              mBackgroundSprite;
     sf::Text                mLobbyText;
     sf::Text                mReady;
     sf::Sprite              unavailable;

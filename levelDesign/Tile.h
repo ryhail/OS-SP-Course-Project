@@ -8,7 +8,10 @@ class Tile : public sf::Sprite {
 public:
     enum Type {
         Border,
-        field
+        Field,
+        Ice,
+        Slime,
+        Spades
     };
 private:
     Type       mType;

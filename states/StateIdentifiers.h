@@ -12,8 +12,7 @@ namespace States
         Connect,
         Lobby,
         Game,
-        Loading,
-        Pause,
+        InGameMenu
     };
 }
 

@@ -19,10 +19,16 @@ public:
 
 private:
     void    handleCollisions();
-
+    void animateBoss(sf::Time dt); //todo: убрать
 private:
+    //todo: убрать
+    sf::Sprite      bossSprite;
+    sf::Time        animationBoss;
+    int currentFrame;
+    //
     int             sockfd;
     sockaddr_in     server_adr;
+    int seed;
     client_data_t   msgToServer;
     game_data_t     msgFromServer;
     Level           mLevel;
