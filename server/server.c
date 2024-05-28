@@ -196,8 +196,8 @@ void procces_client_data (game_data_t* gamedata, client_data_t clientdata) {
         bullet_t  bullet  = clientdata.bullet;
         float x = bullet.vector.x;
         float y = bullet.vector.y;
-        bullet.vector.x = BULLET_SPEED *  x / (x+y);
-        bullet.vector.y = BULLET_SPEED *  y / (x+y);
+        bullet.vector.x = BULLET_SPEED * 2 *  x / (x+y);
+        bullet.vector.y = BULLET_SPEED * 2 *  y / (x+y);
         push_bullet(gamedata->bullets, clientdata.bullet);
     }
 }
@@ -267,7 +267,7 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
         }
 
 
-        if (player == '3' ) {
+        if (player == '1' ) {
             signal = 's';
             int seed = time(NULL);
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_1,
@@ -277,14 +277,14 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
                 exit(EXIT_FAILURE);
             }
 
-//            sleep(1);
-//            if (sendto(sockfd, &seed, sizeof(seed), 0, (struct sockaddr *) client_addr_1,
-//                       sizeof(*client_addr_1)) == -1) {
-//                perror("Sendto failed");
-//                close(sockfd);
-//                exit(EXIT_FAILURE);
-//            }
-//            return;
+            sleep(1);
+            if (sendto(sockfd, &seed, sizeof(seed), 0, (struct sockaddr *) client_addr_1,
+                       sizeof(*client_addr_1)) == -1) {
+                perror("Sendto failed");
+                close(sockfd);
+                exit(EXIT_FAILURE);
+            }
+            return;
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_2,
                        sizeof(*client_addr_2)) == -1) {
                 perror("Sendto failed");
@@ -376,10 +376,13 @@ char recieve_client_data(int sockfd,game_data_t* game_data, struct sockaddr_in* 
 send_data_t make_send_data(game_data_t game_data, int number){
     send_data_t data_to_send = {0};
     data_to_send.boss = game_data.boss;
-    if(number == '1')
-        data_to_send.player= game_data.player2;
-    else
-        data_to_send.player= game_data.player1;
+    if(number == '1') {
+        data_to_send.hp = game_data.player1.hp;
+        data_to_send.player = game_data.player2;
+    }else {
+        data_to_send.hp = game_data.player2.hp;
+        data_to_send.player = game_data.player1;
+    }
     for(int i = 0; i < MAX_BULLETS; i++){
         data_to_send.new_bullets[i] = game_data.bullets[i];
     }
