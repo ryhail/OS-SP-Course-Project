@@ -43,7 +43,7 @@ void make_non_block(int sockfd){
 }
 void make_block(int sockfd){
     if(fcntl(sockfd,F_SETFL, 0) == -1)
-        perror("NON_BLOCK error");
+        perror("NON_BLOCK err or");
 }
 
 void initialize_server(int port,const char* server_ip, struct sockaddr_in* server_addr){
