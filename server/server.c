@@ -65,12 +65,12 @@ void move_boss(entity_t* boss) {
     }
 }
 void send_server_data(int sockfd,game_data_t game_data, struct sockaddr_in client_addr,int  number){
-//    if (sendto(sockfd, &game_data, sizeof(game_data), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) ==
-//        -1) {
-//        perror("Sendto failed");
-//        //printf("%d", errno);
-//    }
-//    return;
+    if (sendto(sockfd, &game_data, sizeof(game_data), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) ==
+        -1) {
+        perror("Sendto failed");
+        //printf("%d", errno);
+    }
+    return;
     int received_number;
     do{
         // Send number to server
