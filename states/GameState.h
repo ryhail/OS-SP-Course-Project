@@ -16,7 +16,7 @@ public:
     bool         update(sf::Time dt) override;
     bool         handleEvent(const sf::Event& event) override;
     void         drawHeart(Entity *entity, sf::RenderWindow* window);
-    void         drawBullets(game_data_t& game_data);
+    void         drawBullets(send_data &game_data);
 private:
     void    handleCollisions();
 private:

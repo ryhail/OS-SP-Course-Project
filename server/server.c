@@ -69,7 +69,7 @@ void send_server_data(int sockfd, send_data_t send_data, struct sockaddr_in clie
             //printf("%d", errno);
         }
         return;
-    printf("%Bullets : d", send_data.bullets_count);
+    //printf("%Bullets : d", send_data.bullets_count);
     struct sockaddr_in client_addr_new;
     socklen_t size = sizeof(client_addr_new);
     //if(fcntl(sockfd,F_SETFL, O_NONBLOCK) == -1)
@@ -395,7 +395,7 @@ int main() {
         process_bullets(&gamedata);
         move_boss(&gamedata.boss);
         boss_shoot_player(&gamedata, new_bullets);
-        usleep(10000);
+        //usleep(10000);
         send_server_data(sockfd, make_send_data(gamedata, type),client_addr);
 
 

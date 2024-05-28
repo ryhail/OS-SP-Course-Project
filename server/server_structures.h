@@ -34,7 +34,6 @@ struct game_data {
 struct send_data {
     entity_t boss;
     entity_t player;
-    int bullets_count;
     bullet_t new_bullets[MAX_BULLETS];
 }typedef  send_data_t;
 

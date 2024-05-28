@@ -32,6 +32,7 @@ class Player : public Entity{
     sf::Time        surfaceDeltaTime;
     int             animationFrame;
     Animation       currentAnimation;
+    bullet_t *      lastBulletCreated;
 public:
     Player(TextureHolder* textures, Textures::ID playerType);
     void    takeDamage(int dmg);
@@ -52,6 +53,8 @@ public:
     bool    isDead();
     void updateSurface(sf::Time dt);
     Animation getCurrentAnimation();
+    void setCurrentAnimation(Animation animType);
+    bullet_t * getLastBullet();
 
     sf::Vector2f getCoordinates() override;
 
