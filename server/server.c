@@ -15,10 +15,8 @@
 #define BORDER_MAX_SIZE_X 1920
 #define UPDATE_INTERVAL 6 // Интервал обновления
 #define MAX_BOSS_SPEED 3.0 // Максимальная скорость босса
-#include <stdlib.h>
 #include <sys/time.h>
 #include <math.h>
-#include <stdlib.h>
 #include <time.h>
 #include <sys/wait.h>
 #define BULLET_SPEED 4.0
@@ -64,8 +62,8 @@ void move_boss(entity_t* boss) {
         if (boss->coordinates.y > BORDER_MAX_SIZE_Y) boss->coordinates.y = BORDER_MAX_SIZE_Y;
     }
 }
-void send_server_data(int sockfd,game_data_t game_data, struct sockaddr_in client_addr,int  number){
-    if (sendto(sockfd, &game_data, sizeof(game_data), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) ==
+void send_server_data(int sockfd, send_data_t send_data, struct sockaddr_in client_addr){
+    if (sendto(sockfd, &send_data, sizeof(send_data), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) ==
         -1) {
         perror("Sendto failed");
         //printf("%d", errno);
@@ -75,7 +73,7 @@ void send_server_data(int sockfd,game_data_t game_data, struct sockaddr_in clien
     do{
         // Send number to server
         received_number = - 1;
-        if (sendto(sockfd, &game_data, sizeof(game_data), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) ==
+        if (sendto(sockfd, &send_data, sizeof(send_data), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) ==
             -1) {
             perror("Sendto failed player 1");
             printf("%d", errno);
@@ -333,7 +331,22 @@ void recieve_client_data(int sockfd,game_data_t* game_data){
         printf("%f %f", clientdata.player.coordinates.x, clientdata.player.coordinates.y);
     }
 }
-
+send_data_t make_send_data(game_data_t game_data, int number, bullet_t new_bullets [MAX_BULLETS]){
+    send_data_t data_to_send = {0};
+    data_to_send.boss = game_data.boss;
+    if(number == 1)
+        data_to_send.player= game_data.player2;
+    else
+        data_to_send.player= game_data.player1;
+    for(int i = 0; i < MAX_BULLETS; i++){
+        bullet_t bullet = new_bullets[i];
+        if((bullet.owner != '0' + number) && (bullet.owner != 0)) {
+            push_bullet(new_bullets, bullet);
+            data_to_send.bullets_count++;
+        }
+    }
+    return data_to_send;
+}
 
 
 int main() {
@@ -361,8 +374,8 @@ int main() {
         boss_shoot_player(&gamedata, new_bullets);
         //int pid = fork();
         //if(pid==0)
-        send_server_data(sockfd,gamedata,client_addr_1,1);
-        send_server_data(sockfd,gamedata,client_addr_2,2);
+        send_server_data(sockfd, make_send_data(gamedata, 1, new_bullets),client_addr_1);
+        send_server_data(sockfd,make_send_data(gamedata, 2, new_bullets),client_addr_2);
         continue;
         printf(" %f , %f \n", gamedata.player2.coordinates.x, gamedata.player2.coordinates.y);
 
