@@ -19,7 +19,7 @@
 #include <math.h>
 #include <time.h>
 #include <sys/wait.h>
-#define BULLET_SPEED 4.0
+#define BULLET_SPEED 6.0
 
 void func(int signum)
 {
@@ -63,14 +63,12 @@ void move_boss(entity_t* boss) {
     }
 }
 void send_server_data(int sockfd, send_data_t send_data, struct sockaddr_in client_addr){
-    if(send_data.bullets_count == 0) {
         if (sendto(sockfd, &send_data, sizeof(send_data), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) ==
             -1) {
             perror("Sendto failed");
             //printf("%d", errno);
         }
         return;
-    }
     printf("%Bullets : d", send_data.bullets_count);
     struct sockaddr_in client_addr_new;
     socklen_t size = sizeof(client_addr_new);
@@ -319,34 +317,39 @@ bullet_t shoot_bullet(game_data_t* gamedata, entity_t* shooter, entity_t* target
 
 void boss_shoot_player(game_data_t* gamedata, bullet_t* new_bullets) {
     bullet_t bullet = {0};
+    static long last_update_time_ms = 0;
+    // Получение текущего времени в миллисекундах
+    long current_time_ms = get_current_time_ms();
+    if(current_time_ms - last_update_time_ms < 10000)
+        return;
+    last_update_time_ms = current_time_ms;
     if(gamedata->boss.hp < 0)
         return;
     if (gamedata->player1.hp > 0) {
-        shoot_bullet(gamedata, &gamedata->boss, &gamedata->player1);
+        bullet = shoot_bullet(gamedata, &gamedata->boss, &gamedata->player1);
         push_bullet(gamedata->bullets, bullet);
         push_bullet(new_bullets, bullet);
+        printf("Bam\n");
     }
     if (gamedata->player2.hp > 0) {
-        shoot_bullet(gamedata, &gamedata->boss, &gamedata->player2);
+        bullet = shoot_bullet(gamedata, &gamedata->boss, &gamedata->player2);
         push_bullet(gamedata->bullets, bullet);
         push_bullet(new_bullets, bullet);
     }
 }
 
-char recieve_client_data(int sockfd,game_data_t* game_data, char number){
+char recieve_client_data(int sockfd,game_data_t* game_data, struct sockaddr_in* client_addr, socklen_t* client_addr_len){
     client_data_t clientdata;
     size_t size = 0;
-    struct sockaddr_in client_addr;
-    socklen_t client_addr_len = sizeof(client_addr);
-    size = recvfrom(sockfd, &clientdata, sizeof(clientdata), 0, (struct sockaddr *)&client_addr, &client_addr_len);
+    size = recvfrom(sockfd, &clientdata, sizeof(clientdata), 0, (struct sockaddr *)client_addr, client_addr_len);
     if (size == -1) {
         if( errno != EWOULDBLOCK) {
             perror("Receive error");
         }
-    }else if(size >0 && (clientdata.player.type != number || number == 0)) {
+    }else if(size >0) {
         int success_signal = 0;
-        if (sendto(sockfd, &success_signal, sizeof(success_signal), 0, (struct sockaddr *) &client_addr,
-                   client_addr_len) == -1) {
+        if (sendto(sockfd, &success_signal, sizeof(success_signal), 0, (struct sockaddr *) client_addr,
+                   *client_addr_len) == -1) {
             perror("Sendto failed check");
         }
         procces_client_data(game_data, clientdata);
@@ -354,19 +357,15 @@ char recieve_client_data(int sockfd,game_data_t* game_data, char number){
     }
     return clientdata.player.type;
 }
-send_data_t make_send_data(game_data_t game_data, int number, bullet_t new_bullets [MAX_BULLETS]){
+send_data_t make_send_data(game_data_t game_data, int number){
     send_data_t data_to_send = {0};
     data_to_send.boss = game_data.boss;
-    if(number == 1)
+    if(number == '1')
         data_to_send.player= game_data.player2;
     else
         data_to_send.player= game_data.player1;
     for(int i = 0; i < MAX_BULLETS; i++){
-        bullet_t bullet = new_bullets[i];
-        if((bullet.owner != '0' + number) && (bullet.owner != 0)) {
-            push_bullet(new_bullets, bullet);
-            data_to_send.bullets_count++;
-        }
+        data_to_send.new_bullets[i] = game_data.bullets[i];
     }
     return data_to_send;
 }
@@ -375,7 +374,8 @@ send_data_t make_send_data(game_data_t game_data, int number, bullet_t new_bulle
 int main() {
     int sockfd;
     struct sockaddr_in server_addr, client_addr, client_addr_1, client_addr_2;
-    char answer1, answer2;
+    socklen_t client_addr_len = sizeof(client_addr);
+    char type;
     game_data_t gamedata;
     bullet_t  new_bullets[MAX_BULLETS] = {0};
     sockfd = init_server_socket();
@@ -389,21 +389,14 @@ int main() {
     sleep(2);
     while(1) {
         // Receive number from client
-        answer1 = recieve_client_data(sockfd, &gamedata, 0);
-        usleep(10000);
-        do {
-            answer2 = recieve_client_data(sockfd, &gamedata,  answer1);
-            printf("%c, %c \n", answer1 , answer2);
-        }while(answer1 == answer2);
+        type = recieve_client_data(sockfd, &gamedata, &client_addr, &client_addr_len);
+
         printf("New Iteration\n");
         process_bullets(&gamedata);
         move_boss(&gamedata.boss);
         boss_shoot_player(&gamedata, new_bullets);
-        //int pid = fork();
-        //if(pid==0)
-        send_server_data(sockfd, make_send_data(gamedata, 1, new_bullets),client_addr_1);
-        send_server_data(sockfd,make_send_data(gamedata, 2, new_bullets),client_addr_2);
-        continue;
+        usleep(10000);
+        send_server_data(sockfd, make_send_data(gamedata, type),client_addr);
 
 
     }
