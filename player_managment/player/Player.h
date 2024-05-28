@@ -49,8 +49,13 @@ public:
     void    takeBullets(int bullets);
     bool    isDead();
 
+    sf::Vector2f getCoordinates() override;
+
     sf::FloatRect   getBoundingRect() const override;
     sf::Rect<float> getPlayerSpriteSize() const;
+
+    int getHitPoints() override;
+
 private:
     void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const override;
 
@@ -60,7 +65,6 @@ private:
     void decrementBulletCount();
 
     void updateCurrent(sf::Time dt, CommandQueue &queue) override;
-    void updateHealthDisplay();
 
 public:
     int     getSpeed() const;
@@ -74,7 +78,6 @@ private:
 
     int         hitPoints;
     sf::Time    healingTime;
-    std::vector<Heart*>      healthForDisplay;
 
     int         speed;
     bool        active;

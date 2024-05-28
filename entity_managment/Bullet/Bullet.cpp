@@ -79,3 +79,7 @@ void Bullet::use() {
 int Bullet::getDamage() const {
     return damage;
 }
+
+sf::Vector2f Bullet::getCoordinates() {
+    return coordinates;
+}

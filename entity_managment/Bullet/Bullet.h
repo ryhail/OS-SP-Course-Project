@@ -23,6 +23,8 @@ public:
 
     sf::FloatRect getBoundingRect() const override;
 
+    sf::Vector2f getCoordinates() override;
+
 private:
     void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
     void updateCurrent(sf::Time dt, CommandQueue &queue) override;

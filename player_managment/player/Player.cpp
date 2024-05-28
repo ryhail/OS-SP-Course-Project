@@ -10,13 +10,6 @@ Player::Player(TextureHolder* textures, Textures::ID playerType)
     playerSprite.setOrigin((playerSprite.getLocalBounds().width/2),playerSprite.getLocalBounds().height);
 
     hitPoints = PLAYER_INIT_HITPOINTS;
-    sf::Vector2f pos(10.f, 10.f);
-   for(int i = 0; i < PLAYER_INIT_HITPOINTS; i++) {
-        std::unique_ptr<Heart> health(new Heart(*textures));
-        healthForDisplay.push_back(health.get());
-        addChild(std::move(health));
-    }
-    updateHealthDisplay();
 
     facing.y = 0;
     facing.x = 0;
@@ -36,20 +29,7 @@ Player::Player(TextureHolder* textures, Textures::ID playerType)
     speed = PLAYER_INIT_SPEED;
 }
 
-
-void Player::updateHealthDisplay() {
-    sf::Vector2f pos(getCoordinates().x - getBoundingRect().width / 1.25f, getCoordinates().y - getBoundingRect().height / 0.8f);
-    for(auto & heart : healthForDisplay) {
-        heart->setPosition(pos);
-        pos.x+=15.f;
-    }
-}
-
 void Player::takeDamage(int dmg) {
-    for(int i = 0; i < dmg; i++) {
-        healthForDisplay.back()->broke();
-        healthForDisplay.pop_back();
-    }
     hitPoints-=dmg;
 }
 
@@ -137,7 +117,6 @@ void Player::createBullet(SceneNode &node, TextureHolder &textures) {
 void Player::updateCurrent(sf::Time dt, CommandQueue &queue) {
     if(isDead()) return;
     checkBulletLaunch(queue, dt);
-    updateHealthDisplay();
 }
 
 bool Player::isForRemove() {
@@ -216,4 +195,12 @@ void Player::takeBullets(int bullets) {
 
 bool Player::isDead() {
     return hitPoints <= 0;
+}
+
+sf::Vector2f Player::getCoordinates() {
+    return coordinates;
+}
+
+int Player::getHitPoints() {
+    return hitPoints;
 }

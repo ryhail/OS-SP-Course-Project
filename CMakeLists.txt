@@ -57,5 +57,7 @@ add_executable(game main.cpp
         entity_managment/Data.h
         player_managment/Heart.cpp
         player_managment/Heart.h
+        entity_managment/Boss.cpp
+        entity_managment/Boss.h
 )
 target_link_libraries(game sfml-graphics sfml-audio)

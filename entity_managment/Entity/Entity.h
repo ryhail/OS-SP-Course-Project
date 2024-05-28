@@ -12,7 +12,8 @@ public:
     Entity();
     explicit Entity(sf::Vector2f _coordinates);
 
-    sf::Vector2f getCoordinates() { return coordinates; }
+    virtual int getHitPoints() { return 0; }
+    virtual sf::Vector2f getCoordinates() { return coordinates; }
 
 private:
     void updateCurrent(sf::Vector2f _coordinates) override;

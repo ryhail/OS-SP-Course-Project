@@ -5,16 +5,17 @@
 #include "../levelDesign/Level.h"
 #include "../command/CommandQueue.h"
 #include "../input_handler/InputHandler.h"
+#include "../entity_managment/Boss.h"
 
 class GameState : public State {
 public:
     GameState(StateStack& stack,
     Context context);
     void         buildScene();
-    virtual void draw();
-    virtual bool update(sf::Time dt);
-    virtual bool handleEvent(const sf::Event& event);
-    void drawHeart(Player* player, sf::RenderWindow* window);
+    void draw() override;
+    bool update(sf::Time dt) override;
+    bool handleEvent(const sf::Event& event) override;
+    void drawHeart(Entity *entity, sf::RenderWindow* window);
 
 private:
     void    handleCollisions();
@@ -27,6 +28,7 @@ private:
     Level           mLevel;
     Player*         controlledPlayer;
     Player*         updatedPlayer;
+    Boss*           boss;
     SceneNode       sceneGraph;
     CommandQueue    commandQueue;
     InputHandler    inputHandler;

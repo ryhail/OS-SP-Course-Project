@@ -2,6 +2,7 @@
 #include <set>
 #include "GameState.h"
 #include "../entity_managment/PickUp/Pickup.h"
+#include "../entity_managment/Boss.h"
 
 GameState::GameState(StateStack &stack, State::Context context) : State(stack, context),
     mLevel(context.window)
@@ -26,28 +27,30 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     controlledPlayer->setCurentMapTile(mLevel.getCurrentMapTile());
     updatedPlayer->setPosition(mLevel.getCurrentMapTile()->getSpawnPoint());
     updatedPlayer->setCurentMapTile(mLevel.getCurrentMapTile());
+
+    boss = new Boss(sf::Vector2f(400.f, 200.f), 5, *context.textures);
     buildScene();
     msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
-    msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
+    msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;\
 }
 
 void GameState::draw() {
     mLevel.draw();
     getContext().window->draw(sceneGraph);
-    //drawHeart(controlledPlayer, getContext().window);
-    //drawHeart(updatedPlayer, getContext().window);
+    drawHeart(controlledPlayer, getContext().window);
+    drawHeart(updatedPlayer, getContext().window);
 }
-//void GameState::drawHeart(Player* player, sf::RenderWindow* window) {
-//    sf::Vector2f pos = player->getCoordinates();
-//    pos.x -= player->getBoundingRect().width / 1.25f;
-//    pos.y -= player->getBoundingRect().height / 0.8f;
-//    int hp = player->getHitPoints();
-//    for(int i = 0; i < hp; i++) {
-//        heart.setPosition(pos);
-//        window->draw(heart);
-//        pos.x += 15;
-//    }
-//}
+void GameState::drawHeart(Entity *entity, sf::RenderWindow* window) {
+    sf::Vector2f pos = entity->getCoordinates();
+    pos.x -= entity->getBoundingRect().width / 1.25f;
+    pos.y -= entity->getBoundingRect().height / 0.8f;
+    int hp = entity->getHitPoints();
+    for(int i = 0; i < hp; i++) {
+        heart.setPosition(pos);
+        window->draw(heart);
+        pos.x += 15;
+    }
+}
 
 bool GameState::update(sf::Time dt) {
     serverDelay += dt;
@@ -81,6 +84,8 @@ void GameState::buildScene() {
     sceneGraph.addChild(std::move(activePlayer));
     SceneNode::SceneNodePtr passivePlayer(updatedPlayer);
     sceneGraph.addChild(std::move(passivePlayer));
+    SceneNode::SceneNodePtr updatedBoss(boss);
+    sceneGraph.addChild(std::move(updatedBoss));
 }
 /*
  * обработка столкновений между сущностями
@@ -91,21 +96,20 @@ void GameState::handleCollisions() {
     sceneGraph.checkSceneCollision(sceneGraph, collidePairs);
 
     for (SceneNode::Pair pair : collidePairs) {
-        if(hasSpecifiedCategories(pair, EntityType::ACTIVE_PLAYER, EntityType::BULLET)
-        || hasSpecifiedCategories(pair, EntityType::INACTIVE_PLAYER, EntityType::BULLET)) {
-                auto& player = dynamic_cast<Player&>(*pair.first);
-                auto& bullet = dynamic_cast<Bullet&>(*pair.second);
-                if (bullet.getVictim() & EntityType::PLAYER) {
-                    player.takeDamage(bullet.getDamage());
-                    bullet.use();
-                }
-        }
-        //босса еще нет
+//        if(hasSpecifiedCategories(pair, EntityType::ACTIVE_PLAYER, EntityType::BULLET)
+//        || hasSpecifiedCategories(pair, EntityType::INACTIVE_PLAYER, EntityType::BULLET)) {
+//                auto& player = dynamic_cast<Player&>(*pair.first);
+//                auto& bullet = dynamic_cast<Bullet&>(*pair.second);
+//                if (bullet.getVictim() & EntityType::PLAYER) {
+//                    player.takeDamage(bullet.getDamage());
+//                    bullet.use();
+//                }
+//        }
 //        if(hasSpecifiedCategories(pair, EntityType::BOSS, EntityType::BULLET)) {
-//            //auto& boss = dynamic_cast<Boss&>(*pair.first);
+//            auto& findboss = dynamic_cast<Boss&>(*pair.first);
 //            auto& bullet = dynamic_cast<Bullet&>(*pair.second);
 //            if (bullet.getVictim() & EntityType::BOSS) {
-//                //boss.takeDamage(bullet.getDamage());
+//                findboss.takeDamage(bullet.getDamage());
 //                bullet.use();
 //            }
 //        }
@@ -116,14 +120,14 @@ void GameState::handleCollisions() {
             pickup.use();
         }
         // тестировать, что работает
-        if(hasSpecifiedCategories(pair, EntityType::ACTIVE_PLAYER, EntityType::BULLET)
-           || hasSpecifiedCategories(pair, EntityType::INACTIVE_PLAYER, EntityType::BULLET)) {
-            auto& player = dynamic_cast<Player&>(*pair.first);
-            auto& bullet = dynamic_cast<Bullet&>(*pair.second);
-            if (bullet.getVictim() & EntityType::BOSS) {
-                player.takeDamage(bullet.getDamage());
-                bullet.use();
-            }
-        }
+//        if(hasSpecifiedCategories(pair, EntityType::ACTIVE_PLAYER, EntityType::BULLET)
+//           || hasSpecifiedCategories(pair, EntityType::INACTIVE_PLAYER, EntityType::BULLET)) {
+//            auto& player = dynamic_cast<Player&>(*pair.first);
+//            auto& bullet = dynamic_cast<Bullet&>(*pair.second);
+//            if (bullet.getVictim() & EntityType::BOSS) {
+//                player.takeDamage(bullet.getDamage());
+//                bullet.use();
+//            }
+//        }
     }
 }
