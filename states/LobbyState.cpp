@@ -107,8 +107,8 @@ bool LobbyState::update(sf::Time dt) {
             }
         }
         std::cout << "Send" << available << std::endl;
-        //sendto(sockfd, &available, sizeof(available), 0, (const sockaddr *) (&server_addr), sizeof(server_addr));
-        //recv(sockfd, &available, sizeof(available), 0);
+        sendto(sockfd, &available, sizeof(available), 0, (const sockaddr *) (&server_addr), sizeof(server_addr));
+        recv(sockfd, &available, sizeof(available), 0);
         std::cout << "Recieved" <<available << std::endl;
         serverDelay = sf::Time::Zero;
     }
@@ -127,7 +127,7 @@ bool LobbyState::update(sf::Time dt) {
             }
             break;
     }
-    if (available == 'r') {
+    if (available == 's') {
         if(mChoice) {
             getContext().player2->setActive(true);
             getContext().player1->setActive(false);

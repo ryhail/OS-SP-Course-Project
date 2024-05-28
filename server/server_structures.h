@@ -26,7 +26,7 @@ struct game_data {
     entity_t boss;
     entity_t player1;
     entity_t player2;
-    bullet_t bullets[MAX_BULLETS];
+    bullet_t bullets[MAX_BULLETS * 10];
 }typedef  game_data_t;
 
 struct send_data {
