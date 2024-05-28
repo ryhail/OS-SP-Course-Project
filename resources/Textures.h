@@ -14,6 +14,7 @@ namespace Textures {
         Heart,
         Player1,
         Player2,
+        Boss,
         Bullet,
         PlayerUnavailable,
         PickUpIncreaseBullet,

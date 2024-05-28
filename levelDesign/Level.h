@@ -11,7 +11,7 @@
 
 class Level : private sf::NonCopyable{
 public:
-    Level(sf::RenderWindow* window);
+    Level(sf::RenderWindow *window);
     void								update(sf::Time dt);
     void								draw();
     MapTile*                            getCurrentMapTile();
@@ -22,8 +22,6 @@ private:
 private:
     sf::RenderWindow*					mWindow;
     TextureHolder						mTextures;
-    Player*							    mPlayer1;
-    Player*                             mPlayer2;
 };
 
 

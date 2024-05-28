@@ -81,7 +81,7 @@ MapTile::MapTile(sf::RenderWindow *window, char schema[11][21]) : mWindow(window
                     tile.setTexture(mTextures.getResource(Textures::Border));
                     break;
             }
-            tile.setPosition(  j * 64,  i * 64);
+            tile.setPosition(j * 64,  i * 64);
             mTiles.push_back(tile);
         }
     }

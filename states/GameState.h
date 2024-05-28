@@ -15,11 +15,15 @@ public:
     virtual bool update(sf::Time dt);
     virtual bool handleEvent(const sf::Event& event);
     void drawHeart(Player* player, sf::RenderWindow* window);
-
 private:
     void    handleCollisions();
-
+    void animateBoss(sf::Time dt); //todo: убрать
 private:
+    //todo: убрать
+    sf::Sprite      boss;
+    sf::Time        animationBoss;
+    int currentFrame;
+    //
     int             sockfd;
     sockaddr_in     server_adr;
     client_data_t   msgToServer;
