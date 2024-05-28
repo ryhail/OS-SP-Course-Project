@@ -311,12 +311,12 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
 bullet_t shoot_bullet(game_data_t* gamedata, entity_t* shooter, entity_t* target) {
     float dx = target->coordinates.x - shooter->coordinates.x;
     float dy = target->coordinates.y - shooter->coordinates.y;
-
+    float distance = sqrt(dx*dx + dy*dy);
     bullet_t bullet;
     bullet.coordinates.x = shooter->coordinates.x;
     bullet.coordinates.y = shooter->coordinates.y;
-    bullet.vector.x = (dx / (dx+dy)) * BULLET_SPEED;
-    bullet.vector.y = (dy / (dx+dy)) * BULLET_SPEED;
+    bullet.vector.x = (dx / distance) * BULLET_SPEED;
+    bullet.vector.y = (dy / distance) * BULLET_SPEED;
     bullet.owner = shooter->type;
 
     return bullet;
