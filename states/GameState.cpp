@@ -9,7 +9,7 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     server_adr = *context.server_adr;
     serverDelay = sf::Time::Zero;
     recv(sockfd,&seed,sizeof(seed),0);
-    mLevel = new Level(context.window, seed);
+    mLevel = new Level(context.window, 0);
 
     if(context.player1->isActive()) {
         std::cout << "c1" << std::endl;
@@ -38,13 +38,7 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
 void GameState::draw() {
     mLevel->draw();
     getContext().window->draw(sceneGraph);
-    game_data buletTest;
-    for(int i = 0; i < 10; i++) {
-        buletTest.bullets[i].owner = 'p';
-        buletTest.bullets[i].coordinates.x = rand()%1280;
-        buletTest.bullets[i].coordinates.y = rand()%720;
-    }
-    drawBullets(buletTest);
+    drawBullets(msgFromServer);
     //drawHeart(controlledPlayer, getContext().window);
     //drawHeart(updatedPlayer, getContext().window);
 }
@@ -65,14 +59,20 @@ bool GameState::update(sf::Time dt) {
     if(serverDelay.asSeconds() > 0.1f) {
         msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
         msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
-        msgToServer.bullet = {0};
+        msgToServer.player.animation = controlledPlayer->getCurrentAnimation();
+        msgToServer.player.hp = controlledPlayer->getHitPoints();
+        if(controlledPlayer->getLastBullet() != nullptr)
+            msgToServer.bullet = *controlledPlayer->getLastBullet();
+        else
+            msgToServer.bullet = {0};
         send_client_data(msgToServer, sockfd, server_adr);
         serverDelay = sf::Time::Zero;
         receive_game_data(&msgFromServer, sockfd, server_adr);
         std::cout << msgFromServer.player.coordinates.x << ' ' << msgFromServer.player.coordinates.x << std::endl;
         updatedPlayer->setPosition(msgFromServer.player.coordinates.x, msgFromServer.player.coordinates.y);
+        updatedPlayer->setCurrentAnimation(static_cast<Animation>(msgFromServer.player.animation));
     }
-
+    updatedPlayer->animate(updatedPlayer->getCurrentAnimation(), dt);
     while (!commandQueue.isEmpty()) {
         sceneGraph.execCommand(commandQueue.pop(), dt);
     }
@@ -120,15 +120,6 @@ void GameState::handleCollisions() {
                     bullet.use();
                 }
         }
-        //босса еще нет
-//        if(hasSpecifiedCategories(pair, EntityType::BOSS, EntityType::BULLET)) {
-//            //auto& boss = dynamic_cast<Boss&>(*pair.first);
-//            auto& bullet = dynamic_cast<Bullet&>(*pair.second);
-//            if (bullet.getVictim() & EntityType::BOSS) {
-//                //boss.takeDamage(bullet.getDamage());
-//                bullet.use();
-//            }
-//        }
         if(hasSpecifiedCategories(pair, EntityType::PLAYER, EntityType::PICKUP)) {
             auto& player = dynamic_cast<Player&>(*pair.first);
             auto& pickup = dynamic_cast<Pickup&>(*pair.second);
@@ -148,10 +139,10 @@ void GameState::handleCollisions() {
     }
 }
 
-void GameState::drawBullets(game_data_t& game_data) {
-    for(int i = 0; i < MAX_BULLETS*10; i++) {
-        if(game_data.bullets[i].owner != 0) {
-            Bullet bull = Bullet(game_data.bullets[i], getContext().textures);
+void GameState::drawBullets(send_data &game_data) {
+    for(int i = 0; i < MAX_BULLETS; i++) {
+        if(game_data.new_bullets[i].owner != 0) {
+            Bullet bull = Bullet(game_data.new_bullets[i], getContext().textures);
             bull.drawSprite(getContext().window);
         }
     }

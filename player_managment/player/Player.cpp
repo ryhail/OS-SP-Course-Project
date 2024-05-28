@@ -117,7 +117,7 @@ void Player::createBullet(SceneNode &node, TextureHolder &textures) {
                                       'p'};
 }
 
-}
+
 bullet_t * Player::getLastBullet() {
     bullet_t* buf = lastBulletCreated;
     lastBulletCreated = nullptr;
