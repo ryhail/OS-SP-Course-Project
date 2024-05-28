@@ -48,7 +48,7 @@ void initialize_server(int port,const char* server_ip, struct sockaddr_in* serve
     }
 }
 
-void send_client_data(client_data_t data, int sockfd, struct sockaddr_in server_addr){
+void    send_client_data(client_data_t data, int sockfd, struct sockaddr_in server_addr){
     int received_number;
     do{
         // Send number to server

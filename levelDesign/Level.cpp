@@ -1,3 +1,4 @@
+#include <sys/socket.h>
 #include "Level.h"
 
 
@@ -13,6 +14,8 @@ Level::Level(sf::RenderWindow *window) :
             schema[i][j] = '1';
         }
     }
+    int seed;
+    recv(sockfd,&seed,sizeof(seed),0);
     //srand(seed);
     for(int i = 0; i < 40; i++) {
         schema[rand() % 9 + 1][rand() % 18 + 1] = (char)('1' + rand() % 4);
