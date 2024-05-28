@@ -59,6 +59,7 @@ void initialize_server(int port,const char* server_ip, struct sockaddr_in* serve
 
 void    send_client_data(client_data_t data, int sockfd, struct sockaddr_in server_addr){
     int received_number;
+    make_non_block(sockfd);
     do{
         // Send number to server
         received_number = - 1;
@@ -73,7 +74,9 @@ void    send_client_data(client_data_t data, int sockfd, struct sockaddr_in serv
         } else {
             printf("Received response from server: %d\n", received_number);
         }
+        usleep(1000);
     }while(received_number != 0 );
+    make_block(sockfd);
     printf("Number sent to server.\n");
 
     // Close socket
