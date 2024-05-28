@@ -69,6 +69,10 @@ void send_server_data(int sockfd, send_data_t send_data, struct sockaddr_in clie
 //        //printf("%d", errno);
 //    }
 //    return;
+    struct sockaddr_in client_addr_new;
+    socklen_t size = sizeof(client_addr_new);
+    //if(fcntl(sockfd,F_SETFL, O_NONBLOCK) == -1)
+    //    perror("NON_BLOCK error");
     int received_number;
     do{
         // Send number to server
@@ -77,13 +81,18 @@ void send_server_data(int sockfd, send_data_t send_data, struct sockaddr_in clie
             -1) {
             perror("Sendto failed player");
         }
-        if (recv(sockfd, &received_number, sizeof(received_number),0) == -1) {
+        if (recvfrom(sockfd, &received_number, sizeof(received_number),0, (struct sockaddr *) &client_addr_new, &size) == -1) {
             if(errno != EWOULDBLOCK) {
                 perror("Check error");
             }
-        } else {
         }
+
+        if(client_addr.sin_port != client_addr_new.sin_port || client_addr_new.sin_addr.s_addr != client_addr.sin_addr.s_addr)
+            received_number = -1;
     }while(received_number != 0 );
+    //if(fcntl(sockfd,F_SETFL, 0) == -1)
+    //    perror("NON_BLOCK error");
+    usleep(1000);
     printf("Send");
 }
 
@@ -321,7 +330,7 @@ void boss_shoot_player(game_data_t* gamedata, bullet_t* new_bullets) {
     }
 }
 
-char recieve_client_data(int sockfd,game_data_t* game_data){
+char recieve_client_data(int sockfd,game_data_t* game_data, char number){
     client_data_t clientdata;
     size_t size = 0;
     struct sockaddr_in client_addr;
@@ -331,7 +340,7 @@ char recieve_client_data(int sockfd,game_data_t* game_data){
         if( errno != EWOULDBLOCK) {
             perror("Receive error");
         }
-    }else if(size >0) {
+    }else if(size >0 && (clientdata.player.type != number || number == 0)) {
         int success_signal = 0;
         if (sendto(sockfd, &success_signal, sizeof(success_signal), 0, (struct sockaddr *) &client_addr,
                    client_addr_len) == -1) {
@@ -377,12 +386,13 @@ int main() {
     sleep(2);
     while(1) {
         // Receive number from client
-        answer1 = recieve_client_data(sockfd, &gamedata);
+        answer1 = recieve_client_data(sockfd, &gamedata, 0);
         usleep(10000);
         do {
-            answer2 = recieve_client_data(sockfd, &gamedata);
+            answer2 = recieve_client_data(sockfd, &gamedata,  answer1);
             printf("%c, %c \n", answer1 , answer2);
         }while(answer1 == answer2);
+        printf("New Iteration\n");
         process_bullets(&gamedata);
         move_boss(&gamedata.boss);
         boss_shoot_player(&gamedata, new_bullets);
