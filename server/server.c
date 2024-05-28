@@ -15,7 +15,7 @@
 #define BORDER_MAX_SIZE_X (1280 - BORDER_MIN_SIZE_X)
 #define UPDATE_INTERVAL 6 // Интервал обновления
 #define MIN_BOSS_SPEED 2.0
-#define MAX_BOSS_SPEED (10.0 - MIN_BOSS_SPEED) // Максимальная скорость босса
+#define MAX_BOSS_SPEED (6.0 - MIN_BOSS_SPEED) // Максимальная скорость босса
 #include <sys/time.h>
 #include <math.h>
 #include <time.h>
