@@ -63,12 +63,15 @@ void move_boss(entity_t* boss) {
     }
 }
 void send_server_data(int sockfd, send_data_t send_data, struct sockaddr_in client_addr){
-//    if (sendto(sockfd, &send_data, sizeof(send_data), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) ==
-//        -1) {
-//        perror("Sendto failed");
-//        //printf("%d", errno);
-//    }
-//    return;
+    if(send_data.bullets_count == 0) {
+        if (sendto(sockfd, &send_data, sizeof(send_data), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) ==
+            -1) {
+            perror("Sendto failed");
+            //printf("%d", errno);
+        }
+        return;
+    }
+    printf("%d", send_data.bullets_count);
     struct sockaddr_in client_addr_new;
     socklen_t size = sizeof(client_addr_new);
     //if(fcntl(sockfd,F_SETFL, O_NONBLOCK) == -1)
