@@ -10,8 +10,7 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     serverDelay = sf::Time::Zero;
     recv(sockfd,&seed,sizeof(seed),0);
     mLevel = new Level(context.window, seed);
-    // todo: убрать нахуй
-    getContext().textures->load(Textures::Boss, "resources/Textures/boss.png");
+
     if(context.player1->isActive()) {
         std::cout << "c1" << std::endl;
         controlledPlayer = context.player1;
@@ -32,13 +31,12 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     bossEntity= new Boss(sf::Vector2f(400.f, 200.f), 5, *context.textures);
     buildScene();
     msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
-    msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;\
+    msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
 }
 
 void GameState::draw() {
     mLevel->draw();
     getContext().window->draw(sceneGraph);
-    getContext().window->draw(boss);
     //drawHeart(controlledPlayer, getContext().window);
     //drawHeart(updatedPlayer, getContext().window);
 }
@@ -56,12 +54,11 @@ void GameState::drawHeart(Entity *entity, sf::RenderWindow* window) {
 
 bool GameState::update(sf::Time dt) {
     serverDelay += dt;
-    animateBoss(dt);
     if(serverDelay.asSeconds() > 0.1f) {
         msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
         msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
-        send_client_data(msgToServer, sockfd, server_adr);
         msgToServer.bullet = {0};
+        send_client_data(msgToServer, sockfd, server_adr);
         serverDelay = sf::Time::Zero;
         receive_game_data(&msgFromServer, sockfd, server_adr);
     }
@@ -143,14 +140,3 @@ void GameState::handleCollisions() {
     }
 }
 
-void GameState::animateBoss(sf::Time dt) {
-    animationBoss+=dt;
-    if(animationBoss.asSeconds() > 0.15) {
-        if(currentFrame == 3)
-            currentFrame = 0;
-        else
-            currentFrame++;
-        animationBoss=sf::Time::Zero;
-    }
-    boss.setTextureRect(sf::IntRect(currentFrame*69, 0, 69,94));
-}

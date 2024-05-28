@@ -12,20 +12,15 @@ public:
     GameState(StateStack& stack,
     Context context);
     void         buildScene();
-    void draw() override;
-    bool update(sf::Time dt) override;
-    bool handleEvent(const sf::Event& event) override;
+    void         draw() override;
+    bool         update(sf::Time dt) override;
+    bool         handleEvent(const sf::Event& event) override;
     void drawHeart(Entity *entity, sf::RenderWindow* window);
 
 private:
     void    handleCollisions();
     void animateBoss(sf::Time dt); //todo: убрать
 private:
-    //todo: убрать
-    sf::Sprite      boss;
-    sf::Time        animationBoss;
-    int currentFrame;
-    //
     int             sockfd;
     sockaddr_in     server_adr;
     int seed;

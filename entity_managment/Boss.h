@@ -27,14 +27,18 @@ public:
     int getHitPoints() override;
 
 
+
 private:
     void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const override;
     void updateCurrent(sf::Time dt, CommandQueue &queue) override;
     void updateHealthDisplay();
+    void animate(sf::Time dt);
 
 private:
     sf::Vector2f    coordinates;
     sf::Sprite      sprite;
+    sf::Time        animationDeltaTime;
+    int             currentFrame;
     int             hitPoints;
     std::vector<Heart*>      healthForDisplay;
 };
