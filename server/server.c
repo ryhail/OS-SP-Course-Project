@@ -57,10 +57,21 @@ void move_boss(entity_t* boss) {
         boss->coordinates.y += speed * sin(angle);
         last_update_time_ms = current_time_ms;
         // Ограничения для движения босса по границам поля
-        if (boss->coordinates.x < BORDER_MIN_SIZE_X) boss->coordinates.x = BORDER_MIN_SIZE_X;
-        if (boss->coordinates.x > BORDER_MAX_SIZE_X) boss->coordinates.x = BORDER_MAX_SIZE_X;
-        if (boss->coordinates.y < BORDER_MIN_SIZE_Y) boss->coordinates.y = BORDER_MIN_SIZE_Y;
-        if (boss->coordinates.y > BORDER_MAX_SIZE_Y) boss->coordinates.y = BORDER_MAX_SIZE_Y;
+        if (boss->coordinates.x < BORDER_MIN_SIZE_X){
+            angle =
+            boss->coordinates.x = BORDER_MIN_SIZE_X;
+        }
+        if (boss->coordinates.x > BORDER_MAX_SIZE_X){
+            boss->coordinates.x = BORDER_MAX_SIZE_X;
+        }
+        if (boss->coordinates.y < BORDER_MIN_SIZE_Y){
+            angle = -angle;
+            boss->coordinates.y = BORDER_MIN_SIZE_Y;
+        }
+        if (boss->coordinates.y > BORDER_MAX_SIZE_Y){
+            angle = -angle;
+            boss->coordinates.y = BORDER_MAX_SIZE_Y;
+        }
     }
 }
 void send_server_data(int sockfd, send_data_t send_data, struct sockaddr_in client_addr){
@@ -186,7 +197,7 @@ void procces_client_data (game_data_t* gamedata, client_data_t clientdata) {
         float x = bullet.vector.x;
         float y = bullet.vector.y;
         bullet.vector.x = BULLET_SPEED *  x / (x+y);
-        bullet.vector.x = BULLET_SPEED *  y / (x+y);
+        bullet.vector.y = BULLET_SPEED *  y / (x+y);
         push_bullet(gamedata->bullets, clientdata.bullet);
     }
 }
