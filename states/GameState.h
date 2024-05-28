@@ -22,7 +22,7 @@ private:
     void animateBoss(sf::Time dt); //todo: убрать
 private:
     //todo: убрать
-    sf::Sprite      bossSprite;
+    sf::Sprite      boss;
     sf::Time        animationBoss;
     int currentFrame;
     //
@@ -30,11 +30,11 @@ private:
     sockaddr_in     server_adr;
     int seed;
     client_data_t   msgToServer;
-    game_data_t     msgFromServer;
-    Level           mLevel;
+    send_data       msgFromServer;
+    Level*          mLevel;
     Player*         controlledPlayer;
     Player*         updatedPlayer;
-    Boss*           boss;
+    Boss*           bossEntity;
     SceneNode       sceneGraph;
     CommandQueue    commandQueue;
     InputHandler    inputHandler;

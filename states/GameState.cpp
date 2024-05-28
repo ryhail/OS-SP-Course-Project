@@ -29,7 +29,7 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     updatedPlayer->setPosition(mLevel->getCurrentMapTile()->getSpawnPoint());
     updatedPlayer->setCurentMapTile(mLevel->getCurrentMapTile());
 
-    boss = new Boss(sf::Vector2f(400.f, 200.f), 5, *context.textures);
+    bossEntity= new Boss(sf::Vector2f(400.f, 200.f), 5, *context.textures);
     buildScene();
     msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
     msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;\
@@ -38,6 +38,7 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
 void GameState::draw() {
     mLevel->draw();
     getContext().window->draw(sceneGraph);
+    getContext().window->draw(boss);
     //drawHeart(controlledPlayer, getContext().window);
     //drawHeart(updatedPlayer, getContext().window);
 }
@@ -56,14 +57,17 @@ void GameState::drawHeart(Entity *entity, sf::RenderWindow* window) {
 bool GameState::update(sf::Time dt) {
     serverDelay += dt;
     animateBoss(dt);
-//    if(serverDelay.asSeconds() > 0.001f) {
-//        msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
-//        msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
-//        send_client_data(msgToServer, sockfd, server_adr);
-//        serverDelay = sf::Time::Zero;
-//    }
-//    receive_game_data(&msgFromServer, sockfd, server_adr);
-   // updatedPlayer->setPosition(msgFromServer.player2.coordinates.x, msgFromServer.player2.coordinates.y);
+    if(serverDelay.asSeconds() > 0.1f) {
+        msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
+        msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
+        send_client_data(msgToServer, sockfd, server_adr);
+        msgToServer.bullet = {0};
+        serverDelay = sf::Time::Zero;
+        receive_game_data(&msgFromServer, sockfd, server_adr);
+    }
+
+    std::cout << msgFromServer.player.coordinates.x << ' ' << msgFromServer.player.coordinates.x << std::endl;
+    updatedPlayer->setPosition(msgFromServer.player.coordinates.x, msgFromServer.player.coordinates.y);
     while (!commandQueue.isEmpty()) {
         sceneGraph.execCommand(commandQueue.pop(), dt);
     }
@@ -90,7 +94,7 @@ void GameState::buildScene() {
     sceneGraph.addChild(std::move(activePlayer));
     SceneNode::SceneNodePtr passivePlayer(updatedPlayer);
     sceneGraph.addChild(std::move(passivePlayer));
-    SceneNode::SceneNodePtr updatedBoss(boss);
+    SceneNode::SceneNodePtr updatedBoss(bossEntity);
     sceneGraph.addChild(std::move(updatedBoss));
 }
 /*

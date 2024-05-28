@@ -6,7 +6,7 @@
 #define SFML_CLIENT_H
 #include "server_structures.h"
 #define PORT 12346
-#define SERVER_PORT 12345
+#define SERVER_PORT 52345
 int initialize_client(int port);
 void initialize_server(int port,const char* server_ip, struct sockaddr_in* server_addr);
 void send_client_data(client_data_t data, int sockfd, struct sockaddr_in server_addr);
