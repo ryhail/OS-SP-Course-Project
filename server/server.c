@@ -58,10 +58,15 @@ void move_boss(entity_t* boss) {
         last_update_time_ms = current_time_ms;
         // Ограничения для движения босса по границам поля
         if (boss->coordinates.x < BORDER_MIN_SIZE_X){
-            angle =
+            double x =  - cos(angle);
+            double y = sin(angle);
+            angle = atan2(y, x);
             boss->coordinates.x = BORDER_MIN_SIZE_X;
         }
         if (boss->coordinates.x > BORDER_MAX_SIZE_X){
+            double x =  - cos(angle);
+            double y = sin(angle);
+            angle = atan2(y, x);
             boss->coordinates.x = BORDER_MAX_SIZE_X;
         }
         if (boss->coordinates.y < BORDER_MIN_SIZE_Y){
