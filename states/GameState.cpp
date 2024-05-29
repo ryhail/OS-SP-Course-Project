@@ -9,7 +9,7 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     server_adr = *context.server_adr;
     serverDelay = sf::Time::Zero;
     recv(sockfd,&seed,sizeof(seed),0);
-    mLevel = new Level(context.window, 0);
+    mLevel = new Level(context.window, seed);
 
     if(context.player1->isActive()) {
         std::cout << "c1" << std::endl;
@@ -39,6 +39,8 @@ void GameState::draw() {
     mLevel->draw();
     getContext().window->draw(sceneGraph);
     drawBullets(msgFromServer);
+    controlledPlayer->drawHearts(getContext().window);
+    updatedPlayer->drawHearts(getContext().window);
 
     //drawHeart(controlledPlayer, getContext().window);
     //drawHeart(updatedPlayer, getContext().window);
@@ -68,8 +70,9 @@ bool GameState::update(sf::Time dt) {
         send_client_data(msgToServer, sockfd, server_adr);
         serverDelay = sf::Time::Zero;
         receive_game_data(&msgFromServer, sockfd, server_adr);
+        controlledPlayer->takeDamage(msgFromServer.hp - msgFromServer.hp);
         std::cout << msgFromServer.player.coordinates.x << ' ' << msgFromServer.player.coordinates.x << std::endl;
-        updatedPlayer->setPosition(msgFromServer.player.coordinates.x, msgFromServer.player.coordinates.y);
+        updatedPlayer->setPosition(sf::Vector2f(msgFromServer.player.coordinates.x, msgFromServer.player.coordinates.y));
         updatedPlayer->setCurrentAnimation(static_cast<Animation>(msgFromServer.player.animation));
         bossEntity->move(sf::Vector2f (msgFromServer.boss.coordinates.x, msgFromServer.boss.coordinates.y));
     }
@@ -107,11 +110,11 @@ void GameState::buildScene() {
  * обработка столкновений между сущностями
  * (логика выстрела, подбирашек)
  */
-//void GameState::handleCollisions() {
-//    std::set<SceneNode::Pair> collidePairs;
-//    sceneGraph.checkSceneCollision(sceneGraph, collidePairs);
-//
-//    for (SceneNode::Pair pair : collidePairs) {
+void GameState::handleCollisions() {
+    std::set<SceneNode::Pair> collidePairs;
+    sceneGraph.checkSceneCollision(sceneGraph, collidePairs);
+
+    for (SceneNode::Pair pair : collidePairs) {
 //        if(hasSpecifiedCategories(pair, EntityType::ACTIVE_PLAYER, EntityType::BULLET)
 //        || hasSpecifiedCategories(pair, EntityType::INACTIVE_PLAYER, EntityType::BULLET)) {
 //                auto& player = dynamic_cast<Player&>(*pair.first);
@@ -121,12 +124,12 @@ void GameState::buildScene() {
 //                    bullet.use();
 //                }
 //        }
-//        if(hasSpecifiedCategories(pair, EntityType::PLAYER, EntityType::PICKUP)) {
-//            auto& player = dynamic_cast<Player&>(*pair.first);
-//            auto& pickup = dynamic_cast<Pickup&>(*pair.second);
-//            pickup.pickup(player);
-//            pickup.use();
-//        }
+        if(hasSpecifiedCategories(pair, EntityType::PLAYER, EntityType::PICKUP)) {
+            auto& player = dynamic_cast<Player&>(*pair.first);
+            auto& pickup = dynamic_cast<Pickup&>(*pair.second);
+            pickup.pickup(player);
+            pickup.use();
+        }
 //        // тестировать, что работает
 //        if(hasSpecifiedCategories(pair, EntityType::ACTIVE_PLAYER, EntityType::BULLET)
 //           || hasSpecifiedCategories(pair, EntityType::INACTIVE_PLAYER, EntityType::BULLET)) {
@@ -137,8 +140,8 @@ void GameState::buildScene() {
 //                bullet.use();
 //            }
 //        }
-//    }
-//}
+    }
+}
 
 void GameState::drawBullets(send_data &game_data) {
     for(int i = 0; i < MAX_BULLETS; i++) {

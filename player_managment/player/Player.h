@@ -27,6 +27,7 @@ enum Animation {
 class Player : public Entity{
     TextureHolder*  mTextures;
     sf::Sprite      playerSprite;
+    sf::Sprite      heart;
     MapTile*        currentMapTile;
     sf::Time        animationDeltaTime;
     sf::Time        surfaceDeltaTime;
@@ -51,6 +52,7 @@ public:
     void    setPosition(sf::Vector2f pos);
     void    takeBullets(int bullets);
     bool    isDead();
+    void drawHearts(sf::RenderWindow *window);
     void updateSurface(sf::Time dt);
     Animation getCurrentAnimation();
     void setCurrentAnimation(Animation animType);
@@ -65,7 +67,6 @@ public:
 
 private:
     void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const override;
-
     void checkBulletLaunch(CommandQueue& commandQueue, sf::Time dt);
     bool firingAvailable() const;
     void createBullet(SceneNode &node, TextureHolder &textures);

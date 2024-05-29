@@ -5,6 +5,7 @@
 Player::Player(TextureHolder* textures, Textures::ID playerType)
         : Entity(), mTextures(textures){
     playerSprite.setTexture(textures->getResource(playerType));
+    heart.setTexture(textures->getResource(Textures::Heart));
     playerSprite.setTextureRect(sf::IntRect (0,0,43,64));
     playerSprite.setPosition(coordinates.x, coordinates.y);
     playerSprite.setOrigin((playerSprite.getLocalBounds().width/2),playerSprite.getLocalBounds().height);
@@ -87,6 +88,7 @@ void Player::move(sf::Vector2i direction, sf::Time dt) {
 void Player::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(playerSprite, states);
 }
+
 
 void Player::fire() {
     isFiring = true;
@@ -251,5 +253,18 @@ Animation Player::getCurrentAnimation() {
 
 void Player::setCurrentAnimation(Animation animType) {
     currentAnimation = animType;
+}
+
+void Player::drawHearts(sf::RenderWindow *window) {
+    if(hitPoints == 0) return;
+    sf::Vector2f pos;
+    pos = playerSprite.getPosition();
+    pos.y -= playerSprite.getLocalBounds().height * 1.5f;
+    pos.x -= playerSprite.getLocalBounds().width;
+    for(int i = 0; i < hitPoints; i++) {
+        pos.x += 15;
+        heart.setPosition(pos);
+        window->draw(heart);
+    }
 }
 
