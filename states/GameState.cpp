@@ -70,7 +70,7 @@ bool GameState::update(sf::Time dt) {
         send_client_data(msgToServer, sockfd, server_adr);
         serverDelay = sf::Time::Zero;
         receive_game_data(&msgFromServer, sockfd, server_adr);
-        if(msgFromServer.hp < controlledPlayer->getHitPoints())
+        //if(msgFromServer.hp < controlledPlayer->getHitPoints())
             controlledPlayer->takeDamage(controlledPlayer->getHitPoints() - msgFromServer.hp);
         std::cout <<(int) msgFromServer.hp << std::endl;
         updatedPlayer->setPosition(sf::Vector2f(msgFromServer.player.coordinates.x, msgFromServer.player.coordinates.y));

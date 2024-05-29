@@ -118,7 +118,7 @@ game_data_t initialise(void) {
     //signal(SIGCHLD, func);
     game_data_t gamedata = {0};
     gamedata.boss.type = 'b';
-    gamedata.boss.hp = 20;
+    gamedata.boss.hp = 5;
     gamedata.boss.coordinates = (struct  coordinate){656,656};
     gamedata.player1.type = '1';
     gamedata.player1.hp = 5;
@@ -201,9 +201,15 @@ void push_bullet(bullet_t* bullets,bullet_t bullet) {
 void procces_client_data (game_data_t* gamedata, client_data_t clientdata) {
     if (clientdata.player.type == '1'){
         gamedata->player1.coordinates = clientdata.player.coordinates;
+        gamedata->player1.animation = clientdata.player.animation;
+        if(clientdata.player.hp < gamedata->player1.hp)
+            gamedata->player1.hp = clientdata.player.hp;
     }
     if (clientdata.player.type == '2') {
         gamedata->player2.coordinates = clientdata.player.coordinates;
+        gamedata->player2.animation = clientdata.player.animation;
+        if(clientdata.player.hp < gamedata->player2.hp)
+            gamedata->player2.hp = clientdata.player.hp;
     }
     printf("client hp : %d", clientdata.player.hp);
     if(!bullet_empty(clientdata.bullet)) {
@@ -281,7 +287,7 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
         }
 
 
-        if (player == '3' ) {
+        if (player == '1' ) {
             signal = 's';
             int seed = time(NULL);
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_1,
@@ -291,14 +297,14 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
                 exit(EXIT_FAILURE);
             }
 
-//            sleep(1);
-//            if (sendto(sockfd, &seed, sizeof(seed), 0, (struct sockaddr *) client_addr_1,
-//                       sizeof(*client_addr_1)) == -1) {
-//                perror("Sendto failed");
-//                close(sockfd);
-//                exit(EXIT_FAILURE);
-//            }
-//            return;
+            sleep(1);
+            if (sendto(sockfd, &seed, sizeof(seed), 0, (struct sockaddr *) client_addr_1,
+                       sizeof(*client_addr_1)) == -1) {
+                perror("Sendto failed");
+                close(sockfd);
+                exit(EXIT_FAILURE);
+            }
+            return;
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_2,
                        sizeof(*client_addr_2)) == -1) {
                 perror("Sendto failed");
