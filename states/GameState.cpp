@@ -72,9 +72,6 @@ bool GameState::update(sf::Time dt) {
         std::cout << msgFromServer.player.coordinates.x << ' ' << msgFromServer.player.coordinates.x << std::endl;
         updatedPlayer->setPosition(msgFromServer.player.coordinates.x, msgFromServer.player.coordinates.y);
     }
-
-    }
-
     std::cout << msgFromServer.player.coordinates.x << ' ' << msgFromServer.player.coordinates.x << std::endl;
     updatedPlayer->setPosition(msgFromServer.player.coordinates.x, msgFromServer.player.coordinates.y);
     boss->setCoordinates(sf::Vector2f (msgFromServer.boss.coordinates.x, msgFromServer.boss.coordinates.y));
