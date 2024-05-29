@@ -29,7 +29,7 @@ void Boss::updateHealthDisplay() {
 }
 
 bool Boss::isForRemove() {
-    return hitPoints <= 0;
+    return hitPoints < 0;
 }
 
 EntityType::Type Boss::getCategory() const {
@@ -50,6 +50,8 @@ void Boss::updateCurrent(sf::Time dt, CommandQueue &queue) {
 }
 
 void Boss::takeDamage(int dmg) {
+    if(hitPoints == 0)
+        return;
     for(int i = 0; i < dmg; i++) {
         healthForDisplay.back()->broke();
         healthForDisplay.pop_back();

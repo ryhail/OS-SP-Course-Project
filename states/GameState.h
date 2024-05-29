@@ -35,6 +35,7 @@ private:
     sf::Time        serverDelay;
     sf::Sprite      heart;
     sf::Sprite      endGameSprite;
+    bool            endGame;
 };
 
 

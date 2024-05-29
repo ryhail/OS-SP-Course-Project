@@ -11,7 +11,7 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     serverDelay = sf::Time::Zero;
     recv(sockfd,&seed,sizeof(seed),0);
     mLevel = new Level(context.window, seed);
-
+    endGame = false;
     if(context.player1->isActive()) {
         std::cout << "c1" << std::endl;
         controlledPlayer = context.player1;
@@ -28,7 +28,7 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     controlledPlayer->setCurentMapTile(mLevel->getCurrentMapTile());
     updatedPlayer->setPosition(mLevel->getCurrentMapTile()->getSpawnPoint());
     updatedPlayer->setCurentMapTile(mLevel->getCurrentMapTile());
-
+    endGameSprite.setPosition(0,0);
     bossEntity= new Boss(sf::Vector2f(400.f, 200.f), 5, *context.textures);
     buildScene();
     msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
@@ -37,24 +37,15 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
 }
 
 void GameState::draw() {
-    mLevel->draw();
-    getContext().window->draw(sceneGraph);
-    drawBullets(msgFromServer);
-    controlledPlayer->drawHearts(getContext().window);
-    updatedPlayer->drawHearts(getContext().window);
-
-    //drawHeart(controlledPlayer, getContext().window);
-    //drawHeart(updatedPlayer, getContext().window);
-}
-void GameState::drawHeart(Entity *entity, sf::RenderWindow* window) {
-    sf::Vector2f pos = entity->getCoordinates();
-    pos.x -= entity->getBoundingRect().width / 1.25f;
-    pos.y -= entity->getBoundingRect().height / 0.8f;
-    int hp = entity->getHitPoints();
-    for(int i = 0; i < hp; i++) {
-        heart.setPosition(pos);
-        window->draw(heart);
-        pos.x += 15;
+    if(endGame) {
+        getContext().window->draw(endGameSprite);
+    }
+    else {
+        mLevel->draw();
+        getContext().window->draw(sceneGraph);
+        drawBullets(msgFromServer);
+        controlledPlayer->drawHearts(getContext().window);
+        updatedPlayer->drawHearts(getContext().window);
     }
 }
 
@@ -94,6 +85,14 @@ bool GameState::update(sf::Time dt) {
     inputHandler.handleRealtimeInput(commandQueue);
     if(commandQueue.isEmpty() && !controlledPlayer->isForRemove())
         controlledPlayer->animate(Idle, dt);
+    if((controlledPlayer->getHitPoints() == 0) && (updatedPlayer->getHitPoints() == 0)) {
+        endGameSprite.setTexture(getContext().textures->getResource(Textures::endGameLose));
+        endGame = true;
+    }
+    if(bossEntity->getHitPoints() == 0) {
+        endGameSprite.setTexture(getContext().textures->getResource(Textures::endGameWin));
+        endGame = true;
+    }
     return true;
 }
 
@@ -102,14 +101,10 @@ bool GameState::handleEvent(const sf::Event &event) {
         if(event.key.code == sf::Keyboard::Escape) {
             requestStackPush(States::InGameMenu);
         }
-    }
-    if((controlledPlayer->getHitPoints() == 0) && (updatedPlayer->getHitPoints() == 0)) {
-        endGameSprite.setTexture(getContext().textures->getResource(Textures::endGameLose));
-        endGameSprite.setPosition(0,0);
-        getContext().window->draw(endGameSprite);
-        sleep(5);
-        requestStackPop();
-        requestStackPush(States::Menu);
+        if(event.key.code == sf::Keyboard::Enter && endGame) {
+            requestStackPop();
+            requestStackPush(States::Menu);
+        }
     }
     return true;
 }
