@@ -449,14 +449,7 @@ int main() {
         process_bullets(&gamedata);
         move_boss(&gamedata.boss);
         boss_shoot_player(&gamedata);
-        if(gamedata.boss.hp <=0||(gamedata.player2.hp <=0 && gamedata.player1.hp <=0)){
-            if(type == '1')
-                player1_finish = 1;
-            if(type == '2')
-                player2_finish = 1;
-            if ((player1_finish || gamedata.player1.hp == -1) && (player2_finish || gamedata.player2.hp == -1))
-                break;
-        }
+
 
         send_server_data(sockfd, make_send_data(gamedata, type),client_addr);
 

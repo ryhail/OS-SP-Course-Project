@@ -4,7 +4,7 @@
 
 #ifndef STRUCTURES_H
 #define STRUCTURES_H
-#define MAX_BULLETS 12
+#define MAX_BULLETS 64
 #include <stdint.h>
 struct  coordinate {
     float x;

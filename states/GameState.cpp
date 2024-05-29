@@ -52,7 +52,7 @@ void GameState::draw() {
 
 bool GameState::update(sf::Time dt) {
     serverDelay += dt;
-    if(serverDelay.asSeconds() >= 0.0f) {
+    if(!endGame) {
         msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
         msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
         msgToServer.player.animation = controlledPlayer->getCurrentAnimation();

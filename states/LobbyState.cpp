@@ -106,10 +106,10 @@ bool LobbyState::update(sf::Time dt) {
                 available = '1';
             }
         }
-        std::cout << "Send" << available << std::endl;
+        std::cout << "Received" << available << std::endl;
         sendto(sockfd, &available, sizeof(available), 0, (const sockaddr *) (&server_addr), sizeof(server_addr));
         recv(sockfd, &available, sizeof(available), 0);
-        std::cout << "Recieved" <<available << std::endl;
+        std::cout << "Send" <<available << std::endl;
         serverDelay = sf::Time::Zero;
     }
     switch(available) {
