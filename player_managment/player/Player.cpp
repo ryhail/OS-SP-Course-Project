@@ -5,6 +5,7 @@
 Player::Player(TextureHolder* textures, Textures::ID playerType)
         : Entity(), mTextures(textures){
     playerSprite.setTexture(textures->getResource(playerType));
+    heart.setTexture(textures->getResource(Textures::Heart));
     playerSprite.setTextureRect(sf::IntRect (0,0,43,64));
     playerSprite.setPosition(coordinates.x, coordinates.y);
     playerSprite.setOrigin((playerSprite.getLocalBounds().width/2),playerSprite.getLocalBounds().height);
@@ -24,10 +25,9 @@ Player::Player(TextureHolder* textures, Textures::ID playerType)
     surfaceDeltaTime = sf::Time::Zero;
     animationDeltaTime = sf::Time::Zero;
     animationFrame = 0;
-
+    lastBulletCreated = nullptr;
     bulletCount = 5;
     speed = PLAYER_INIT_SPEED;
-    lastBulletCreated = nullptr;
 }
 
 void Player::takeDamage(int dmg) {
@@ -89,6 +89,7 @@ void Player::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) cons
     target.draw(playerSprite, states);
 }
 
+
 void Player::fire() {
     isFiring = true;
 }
@@ -109,12 +110,23 @@ bool Player::firingAvailable() const {
 }
 
 void Player::createBullet(SceneNode &node, TextureHolder &textures) {
-    std::unique_ptr<Bullet> bullet(new Bullet(facing, coordinates + firingShift, getCategory(), textures, currentMapTile));
-    node.addChild(std::move(bullet));
+    // std::unique_ptr<Bullet> bullet(new Bullet(facing, coordinates + firingShift, getCategory(), textures, currentMapTile));
+    //node.addChild(std::move(bullet));
+    sf::Vector2f coords = coordinates + firingShift;
     decrementBulletCount();
-    lastBulletCreated = new bullet_t {{bullet->getCoordinates().x, bullet->getCoordinates().y},
-                                                       {bullet->getFacing().x, bullet->getFacing().y},
-                                                       'p'};
+    lastBulletCreated = new bullet_t {{coords.x, coords.y},
+                                      {facing.x, facing.y},
+                                      'p'};
+}
+
+
+bullet_t Player::getLastBullet() {
+    if(lastBulletCreated == nullptr)
+        return {0};
+    bullet_t buf = *lastBulletCreated;
+    free(lastBulletCreated);
+    lastBulletCreated = nullptr;
+    return buf;
 }
 
 void Player::updateCurrent(sf::Time dt, CommandQueue &queue) {
@@ -235,10 +247,23 @@ int Player::getHitPoints() {
     return hitPoints;
 }
 
-bullet_t * Player::getLastBullet() {
-    if(!lastBulletAccessed) {
-        lastBulletAccessed = true;
-        return lastBulletCreated;
+Animation Player::getCurrentAnimation() {
+    return currentAnimation;
+}
+
+void Player::setCurrentAnimation(Animation animType) {
+    currentAnimation = animType;
+}
+
+void Player::drawHearts(sf::RenderWindow *window) {
+    if(hitPoints == 0) return;
+    sf::Vector2f pos;
+    pos = playerSprite.getPosition();
+    pos.y -= playerSprite.getLocalBounds().height * 1.5f;
+    pos.x -= playerSprite.getLocalBounds().width;
+    for(int i = 0; i < hitPoints; i++) {
+        pos.x += 15;
+        heart.setPosition(pos);
+        window->draw(heart);
     }
-    return nullptr;
 }

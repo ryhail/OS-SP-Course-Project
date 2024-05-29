@@ -27,11 +27,13 @@ enum Animation {
 class Player : public Entity{
     TextureHolder*  mTextures;
     sf::Sprite      playerSprite;
+    sf::Sprite      heart;
     MapTile*        currentMapTile;
     sf::Time        animationDeltaTime;
     sf::Time        surfaceDeltaTime;
     int             animationFrame;
     Animation       currentAnimation;
+    bullet_t *      lastBulletCreated;
 public:
     Player(TextureHolder* textures, Textures::ID playerType);
     void    takeDamage(int dmg);
@@ -50,20 +52,21 @@ public:
     void    setPosition(sf::Vector2f pos);
     void    takeBullets(int bullets);
     bool    isDead();
-    void    updateSurface(sf::Time dt);
+    void drawHearts(sf::RenderWindow *window);
+    void updateSurface(sf::Time dt);
+    Animation getCurrentAnimation();
+    void setCurrentAnimation(Animation animType);
+    bullet_t getLastBullet();
 
     sf::Vector2f getCoordinates() override;
 
     sf::FloatRect   getBoundingRect() const override;
     sf::Rect<float> getPlayerSpriteSize() const;
-
+    void setHitPoints(int hp);
     int getHitPoints() override;
-
-    bullet_t * getLastBullet();
 
 private:
     void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const override;
-
     void checkBulletLaunch(CommandQueue& commandQueue, sf::Time dt);
     bool firingAvailable() const;
     void createBullet(SceneNode &node, TextureHolder &textures);
@@ -89,9 +92,6 @@ private:
 
     sf::Vector2<float> facing;
     sf::Vector2<float> firingShift;
-
-    bullet_t*     lastBulletCreated;
-    bool        lastBulletAccessed;
 
     EntityType::Type getCategory() const override;
 };

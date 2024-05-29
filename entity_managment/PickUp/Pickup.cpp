@@ -48,7 +48,10 @@ Pickup::Pickup(sf::Vector2f _coordinates, MapTile *_currentMapTile, int _type, T
     coordinates = _coordinates;
     currentMapTile = _currentMapTile;
 
-    type = _type;
+    if (_type == 0)
+        type = Pickup::BulletRefill;
+    else if(_type == 1)
+        type = Pickup::HealthRefill;
     textures.getResource(Table[type].texture);
     action = Table[type].pickupDoing;
 

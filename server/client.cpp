@@ -10,6 +10,7 @@
 
 int initialize_client(int port){
     int sockfd;
+    int buffer_size = 128000;
     struct sockaddr_in local_addr;
     // Create UDP socket
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
@@ -29,7 +30,6 @@ int initialize_client(int port){
         exit(EXIT_FAILURE);
     }
 
-
     return sockfd;
 }
 void make_non_block(int sockfd){
@@ -38,7 +38,7 @@ void make_non_block(int sockfd){
 }
 void make_block(int sockfd){
     if(fcntl(sockfd,F_SETFL, 0) == -1)
-        perror("NON_BLOCK error");
+        perror("NON_BLOCK err or");
 }
 
 void initialize_server(int port,const char* server_ip, struct sockaddr_in* server_addr){
@@ -54,6 +54,7 @@ void initialize_server(int port,const char* server_ip, struct sockaddr_in* serve
 
 void    send_client_data(client_data_t data, int sockfd, struct sockaddr_in server_addr){
     int received_number;
+    make_non_block(sockfd);
     do{
         // Send number to server
         received_number = - 1;
@@ -68,8 +69,9 @@ void    send_client_data(client_data_t data, int sockfd, struct sockaddr_in serv
         } else {
             printf("Received response from server: %d\n", received_number);
         }
-        usleep(10000);
+        usleep(100);
     }while(received_number != 0 );
+    make_block(sockfd);
     printf("Number sent to server.\n");
 
     // Close socket
@@ -82,13 +84,6 @@ void receive_game_data(send_data_t * data, int sockfd, struct sockaddr_in server
         if(errno != EWOULDBLOCK) {
             perror("Receive error");
         }
-    }else if(count >0) {
-        int success_signal = 0;
-        if (sendto(sockfd, &success_signal, sizeof(success_signal), 0, (struct sockaddr *) &server_addr,
-                   sizeof(server_addr)) == -1) {
-            perror("Sendto failed check");
-        }
     }
-    usleep(10000);
 
 }

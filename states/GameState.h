@@ -7,38 +7,35 @@
 #include "../input_handler/InputHandler.h"
 #include "../entity_managment/Boss.h"
 
-#define PICKUPDELAY sf::seconds(2)
-
 class GameState : public State {
 public:
     GameState(StateStack& stack,
-    Context context);
+              Context context);
     void         buildScene();
     void         draw() override;
     bool         update(sf::Time dt) override;
     bool         handleEvent(const sf::Event& event) override;
-    void drawHeart(Entity *entity, sf::RenderWindow* window);
-
+    void         drawHeart(Entity *entity, sf::RenderWindow* window);
+    void         drawBullets(send_data &game_data);
 private:
     void    handleCollisions();
-    void animateBoss(sf::Time dt); //todo: убрать
 private:
     int             sockfd;
     sockaddr_in     server_adr;
-    int             seed;
+    int seed;
     client_data_t   msgToServer;
     send_data       msgFromServer;
     Level*          mLevel;
     Player*         controlledPlayer;
     Player*         updatedPlayer;
-    Boss*           boss;
+    Boss*           bossEntity;
     SceneNode       sceneGraph;
     CommandQueue    commandQueue;
     InputHandler    inputHandler;
     sf::Time        serverDelay;
-    sf::Time        pickupDelay;
     sf::Sprite      heart;
-    TextureHolder   textureHolder;
+    sf::Sprite      endGameSprite;
+    bool            endGame;
 };
 
 

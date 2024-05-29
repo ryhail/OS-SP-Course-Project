@@ -9,17 +9,22 @@
 #include "server_structures.h"
 #define PORT 52345
 #define BUFFER_SIZE 1024
-#define BORDER_MIN_SIZE_Y 1028
-#define BORDER_MIN_SIZE_X 1920
-#define BORDER_MAX_SIZE_Y 1028
-#define BORDER_MAX_SIZE_X 1920
+#define BORDER_MIN_SIZE_Y 64
+#define BORDER_MIN_SIZE_X 64
+#define BORDER_MAX_SIZE_Y (720 - BORDER_MIN_SIZE_Y)
+#define BORDER_MAX_SIZE_X (1280 - BORDER_MIN_SIZE_X)
+#define PLAYER_WIDTH 43
+#define PLAYER_HEIGHT 64
+#define BOSS_WIDTH 69
+#define BOSS_HEIGHT 94
 #define UPDATE_INTERVAL 6 // Интервал обновления
-#define MAX_BOSS_SPEED 3.0 // Максимальная скорость босса
+#define MIN_BOSS_SPEED 2.0
+#define MAX_BOSS_SPEED (6.0 - MIN_BOSS_SPEED) // Максимальная скорость босса
 #include <sys/time.h>
 #include <math.h>
 #include <time.h>
 #include <sys/wait.h>
-#define BULLET_SPEED 4.0
+#define BULLET_SPEED 6.0
 
 void func(int signum)
 {
@@ -29,6 +34,30 @@ long get_current_time_ms() {
     struct timeval tv;
     gettimeofday(&tv, NULL);
     return tv.tv_sec * 1000 + tv.tv_usec / 1000;
+}
+
+
+// Функция для проверки пересечения круга и прямоугольника
+int isCircleIntersectingRectangle(struct coordinate rectCenterBottom, float rectWidth, float rectHeight, struct coordinate circleCenter, float circleRadius) {
+    // Вычисляем центр прямоугольника
+    struct coordinate rectCenter;
+    rectCenter.x = rectCenterBottom.x;
+    rectCenter.y = rectCenterBottom.y - rectHeight / 2.0;
+
+    // Вычисляем половину ширины и высоты прямоугольника
+    float halfRectWidth = rectWidth / 2.0;
+    float halfRectHeight = rectHeight / 2.0;
+
+    // Вычисляем ближайшую точку на прямоугольнике к центру круга
+    double closestX = fmax(rectCenter.x - halfRectWidth, fmin(circleCenter.x, rectCenter.x + halfRectWidth));
+    double closestY = fmax(rectCenter.y - halfRectHeight, fmin(circleCenter.y, rectCenter.y + halfRectHeight));
+
+    // Вычисляем расстояние от этой точки до центра круга
+    double distanceX = circleCenter.x - closestX;
+    double distanceY = circleCenter.y - closestY;
+
+    // Проверяем, меньше ли это расстояние радиуса круга
+    return (distanceX * distanceX + distanceY * distanceY) < (circleRadius * circleRadius);
 }
 
 void move_boss(entity_t* boss) {
@@ -46,7 +75,7 @@ void move_boss(entity_t* boss) {
     if (current_time - last_rand_update_time> update_interval) {
         srand(time(NULL));
         angle = ((float)rand() / RAND_MAX) * 2 * M_PI;
-        speed = ((float)rand() / RAND_MAX) * MAX_BOSS_SPEED;
+        speed =MIN_BOSS_SPEED+  ((float)rand() / RAND_MAX) * MAX_BOSS_SPEED;
         update_interval = rand() % UPDATE_INTERVAL;
         last_rand_update_time = current_time;
     }
@@ -56,19 +85,36 @@ void move_boss(entity_t* boss) {
         boss->coordinates.y += speed * sin(angle);
         last_update_time_ms = current_time_ms;
         // Ограничения для движения босса по границам поля
-        if (boss->coordinates.x < 0) boss->coordinates.x = 0;
-        if (boss->coordinates.x > BORDER_MAX_SIZE_X) boss->coordinates.x = BORDER_MAX_SIZE_X;
-        if (boss->coordinates.y < 0) boss->coordinates.y = 0;
-        if (boss->coordinates.y > BORDER_MAX_SIZE_Y) boss->coordinates.y = BORDER_MAX_SIZE_Y;
+        if (boss->coordinates.x < BORDER_MIN_SIZE_X){
+            double x =  - cos(angle);
+            double y = sin(angle);
+            angle = atan2(y, x);
+            boss->coordinates.x = BORDER_MIN_SIZE_X;
+        }
+        if (boss->coordinates.x > BORDER_MAX_SIZE_X){
+            double x =  - cos(angle);
+            double y = sin(angle);
+            angle = atan2(y, x);
+            boss->coordinates.x = BORDER_MAX_SIZE_X;
+        }
+        if (boss->coordinates.y < BORDER_MIN_SIZE_Y){
+            angle = -angle;
+            boss->coordinates.y = BORDER_MIN_SIZE_Y;
+        }
+        if (boss->coordinates.y > BORDER_MAX_SIZE_Y){
+            angle = -angle;
+            boss->coordinates.y = BORDER_MAX_SIZE_Y;
+        }
     }
 }
 void send_server_data(int sockfd, send_data_t send_data, struct sockaddr_in client_addr){
-//    if (sendto(sockfd, &send_data, sizeof(send_data), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) ==
-//        -1) {
-//        perror("Sendto failed");
-//        //printf("%d", errno);
-//    }
-//    return;
+        if (sendto(sockfd, &send_data, sizeof(send_data), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) ==
+            -1) {
+            perror("Sendto failed");
+            //printf("%d", errno);
+        }
+        return;
+    //printf("%Bullets : d", send_data.bullets_count);
     struct sockaddr_in client_addr_new;
     socklen_t size = sizeof(client_addr_new);
     //if(fcntl(sockfd,F_SETFL, O_NONBLOCK) == -1)
@@ -100,7 +146,7 @@ game_data_t initialise(void) {
     //signal(SIGCHLD, func);
     game_data_t gamedata = {0};
     gamedata.boss.type = 'b';
-    gamedata.boss.hp = 20;
+    gamedata.boss.hp = 5;
     gamedata.boss.coordinates = (struct  coordinate){656,656};
     gamedata.player1.type = '1';
     gamedata.player1.hp = 5;
@@ -115,27 +161,34 @@ int bullet_empty(bullet_t bullet) {
     int var = bullet.owner == 0;
     return  var;
 }
-int check_hit(bullet_t bullet, entity_t entity, int radius) {
-    float distanse = 0;
-    int dif_x = bullet.coordinates.x - entity.coordinates.x;
-    int dif_y = bullet.coordinates.y - entity.coordinates.y;
-    distanse = sqrt(pow(dif_x,2) + pow(dif_y,2));
-    return distanse < radius;
+int check_hit(bullet_t bullet, entity_t entity) {
+    if (entity.type == 'b' && bullet.owner !='b')
+        return isCircleIntersectingRectangle(entity.coordinates,BOSS_WIDTH,BOSS_HEIGHT,bullet.coordinates,10);
+    if(entity.type != 'b' && bullet.owner == 'b')
+        return isCircleIntersectingRectangle(entity.coordinates,PLAYER_WIDTH,PLAYER_HEIGHT,bullet.coordinates,10);
 }
 //43 Ширина 64 высота
 int process_bullet_hit(entity_t* entity, bullet_t bullet) {
-    if ((entity->hp>0) && (bullet.owner != entity->type) && (check_hit(bullet,* entity,   15))) {
+    if ((entity->hp>0) && ((entity->type == 'b' && bullet.owner != entity->type )||
+            (entity->type != 'b' && bullet.owner == 'b' ))&&
+        (check_hit(bullet,* entity))) {
         entity->hp--;
+        printf("Changed HP %c %d\n",entity->type, entity->hp);
         return 1;
     }
     return 0;
 }
+int process_hit_player(entity_t* entity, bullet_t bullet){
+    if(bullet.owner != 'b')
+        return 0;
+    return 1;
+}
 int move_bullet(bullet_t* bullet) {
     bullet->coordinates.x += bullet->vector.x;
     bullet->coordinates.y += bullet->vector.y;
-    if (bullet->coordinates.x < 0 || bullet->coordinates.x < BORDER_MAX_SIZE_X )
+    if (bullet->coordinates.x < BORDER_MIN_SIZE_X || bullet->coordinates.x > BORDER_MAX_SIZE_X )
         return 1;
-    if (bullet->coordinates.y < 0 || bullet->coordinates.y < BORDER_MAX_SIZE_Y )
+    if (bullet->coordinates.y < BORDER_MIN_SIZE_Y || bullet->coordinates.y > BORDER_MAX_SIZE_Y )
         return 1;
     return  0;
 }
@@ -150,18 +203,16 @@ void process_bullets(game_data_t* gamedata) {
     int i ;
     for(i = 0; (i + step < MAX_BULLETS) && !bullet_empty(gamedata->bullets[i + step]); i ++) {
         gamedata->bullets[i] = gamedata->bullets[i+step];
-        if (gamedata->bullets[i + step].owner != 'b') {
-            printf("%c", gamedata->bullets[i+ step].owner);
-            step += process_bullet_hit(&gamedata->boss, gamedata->bullets[i+step]);
-            i--;
-        }
-        else if(process_bullet_hit(&gamedata->player1,gamedata->bullets[i+step]) ||
-                process_bullet_hit(&gamedata->player2,gamedata->bullets[i+step]) ||
-                move_bullet(&gamedata->bullets[i+step])){
+       if(process_bullet_hit(&gamedata->boss, gamedata->bullets[i])||
+            process_bullet_hit(&gamedata->player1,gamedata->bullets[i]) ||
+            process_bullet_hit(&gamedata->player2,gamedata->bullets[i]) ||
+            move_bullet(&gamedata->bullets[i+step])){
             step++;
             i--;
         }
     }
+    for(; (i <MAX_BULLETS) ; i ++)
+        gamedata->bullets[i] = (bullet_t){0};
     for(i = 0; (i < MAX_BULLETS) && bullet_empty(gamedata->bullets[i]); i ++)
         gamedata->bullets[i] = (bullet_t){0};
 }
@@ -175,12 +226,37 @@ void push_bullet(bullet_t* bullets,bullet_t bullet) {
 }
 
 void procces_client_data (game_data_t* gamedata, client_data_t clientdata) {
-    if (clientdata.player.type == '1')
-        gamedata->player1 = clientdata.player;
-    if (clientdata.player.type == '2')
-        gamedata->player2 = clientdata.player;
-    if(!bullet_empty(clientdata.bullet))
-        push_bullet(gamedata->bullets,clientdata.bullet);
+    if (clientdata.player.type == '1'){
+        gamedata->player1.coordinates = clientdata.player.coordinates;
+        gamedata->player1.animation = clientdata.player.animation;
+        if(clientdata.player.hp < gamedata->player1.hp)
+            gamedata->player1.hp = clientdata.player.hp;
+        gamedata->player1.hp += clientdata.heal;
+        if(gamedata->player1.hp > 5)
+            gamedata->player1.hp = 5;
+
+    }
+    if (clientdata.player.type == '2') {
+        gamedata->player2.coordinates = clientdata.player.coordinates;
+        gamedata->player2.hp += clientdata.heal;
+        if(gamedata->player2.hp > 5)
+            gamedata->player2.hp = 5;
+        gamedata->player2.animation = clientdata.player.animation;
+        if(clientdata.player.hp < gamedata->player2.hp)
+            gamedata->player2.hp = clientdata.player.hp;
+    }
+    printf("client hp : %d", clientdata.player.hp);
+    if(!bullet_empty(clientdata.bullet)) {
+        printf("Bullet %c %f %f\n",clientdata.player.type ,clientdata.bullet.vector.x, clientdata.bullet.vector.y);
+        bullet_t  bullet  = clientdata.bullet;
+        float x = bullet.vector.x;
+        float y = bullet.vector.y;
+        float distance = sqrt(x*x +y*y);
+        bullet.vector.x = BULLET_SPEED  *  x /distance;
+        bullet.vector.y = BULLET_SPEED  *  y / distance;
+        printf("Bullet %c %f %f\n",clientdata.player.type ,bullet.vector.x, bullet.vector.y);
+        push_bullet(gamedata->bullets, bullet);
+    }
 }
 
 // Функция обработки снарядов
@@ -248,7 +324,7 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
         }
 
 
-        if (player == '3' ) {
+        if (player == '1' ) {
             signal = 's';
             int seed = time(NULL);
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_1,
@@ -258,14 +334,14 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
                 exit(EXIT_FAILURE);
             }
 
-//            sleep(1);
-//            if (sendto(sockfd, &seed, sizeof(seed), 0, (struct sockaddr *) client_addr_1,
-//                       sizeof(*client_addr_1)) == -1) {
-//                perror("Sendto failed");
-//                close(sockfd);
-//                exit(EXIT_FAILURE);
-//            }
-//            return;
+            sleep(1);
+            if (sendto(sockfd, &seed, sizeof(seed), 0, (struct sockaddr *) client_addr_1,
+                       sizeof(*client_addr_1)) == -1) {
+                perror("Sendto failed");
+                close(sockfd);
+                exit(EXIT_FAILURE);
+            }
+            return;
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_2,
                        sizeof(*client_addr_2)) == -1) {
                 perror("Sendto failed");
@@ -303,78 +379,82 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
 bullet_t shoot_bullet(game_data_t* gamedata, entity_t* shooter, entity_t* target) {
     float dx = target->coordinates.x - shooter->coordinates.x;
     float dy = target->coordinates.y - shooter->coordinates.y;
-
+    float distance = sqrt(dx*dx + dy*dy);
     bullet_t bullet;
     bullet.coordinates.x = shooter->coordinates.x;
     bullet.coordinates.y = shooter->coordinates.y;
-    bullet.vector.x = (dx / (dx+dy)) * BULLET_SPEED;
-    bullet.vector.y = (dy / (dx+dy)) * BULLET_SPEED;
+    bullet.vector.x = (dx / distance) * BULLET_SPEED;
+    bullet.vector.y = (dy / distance) * BULLET_SPEED;
     bullet.owner = shooter->type;
 
     return bullet;
 }
 
-void boss_shoot_player(game_data_t* gamedata, bullet_t* new_bullets) {
+void boss_shoot_player(game_data_t* gamedata) {
     bullet_t bullet = {0};
+    static long last_update_time_ms = 0;
+    // Получение текущего времени в миллисекундах
+    long current_time_ms = get_current_time_ms();
+    if(current_time_ms - last_update_time_ms < 10000)
+        return;
+    last_update_time_ms = current_time_ms;
     if(gamedata->boss.hp < 0)
         return;
     if (gamedata->player1.hp > 0) {
-        shoot_bullet(gamedata, &gamedata->boss, &gamedata->player1);
+        bullet = shoot_bullet(gamedata, &gamedata->boss, &gamedata->player1);
         push_bullet(gamedata->bullets, bullet);
-        push_bullet(new_bullets, bullet);
+        printf("Bam\n");
     }
     if (gamedata->player2.hp > 0) {
-        shoot_bullet(gamedata, &gamedata->boss, &gamedata->player2);
+        bullet = shoot_bullet(gamedata, &gamedata->boss, &gamedata->player2);
         push_bullet(gamedata->bullets, bullet);
-        push_bullet(new_bullets, bullet);
     }
 }
 
-char recieve_client_data(int sockfd,game_data_t* game_data, char number){
+char recieve_client_data(int sockfd,game_data_t* game_data, struct sockaddr_in* client_addr, socklen_t* client_addr_len){
     client_data_t clientdata;
     size_t size = 0;
-    struct sockaddr_in client_addr;
-    socklen_t client_addr_len = sizeof(client_addr);
-    size = recvfrom(sockfd, &clientdata, sizeof(clientdata), 0, (struct sockaddr *)&client_addr, &client_addr_len);
+    size = recvfrom(sockfd, &clientdata, sizeof(clientdata), 0, (struct sockaddr *)client_addr, client_addr_len);
     if (size == -1) {
         if( errno != EWOULDBLOCK) {
             perror("Receive error");
         }
-    }else if(size >0 && (clientdata.player.type != number || number == 0)) {
+    }else if(size >0) {
         int success_signal = 0;
-        if (sendto(sockfd, &success_signal, sizeof(success_signal), 0, (struct sockaddr *) &client_addr,
-                   client_addr_len) == -1) {
+        if (sendto(sockfd, &success_signal, sizeof(success_signal), 0, (struct sockaddr *) client_addr,
+                   *client_addr_len) == -1) {
             perror("Sendto failed check");
         }
         procces_client_data(game_data, clientdata);
-        printf("%c %f %f\n",clientdata.player.type ,clientdata.player.coordinates.x, clientdata.player.coordinates.y);
+
     }
     return clientdata.player.type;
 }
-send_data_t make_send_data(game_data_t game_data, int number, bullet_t new_bullets [MAX_BULLETS]){
+send_data_t make_send_data(game_data_t game_data, int number){
     send_data_t data_to_send = {0};
     data_to_send.boss = game_data.boss;
-    if(number == 1)
-        data_to_send.player= game_data.player2;
-    else
-        data_to_send.player= game_data.player1;
+    if(number == '1') {
+        printf("New hp :%d\n", game_data.player2.hp);
+        data_to_send.hp = game_data.player1.hp;
+        data_to_send.player = game_data.player2;
+    }else {
+        data_to_send.hp = game_data.player2.hp;
+        data_to_send.player = game_data.player1;
+    }
     for(int i = 0; i < MAX_BULLETS; i++){
-        bullet_t bullet = new_bullets[i];
-        if((bullet.owner != '0' + number) && (bullet.owner != 0)) {
-            push_bullet(new_bullets, bullet);
-            data_to_send.bullets_count++;
-        }
+        data_to_send.new_bullets[i] = game_data.bullets[i];
     }
     return data_to_send;
 }
 
 
+
 int main() {
     int sockfd;
-    struct sockaddr_in server_addr, client_addr, client_addr_1, client_addr_2;
-    char answer1, answer2;
+    struct sockaddr_in client_addr, client_addr_1, client_addr_2;
+    socklen_t client_addr_len = sizeof(client_addr);
+    char type, player1_finish = 0, player2_finish = 0;
     game_data_t gamedata;
-    bullet_t  new_bullets[MAX_BULLETS] = {0};
     sockfd = init_server_socket();
     gamedata = initialise();
     start_lobby(sockfd, &client_addr_1, &client_addr_2);
@@ -383,24 +463,30 @@ int main() {
     close(sockfd);
     sockfd = init_server_socket();
     printf("Server listening on port %d...\n", PORT);
-    sleep(2);
+    //sleep(2);
+//    bullet_t bullet = {};
+//    bullet.coordinates = (struct coordinate){100,100};
+//    bullet.vector = (struct coordinate){1,1};
+//    bullet.owner = 'p';
+//    push_bullet(gamedata.bullets,bullet);
     while(1) {
         // Receive number from client
-        answer1 = recieve_client_data(sockfd, &gamedata, 0);
-        usleep(10000);
-        do {
-            answer2 = recieve_client_data(sockfd, &gamedata,  answer1);
-            printf("%c, %c \n", answer1 , answer2);
-        }while(answer1 == answer2);
-        printf("New Iteration\n");
+        type = recieve_client_data(sockfd, &gamedata, &client_addr, &client_addr_len);
+
+
         process_bullets(&gamedata);
         move_boss(&gamedata.boss);
-        boss_shoot_player(&gamedata, new_bullets);
-        //int pid = fork();
-        //if(pid==0)
-        send_server_data(sockfd, make_send_data(gamedata, 1, new_bullets),client_addr_1);
-        send_server_data(sockfd,make_send_data(gamedata, 2, new_bullets),client_addr_2);
-        continue;
+        boss_shoot_player(&gamedata);
+        if(gamedata.boss.hp <=0||(gamedata.player2.hp <=0 && gamedata.player1.hp <=0)){
+            if(type == '1')
+                player1_finish = 1;
+            if(type == '2')
+                player2_finish = 1;
+            if ((player1_finish || gamedata.player1.hp == -1) && (player2_finish || gamedata.player2.hp == -1))
+                break;
+        }
+
+        send_server_data(sockfd, make_send_data(gamedata, type),client_addr);
 
 
     }

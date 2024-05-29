@@ -33,7 +33,7 @@ Boss::Boss(TextureHolder& textures) {
 }
 
 bool Boss::isForRemove() {
-    return created && hitPoints <= 0;
+    return hitPoints <= 0;
 }
 
 EntityType::Type Boss::getCategory() const {

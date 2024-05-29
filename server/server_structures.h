@@ -28,19 +28,20 @@ struct game_data {
     entity_t boss;
     entity_t player1;
     entity_t player2;
-    bullet_t bullets[MAX_BULLETS * 10];
+    bullet_t bullets[MAX_BULLETS];
 }typedef  game_data_t;
 
 struct send_data {
     entity_t boss;
     entity_t player;
-    int bullets_count;
+    int8_t hp;
     bullet_t new_bullets[MAX_BULLETS];
 }typedef  send_data_t;
 
 struct client_data {
     entity_t player;
     bullet_t bullet;
+    int heal;
 }typedef  client_data_t;
 
 #endif //STRUCTURES_H

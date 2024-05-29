@@ -12,7 +12,7 @@ typedef ResourceHolder<Textures::ID, sf::Texture> TextureHolder;
 
 class Bullet: public Entity {
 public:
-    Bullet(bullet_t bulletInfo, const TextureHolder &bulletTexture);
+    Bullet(bullet_t bulletInfo, TextureHolder* bulletTexture);
     Bullet(sf::Vector2f _facing, sf::Vector2f _coordinates, EntityType::Type _owner, const TextureHolder& textures, MapTile* _currentMapTile);
 
     bool    isForRemove() override;
@@ -22,7 +22,7 @@ public:
     int                 getDamage() const;
 
     sf::FloatRect getBoundingRect() const override;
-
+    void drawSprite(sf::RenderWindow* window);
     sf::Vector2f getCoordinates() override;
     sf::Vector2f getFacing();
 

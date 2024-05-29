@@ -5,9 +5,9 @@
 #include "Bullet.h"
 
 Bullet::Bullet(bullet_t bulletInfo,
-               const TextureHolder &bulletTexture) :
+               TextureHolder* bulletTexture) :
         Entity(sf::Vector2f(bulletInfo.coordinates.x, bulletInfo.coordinates.y)),
-        sprite(bulletTexture.getResource(Textures::Bullet)) {
+        sprite(bulletTexture->getResource(Textures::Bullet)) {
     if (bulletInfo.owner == 'b') {
         owner = EntityType::BOSS;
     }
@@ -20,6 +20,7 @@ Bullet::Bullet(bullet_t bulletInfo,
 
     sf::FloatRect bounds = sprite.getLocalBounds();
     sprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
+    sprite.setPosition(sf::Vector2f(bulletInfo.coordinates.x, bulletInfo.coordinates.y));
 }
 
 void Bullet::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const {
@@ -49,10 +50,7 @@ void Bullet::updateCurrent(sf::Time dt, CommandQueue &queue) {
 }
 
 bool Bullet::isForRemove() {
-    if(currentMapTile->getCurrentTileType(coordinates) == Tile::Border)
-        return true;
-    else
-        return isUsed;
+    return true;
 }
 
 EntityType::Type Bullet::getCategory() const {
@@ -82,6 +80,10 @@ int Bullet::getDamage() const {
 
 sf::Vector2f Bullet::getCoordinates() {
     return coordinates;
+}
+
+void Bullet::drawSprite(sf::RenderWindow *window) {
+    window->draw(sprite);
 }
 
 sf::Vector2f Bullet::getFacing() {
