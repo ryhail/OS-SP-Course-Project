@@ -240,11 +240,14 @@ void procces_client_data (game_data_t* gamedata, client_data_t clientdata) {
     }
     printf("client hp : %d", clientdata.player.hp);
     if(!bullet_empty(clientdata.bullet)) {
+        printf("Bullet %c %f %f\n",clientdata.player.type ,clientdata.bullet.vector.x, clientdata.bullet.vector.y);
         bullet_t  bullet  = clientdata.bullet;
         float x = bullet.vector.x;
         float y = bullet.vector.y;
-        bullet.vector.x = BULLET_SPEED  *  x / (x+y);
-        bullet.vector.y = BULLET_SPEED  *  y / (x+y);
+        float distance = sqrt(x*x +y*y);
+        bullet.vector.x = BULLET_SPEED  *  x /distance;
+        bullet.vector.y = BULLET_SPEED  *  y / distance;
+        printf("Bullet %c %f %f\n",clientdata.player.type ,bullet.vector.x, bullet.vector.y);
         push_bullet(gamedata->bullets, bullet);
     }
 }
@@ -314,7 +317,7 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
         }
 
 
-        if (player == '1' ) {
+        if (player == '3' ) {
             signal = 's';
             int seed = time(NULL);
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_1,
@@ -324,14 +327,14 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
                 exit(EXIT_FAILURE);
             }
 
-            sleep(1);
-            if (sendto(sockfd, &seed, sizeof(seed), 0, (struct sockaddr *) client_addr_1,
-                       sizeof(*client_addr_1)) == -1) {
-                perror("Sendto failed");
-                close(sockfd);
-                exit(EXIT_FAILURE);
-            }
-            return;
+//            sleep(1);
+//            if (sendto(sockfd, &seed, sizeof(seed), 0, (struct sockaddr *) client_addr_1,
+//                       sizeof(*client_addr_1)) == -1) {
+//                perror("Sendto failed");
+//                close(sockfd);
+//                exit(EXIT_FAILURE);
+//            }
+//            return;
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_2,
                        sizeof(*client_addr_2)) == -1) {
                 perror("Sendto failed");
@@ -416,7 +419,7 @@ char recieve_client_data(int sockfd,game_data_t* game_data, struct sockaddr_in* 
             perror("Sendto failed check");
         }
         procces_client_data(game_data, clientdata);
-        printf("%c %f %f\n",clientdata.player.type ,clientdata.player.coordinates.x, clientdata.player.coordinates.y);
+
     }
     return clientdata.player.type;
 }
@@ -424,7 +427,7 @@ send_data_t make_send_data(game_data_t game_data, int number){
     send_data_t data_to_send = {0};
     data_to_send.boss = game_data.boss;
     if(number == '1') {
-        printf("New hp :%d\n", game_data.player1.hp);
+        printf("New hp :%d\n", game_data.player2.hp);
         data_to_send.hp = game_data.player1.hp;
         data_to_send.player = game_data.player2;
     }else {
@@ -464,7 +467,7 @@ int main() {
 
 
         process_bullets(&gamedata);
-        printf("New Iteration hp : %d\n", gamedata.player1.hp);
+        printf("New Iteration hp : %d\n", gamedata.player2.hp);
         move_boss(&gamedata.boss);
         boss_shoot_player(&gamedata);
         //usleep(10000);
