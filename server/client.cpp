@@ -29,11 +29,6 @@ int initialize_client(int port){
         close(sockfd);
         exit(EXIT_FAILURE);
     }
-    if (setsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &buffer_size, sizeof(buffer_size)) == -1) {
-        perror("setsockopt");
-        close(sockfd);
-        exit(EXIT_FAILURE);
-    }
 
     return sockfd;
 }
@@ -74,7 +69,7 @@ void    send_client_data(client_data_t data, int sockfd, struct sockaddr_in serv
         } else {
             printf("Received response from server: %d\n", received_number);
         }
-        usleep(1000);
+        usleep(100);
     }while(received_number != 0 );
     make_block(sockfd);
     printf("Number sent to server.\n");

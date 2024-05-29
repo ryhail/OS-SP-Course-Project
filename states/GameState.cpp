@@ -70,8 +70,9 @@ bool GameState::update(sf::Time dt) {
         send_client_data(msgToServer, sockfd, server_adr);
         serverDelay = sf::Time::Zero;
         receive_game_data(&msgFromServer, sockfd, server_adr);
-        controlledPlayer->takeDamage(controlledPlayer->getHitPoints() - msgFromServer.hp);
-        std::cout << msgFromServer.player.coordinates.x << ' ' << msgFromServer.player.coordinates.x << std::endl;
+        if(msgFromServer.hp < controlledPlayer->getHitPoints())
+            controlledPlayer->takeDamage(controlledPlayer->getHitPoints() - msgFromServer.hp);
+        std::cout <<(int) msgFromServer.hp << std::endl;
         updatedPlayer->setPosition(sf::Vector2f(msgFromServer.player.coordinates.x, msgFromServer.player.coordinates.y));
         updatedPlayer->setCurrentAnimation(static_cast<Animation>(msgFromServer.player.animation));
         bossEntity->move(sf::Vector2f (msgFromServer.boss.coordinates.x, msgFromServer.boss.coordinates.y));
