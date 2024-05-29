@@ -7,7 +7,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include "server_structures.h"
-#define PORT 52345
+#define PORT 12345
 #define BUFFER_SIZE 1024
 #define BORDER_MIN_SIZE_Y 64
 #define BORDER_MIN_SIZE_X 64
@@ -314,7 +314,7 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
                 exit(EXIT_FAILURE);
             }
 
-            sleep(1);
+            //sleep(1);
 //            if (sendto(sockfd, &seed, sizeof(seed), 0, (struct sockaddr *) client_addr_1,
 //                       sizeof(*client_addr_1)) == -1) {
 //                perror("Sendto failed");

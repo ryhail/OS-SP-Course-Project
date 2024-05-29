@@ -1,7 +1,5 @@
 #ifndef SFML_CONNECTSTATE_H
 #define SFML_CONNECTSTATE_H
-
-
 #include <SFML/Graphics.hpp>
 #include "State.h"
 
