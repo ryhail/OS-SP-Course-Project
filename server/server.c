@@ -199,8 +199,6 @@ void push_bullet(bullet_t* bullets,bullet_t bullet) {
 
 void procces_client_data (game_data_t* gamedata, client_data_t clientdata) {
     if (clientdata.player.type == '1'){
-        //if(clientdata.player.hp < gamedata->player1.hp)
-        //    gamedata->player1.hp = clientdata.player.hp;
         gamedata->player1.coordinates = clientdata.player.coordinates;
         gamedata->player1.animation = clientdata.player.animation;
         if(clientdata.heal == 1)
@@ -212,8 +210,6 @@ void procces_client_data (game_data_t* gamedata, client_data_t clientdata) {
 
     }
     if (clientdata.player.type == '2') {
-        if(clientdata.player.hp < gamedata->player2.hp)
-            gamedata->player2.hp = clientdata.player.hp;
         gamedata->player2.coordinates = clientdata.player.coordinates;
         if(clientdata.heal == 1)
             gamedata->player2.hp += 1;
@@ -383,7 +379,6 @@ void boss_shoot_player(game_data_t* gamedata) {
     if (gamedata->player1.hp > 0) {
         bullet = shoot_bullet(gamedata, &gamedata->boss, &gamedata->player1);
         push_bullet(gamedata->bullets, bullet);
-        printf("Bam\n");
     }
     if (gamedata->player2.hp > 0) {
         bullet = shoot_bullet(gamedata, &gamedata->boss, &gamedata->player2);
