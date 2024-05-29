@@ -201,9 +201,9 @@ void procces_client_data (game_data_t* gamedata, client_data_t clientdata) {
         bullet_t  bullet  = clientdata.bullet;
         float x = bullet.vector.x;
         float y = bullet.vector.y;
-        bullet.vector.x = BULLET_SPEED * 2 *  x / (x+y);
-        bullet.vector.y = BULLET_SPEED * 2 *  y / (x+y);
-        push_bullet(gamedata->bullets, clientdata.bullet);
+        bullet.vector.x = BULLET_SPEED  *  x / (x+y);
+        bullet.vector.y = BULLET_SPEED  *  y / (x+y);
+        push_bullet(gamedata->bullets, bullet);
     }
 }
 
@@ -272,7 +272,7 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
         }
 
 
-        if (player == '3' ) {
+        if (player == '1' ) {
             signal = 's';
             int seed = time(NULL);
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_1,
@@ -282,14 +282,14 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
                 exit(EXIT_FAILURE);
             }
 
-//            sleep(1);
-//            if (sendto(sockfd, &seed, sizeof(seed), 0, (struct sockaddr *) client_addr_1,
-//                       sizeof(*client_addr_1)) == -1) {
-//                perror("Sendto failed");
-//                close(sockfd);
-//                exit(EXIT_FAILURE);
-//            }
-//            return;
+            sleep(1);
+            if (sendto(sockfd, &seed, sizeof(seed), 0, (struct sockaddr *) client_addr_1,
+                       sizeof(*client_addr_1)) == -1) {
+                perror("Sendto failed");
+                close(sockfd);
+                exit(EXIT_FAILURE);
+            }
+            return;
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_2,
                        sizeof(*client_addr_2)) == -1) {
                 perror("Sendto failed");
