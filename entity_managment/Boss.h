@@ -15,7 +15,7 @@
 class Boss : public Entity{
 public:
     Boss(sf::Vector2f _coordinates, int _hitPoints, TextureHolder& textures);
-    Boss(TextureHolder& textures);
+
 public:
     bool                isForRemove() override;
     EntityType::Type    getCategory() const override;
@@ -26,13 +26,12 @@ public:
     void    move(sf::Vector2f coordinates);
     int getHitPoints() override;
 
-    void setCoordinates(sf::Vector2f coord);
-    void setHitPoints(int hp);
-    void create();
+
 
 private:
     void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const override;
     void updateCurrent(sf::Time dt, CommandQueue &queue) override;
+    void updateHealthDisplay();
     void animate(sf::Time dt);
 
 private:
@@ -41,7 +40,7 @@ private:
     sf::Time        animationDeltaTime;
     int             currentFrame;
     int             hitPoints;
-    bool            created;
+    std::vector<Heart*>      healthForDisplay;
 };
 
 
