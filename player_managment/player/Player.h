@@ -35,7 +35,9 @@ class Player : public Entity{
     int             animationFrame;
     Animation       currentAnimation;
     bullet_t *      lastBulletCreated;
+
 public:
+    bool            spike;
     Player(TextureHolder* textures, Textures::ID playerType);
     void    takeDamage(int dmg);
     void    heal();

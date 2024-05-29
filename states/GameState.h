@@ -37,6 +37,7 @@ private:
     sf::Sprite      endGameSprite;
     bool            endGame;
     bool            heal;
+
 };
 
 

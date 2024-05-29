@@ -57,12 +57,19 @@ bool GameState::update(sf::Time dt) {
         msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
         msgToServer.player.animation = controlledPlayer->getCurrentAnimation();
         msgToServer.player.hp = controlledPlayer->getHitPoints();
-        msgToServer.heal = heal;
+        if (heal){
+            msgToServer.heal = 1;
+            heal = false;
+        }
+        if (controlledPlayer->spike){
+            msgToServer.heal -= 1;
+            controlledPlayer->spike = false;
+        }
         msgToServer.bullet = controlledPlayer->getLastBullet();
-        heal = false;
         send_client_data(msgToServer, sockfd, server_adr);
         serverDelay = sf::Time::Zero;
         receive_game_data(&msgFromServer, sockfd, server_adr);
+        msgToServer.heal = 0;
         //if(msgFromServer.hp < controlledPlayer->getHitPoints())
         controlledPlayer->takeDamage(controlledPlayer->getHitPoints() - msgFromServer.hp);
 

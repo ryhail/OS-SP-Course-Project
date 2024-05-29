@@ -236,10 +236,14 @@ void Player::updateSurface(sf::Time dt) {
                 speed = 50;
                 break;
             case (Tile::Spades):
-                if(surfaceDeltaTime.asSeconds() > 0.6f)
+                if(surfaceDeltaTime.asSeconds() > 0.6f) {
                     takeDamage(1);
-                else
+                    spike = true;
+                }
+                else{
+                    spike = false;
                     return;
+                }
                 break;
         }
         surfaceDeltaTime = sf::Time::Zero;
