@@ -75,6 +75,7 @@ bool GameState::update(sf::Time dt) {
         updatedPlayer->setPosition(sf::Vector2f(msgFromServer.player.coordinates.x, msgFromServer.player.coordinates.y));
         updatedPlayer->setCurrentAnimation(static_cast<Animation>(msgFromServer.player.animation));
         bossEntity->move(sf::Vector2f (msgFromServer.boss.coordinates.x, msgFromServer.boss.coordinates.y));
+        bossEntity->takeDamage(bossEntity->getHitPoints() - msgFromServer.boss.hp);
     }
     updatedPlayer->animate(updatedPlayer->getCurrentAnimation(), dt);
     while (!commandQueue.isEmpty()) {
