@@ -57,6 +57,6 @@ private:
 };
 
 bool	collision(const SceneNode& lhs, const SceneNode& rhs);
-bool    hasSpecifiedCategories(SceneNode::Pair collidePair, EntityType::Type first, EntityType::Type second);
+bool    hasSpecifiedCategories(SceneNode::Pair &collidePair, EntityType::Type first, EntityType::Type second);
 
 #endif //COURSE_SCENENODE_H

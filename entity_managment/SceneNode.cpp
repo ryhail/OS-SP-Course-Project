@@ -129,7 +129,7 @@ bool collision(const SceneNode& lhs, const SceneNode& rhs)
 {
     return lhs.getBoundingRect().intersects(rhs.getBoundingRect());
 }
-bool hasSpecifiedCategories(SceneNode::Pair collidePair, EntityType::Type first, EntityType::Type second) {
+bool hasSpecifiedCategories(SceneNode::Pair &collidePair, EntityType::Type first, EntityType::Type second) {
     unsigned int realFirst = collidePair.first->getCategory();
     unsigned int realSecond = collidePair.second->getCategory();
 

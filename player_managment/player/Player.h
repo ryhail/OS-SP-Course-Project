@@ -15,6 +15,7 @@
 #define PLAYER_INIT_HITPOINTS 5
 #define PLAYER_FIRING_INTERVAL sf::seconds(2.0f)
 #define PLAYER_HILING_INTERVAL sf::seconds(5.0f)
+#define PICKTIME sf::seconds(3)
 
 enum Animation {
     Idle,
@@ -68,9 +69,11 @@ public:
 private:
     void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const override;
     void checkBulletLaunch(CommandQueue& commandQueue, sf::Time dt);
+    void checkPickUpLaunch(CommandQueue& commandQueue, sf::Time dt);
     bool firingAvailable() const;
     void createBullet(SceneNode &node, TextureHolder &textures);
     void decrementBulletCount();
+    void createPickUp(SceneNode &node, TextureHolder &textures);
 
     void updateCurrent(sf::Time dt, CommandQueue &queue) override;
 
@@ -80,8 +83,10 @@ public:
 
 private:
     sf::Time    fireCountdown;
+    sf::Time    pickUpCountdown;
     bool        isFiring;
     Command     fireCommand;
+    Command     pickUpCommand;
     int         bulletCount;
 
     int         hitPoints;

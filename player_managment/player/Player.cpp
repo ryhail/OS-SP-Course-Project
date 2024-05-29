@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Player.h"
 #include "../../command/CommandQueue.h"
+#include "../../entity_managment/PickUp/Pickup.h"
 
 Player::Player(TextureHolder* textures, Textures::ID playerType)
         : Entity(), mTextures(textures){
@@ -21,6 +22,10 @@ Player::Player(TextureHolder* textures, Textures::ID playerType)
     fireCommand.category = EntityType::ACTIVE_PLAYER;
     fireCommand.action = [this, textures](SceneNode& node, sf::Time dt) {
         createBullet(node, *textures);
+    };
+    pickUpCommand.category = EntityType::ACTIVE_PLAYER;
+    pickUpCommand.action = [this, textures](SceneNode& node, sf::Time dt) {
+        createPickUp(node, *textures);
     };
     surfaceDeltaTime = sf::Time::Zero;
     animationDeltaTime = sf::Time::Zero;
@@ -133,6 +138,8 @@ void Player::updateCurrent(sf::Time dt, CommandQueue &queue) {
     if(isDead()) return;
     updateSurface(dt);
     checkBulletLaunch(queue, dt);
+    pickUpCountdown -= dt;
+    checkPickUpLaunch(queue, dt);
 }
 
 bool Player::isForRemove() {
@@ -265,5 +272,22 @@ void Player::drawHearts(sf::RenderWindow *window) {
         pos.x += 15;
         heart.setPosition(pos);
         window->draw(heart);
+    }
+}
+
+void Player::createPickUp(SceneNode &node, TextureHolder &textures) {
+    int type = rand() % 2;
+    float coordX = rand() % (780 - 64) + 64;
+    float coordY = rand() % (1280 - 64) + 64;
+    auto* pick = new Pickup(sf::Vector2f(coordX, coordY),
+                            currentMapTile, type, textures);
+    std::unique_ptr<Pickup> pickup(pick);
+    node.addChild(std::move(pickup));
+}
+
+void Player::checkPickUpLaunch(CommandQueue &commandQueue, sf::Time dt) {
+    if (pickUpCountdown <= sf::Time::Zero) {
+        commandQueue.push(pickUpCommand);
+        pickUpCountdown = PICKTIME;
     }
 }

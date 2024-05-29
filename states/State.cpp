@@ -2,11 +2,11 @@
 #include "StateStack.h"
 
 State::Context::Context(sf::RenderWindow& window,
-        ResourceHolder<Textures::ID, sf::Texture>* textures,
-        ResourceHolder<Fonts::ID, sf::Font>* fonts)
+                        ResourceHolder<Textures::ID, sf::Texture>* textures,
+                        ResourceHolder<Fonts::ID, sf::Font>* fonts)
         : window(&window),
-        textures(textures),
-        fonts(fonts)
+          textures(textures),
+          fonts(fonts)
 {
     textures->load(Textures::MainMenu, "resources/Textures/menubg.png");
     textures->load(Textures::Lobby, "resources/Textures/lobbybg.png");
@@ -59,5 +59,3 @@ void State::setServerParams(int sockfd, sockaddr_in server_adr) {
     *mContext.sockfd = sockfd;
     *mContext.server_adr = server_adr;
 }
-
-

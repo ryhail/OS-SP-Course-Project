@@ -5,6 +5,7 @@
 #include "Pickup.h"
 #include "../../player_managment/player/Player.h"
 #include "../Data.h"
+#include "../../states/utility.h"
 
 namespace
 {
@@ -40,7 +41,8 @@ void Pickup::use() {
 }
 
 sf::FloatRect Pickup::getBoundingRect() const {
-    return getWorldTransform().transformRect(sprite.getGlobalBounds());
+    return getWorldTransform()
+    .transformRect(sprite.getGlobalBounds());
 }
 
 Pickup::Pickup(sf::Vector2f _coordinates, MapTile *_currentMapTile, int _type, TextureHolder &textures){
@@ -52,7 +54,10 @@ Pickup::Pickup(sf::Vector2f _coordinates, MapTile *_currentMapTile, int _type, T
         type = Pickup::BulletRefill;
     else if(_type == 1)
         type = Pickup::HealthRefill;
-    textures.getResource(Table[type].texture);
+    sprite.setTexture(textures.getResource(Table[type].texture));
+    sprite.setColor(Table[type].color);
+    sprite.setPosition(coordinates);
+    centerOrigin(sprite);
     action = Table[type].pickupDoing;
 
     isUsed = false;

@@ -23,7 +23,6 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
         updatedPlayer = context.player1;
         msgToServer.player.type = '2';
     }
-    heart.setTexture(context.textures->getResource(Textures::Heart));
     controlledPlayer->setPosition(mLevel->getCurrentMapTile()->getSpawnPoint());
     controlledPlayer->setCurentMapTile(mLevel->getCurrentMapTile());
     updatedPlayer->setPosition(mLevel->getCurrentMapTile()->getSpawnPoint());
@@ -34,6 +33,8 @@ GameState::GameState(StateStack &stack, State::Context context) : State(stack, c
     msgToServer.player.coordinates.x = controlledPlayer->getCoordinates().x;
     msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
     msgToServer.bullet = {0};
+    std::srand(static_cast<unsigned int>(std::time(NULL)));
+    heal = false;
 }
 
 void GameState::draw() {
@@ -56,9 +57,9 @@ bool GameState::update(sf::Time dt) {
         msgToServer.player.coordinates.y = controlledPlayer->getCoordinates().y;
         msgToServer.player.animation = controlledPlayer->getCurrentAnimation();
         msgToServer.player.hp = controlledPlayer->getHitPoints();
-
+        msgToServer.heal = heal;
         msgToServer.bullet = controlledPlayer->getLastBullet();
-
+        heal = false;
         send_client_data(msgToServer, sockfd, server_adr);
         serverDelay = sf::Time::Zero;
         receive_game_data(&msgFromServer, sockfd, server_adr);
@@ -80,11 +81,12 @@ bool GameState::update(sf::Time dt) {
         sceneGraph.execCommand(commandQueue.pop(), dt);
     }
     sceneGraph.update(dt, commandQueue);
-    //handleCollisions();
+    handleCollisions();
     sceneGraph.removeWrecks();
     inputHandler.handleRealtimeInput(commandQueue);
     if(commandQueue.isEmpty() && !controlledPlayer->isForRemove())
         controlledPlayer->animate(Idle, dt);
+
     if((controlledPlayer->getHitPoints() == 0) && (updatedPlayer->getHitPoints() == 0)) {
         endGameSprite.setTexture(getContext().textures->getResource(Textures::endGameLose));
         endGame = true;
@@ -139,6 +141,8 @@ void GameState::handleCollisions() {
             auto& player = dynamic_cast<Player&>(*pair.first);
             auto& pickup = dynamic_cast<Pickup&>(*pair.second);
             pickup.pickup(player);
+            if(pickup.getPickUpType() == Pickup::Type::HealthRefill)
+                heal = true;
             pickup.use();
         }
 //        // тестировать, что работает
@@ -162,3 +166,4 @@ void GameState::drawBullets(send_data &game_data) {
         }
     }
 }
+

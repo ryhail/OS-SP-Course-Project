@@ -11,6 +11,7 @@
 
 struct PickUpData {
     Textures::ID texture;
+    sf::Color   color;
     std::function<void(Player&)> pickupDoing;
 };
 
