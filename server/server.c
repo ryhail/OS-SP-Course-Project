@@ -13,6 +13,10 @@
 #define BORDER_MIN_SIZE_X 64
 #define BORDER_MAX_SIZE_Y (720 - BORDER_MIN_SIZE_Y)
 #define BORDER_MAX_SIZE_X (1280 - BORDER_MIN_SIZE_X)
+#define PLAYER_WIDTH 43
+#define PLAYER_HEIGHT 64
+#define BOSS_WIDTH 69
+#define BOSS_HEIGHT 94
 #define UPDATE_INTERVAL 6 // Интервал обновления
 #define MIN_BOSS_SPEED 2.0
 #define MAX_BOSS_SPEED (6.0 - MIN_BOSS_SPEED) // Максимальная скорость босса
@@ -30,6 +34,30 @@ long get_current_time_ms() {
     struct timeval tv;
     gettimeofday(&tv, NULL);
     return tv.tv_sec * 1000 + tv.tv_usec / 1000;
+}
+
+
+// Функция для проверки пересечения круга и прямоугольника
+int isCircleIntersectingRectangle(struct coordinate rectCenterBottom, float rectWidth, float rectHeight, struct coordinate circleCenter, float circleRadius) {
+    // Вычисляем центр прямоугольника
+    struct coordinate rectCenter;
+    rectCenter.x = rectCenterBottom.x;
+    rectCenter.y = rectCenterBottom.y - rectHeight / 2.0;
+
+    // Вычисляем половину ширины и высоты прямоугольника
+    float halfRectWidth = rectWidth / 2.0;
+    float halfRectHeight = rectHeight / 2.0;
+
+    // Вычисляем ближайшую точку на прямоугольнике к центру круга
+    double closestX = fmax(rectCenter.x - halfRectWidth, fmin(circleCenter.x, rectCenter.x + halfRectWidth));
+    double closestY = fmax(rectCenter.y - halfRectHeight, fmin(circleCenter.y, rectCenter.y + halfRectHeight));
+
+    // Вычисляем расстояние от этой точки до центра круга
+    double distanceX = circleCenter.x - closestX;
+    double distanceY = circleCenter.y - closestY;
+
+    // Проверяем, меньше ли это расстояние радиуса круга
+    return (distanceX * distanceX + distanceY * distanceY) < (circleRadius * circleRadius);
 }
 
 void move_boss(entity_t* boss) {
@@ -133,18 +161,17 @@ int bullet_empty(bullet_t bullet) {
     int var = bullet.owner == 0;
     return  var;
 }
-int check_hit(bullet_t bullet, entity_t entity, int radius) {
-    float distanse = 0;
-    int dif_x = bullet.coordinates.x - entity.coordinates.x;
-    int dif_y = bullet.coordinates.y - entity.coordinates.y;
-    distanse = sqrt(pow(dif_x,2) + pow(dif_y,2));
-    return distanse < radius;
+int check_hit(bullet_t bullet, entity_t entity) {
+    if (entity.type == 'b' && bullet.owner !='b')
+        return isCircleIntersectingRectangle(entity.coordinates,BOSS_WIDTH,BOSS_HEIGHT,bullet.coordinates,10);
+    if(entity.type != 'b' && bullet.owner == 'b')
+        return isCircleIntersectingRectangle(entity.coordinates,PLAYER_WIDTH,PLAYER_HEIGHT,bullet.coordinates,10);
 }
 //43 Ширина 64 высота
 int process_bullet_hit(entity_t* entity, bullet_t bullet) {
     if ((entity->hp>0) && ((entity->type == 'b' && bullet.owner != entity->type )||
             (entity->type != 'b' && bullet.owner == 'b' ))&&
-        (check_hit(bullet,* entity,   15))) {
+        (check_hit(bullet,* entity))) {
         entity->hp--;
         printf("Changed HP %c %d\n",entity->type, entity->hp);
         return 1;
@@ -287,7 +314,7 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
         }
 
 
-        if (player == '3' ) {
+        if (player == '1' ) {
             signal = 's';
             int seed = time(NULL);
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_1,
@@ -297,14 +324,14 @@ void start_lobby(int sockfd,struct sockaddr_in* client_addr_1,struct sockaddr_in
                 exit(EXIT_FAILURE);
             }
 
-//            sleep(1);
-//            if (sendto(sockfd, &seed, sizeof(seed), 0, (struct sockaddr *) client_addr_1,
-//                       sizeof(*client_addr_1)) == -1) {
-//                perror("Sendto failed");
-//                close(sockfd);
-//                exit(EXIT_FAILURE);
-//            }
-//            return;
+            sleep(1);
+            if (sendto(sockfd, &seed, sizeof(seed), 0, (struct sockaddr *) client_addr_1,
+                       sizeof(*client_addr_1)) == -1) {
+                perror("Sendto failed");
+                close(sockfd);
+                exit(EXIT_FAILURE);
+            }
+            return;
             if (sendto(sockfd, &signal, sizeof(signal), 0, (struct sockaddr *) client_addr_2,
                        sizeof(*client_addr_2)) == -1) {
                 perror("Sendto failed");
