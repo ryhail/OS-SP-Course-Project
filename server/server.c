@@ -231,9 +231,16 @@ void procces_client_data (game_data_t* gamedata, client_data_t clientdata) {
         gamedata->player1.animation = clientdata.player.animation;
         if(clientdata.player.hp < gamedata->player1.hp)
             gamedata->player1.hp = clientdata.player.hp;
+        gamedata->player1.hp += clientdata.heal;
+        if(gamedata->player1.hp > 5)
+            gamedata->player1.hp = 5;
+
     }
     if (clientdata.player.type == '2') {
         gamedata->player2.coordinates = clientdata.player.coordinates;
+        gamedata->player2.hp += clientdata.heal;
+        if(gamedata->player2.hp > 5)
+            gamedata->player2.hp = 5;
         gamedata->player2.animation = clientdata.player.animation;
         if(clientdata.player.hp < gamedata->player2.hp)
             gamedata->player2.hp = clientdata.player.hp;
@@ -441,11 +448,12 @@ send_data_t make_send_data(game_data_t game_data, int number){
 }
 
 
+
 int main() {
     int sockfd;
-    struct sockaddr_in server_addr, client_addr, client_addr_1, client_addr_2;
+    struct sockaddr_in client_addr, client_addr_1, client_addr_2;
     socklen_t client_addr_len = sizeof(client_addr);
-    char type;
+    char type, player1_finish = 0, player2_finish = 0;
     game_data_t gamedata;
     sockfd = init_server_socket();
     gamedata = initialise();
@@ -467,10 +475,17 @@ int main() {
 
 
         process_bullets(&gamedata);
-        printf("New Iteration hp : %d\n", gamedata.player2.hp);
         move_boss(&gamedata.boss);
         boss_shoot_player(&gamedata);
-        //usleep(10000);
+        if(gamedata.boss.hp <=0||(gamedata.player2.hp <=0 && gamedata.player1.hp <=0)){
+            if(type == '1')
+                player1_finish = 1;
+            if(type == '2')
+                player2_finish = 1;
+            if (player1_finish && player2_finish)
+                break;
+        }
+
         send_server_data(sockfd, make_send_data(gamedata, type),client_addr);
 
 

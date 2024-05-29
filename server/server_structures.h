@@ -41,6 +41,7 @@ struct send_data {
 struct client_data {
     entity_t player;
     bullet_t bullet;
+    int heal;
 }typedef  client_data_t;
 
 #endif //STRUCTURES_H
