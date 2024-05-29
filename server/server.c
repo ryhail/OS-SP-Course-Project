@@ -146,9 +146,15 @@ int process_bullet_hit(entity_t* entity, bullet_t bullet) {
             (entity->type != 'b' && bullet.owner == 'b' ))&&
         (check_hit(bullet,* entity,   15))) {
         entity->hp--;
+        printf("Changed HP %c %d\n",entity->type, entity->hp);
         return 1;
     }
     return 0;
+}
+int process_hit_player(entity_t* entity, bullet_t bullet){
+    if(bullet.owner != 'b')
+        return 0;
+    return 1;
 }
 int move_bullet(bullet_t* bullet) {
     bullet->coordinates.x += bullet->vector.x;
@@ -382,6 +388,7 @@ send_data_t make_send_data(game_data_t game_data, int number){
     send_data_t data_to_send = {0};
     data_to_send.boss = game_data.boss;
     if(number == '1') {
+        printf("New hp :%d\n", game_data.player1.hp);
         data_to_send.hp = game_data.player1.hp;
         data_to_send.player = game_data.player2;
     }else {
@@ -409,7 +416,7 @@ int main() {
     close(sockfd);
     sockfd = init_server_socket();
     printf("Server listening on port %d...\n", PORT);
-    sleep(2);
+    //sleep(2);
 //    bullet_t bullet = {};
 //    bullet.coordinates = (struct coordinate){100,100};
 //    bullet.vector = (struct coordinate){1,1};
@@ -419,8 +426,9 @@ int main() {
         // Receive number from client
         type = recieve_client_data(sockfd, &gamedata, &client_addr, &client_addr_len);
 
-        printf("New Iteration\n");
+
         process_bullets(&gamedata);
+        printf("New Iteration hp : %d\n", gamedata.player1.hp);
         move_boss(&gamedata.boss);
         boss_shoot_player(&gamedata);
         //usleep(10000);
