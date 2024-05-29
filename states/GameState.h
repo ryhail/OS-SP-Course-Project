@@ -34,6 +34,7 @@ private:
     InputHandler    inputHandler;
     sf::Time        serverDelay;
     sf::Sprite      heart;
+    sf::Sprite      endGameSprite;
 };
 
 

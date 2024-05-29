@@ -18,7 +18,9 @@ namespace Textures {
         Bullet,
         PlayerUnavailable,
         PickUpIncreaseBullet,
-        PickUpRefillHealth
+        PickUpRefillHealth,
+        endGameLose,
+        endGameWin
     };
 }
 

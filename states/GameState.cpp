@@ -1,5 +1,6 @@
 #include <iostream>
 #include <set>
+#include <csignal>
 #include "GameState.h"
 #include "../entity_managment/PickUp/Pickup.h"
 
@@ -75,6 +76,7 @@ bool GameState::update(sf::Time dt) {
         std::cout <<(int) msgFromServer.hp << std::endl;
         updatedPlayer->setPosition(sf::Vector2f(msgFromServer.player.coordinates.x, msgFromServer.player.coordinates.y));
         updatedPlayer->setCurrentAnimation(static_cast<Animation>(msgFromServer.player.animation));
+        updatedPlayer->takeDamage(controlledPlayer->getHitPoints() - msgFromServer.player.hp);
         bossEntity->move(sf::Vector2f (msgFromServer.boss.coordinates.x, msgFromServer.boss.coordinates.y));
         bossEntity->takeDamage(bossEntity->getHitPoints() - msgFromServer.boss.hp);
     }
@@ -96,6 +98,14 @@ bool GameState::handleEvent(const sf::Event &event) {
         if(event.key.code == sf::Keyboard::Escape) {
             requestStackPush(States::InGameMenu);
         }
+    }
+    if((controlledPlayer->getHitPoints() == 0) && (updatedPlayer->getHitPoints() == 0)) {
+        endGameSprite.setTexture(getContext().textures->getResource(Textures::endGameLose));
+        endGameSprite.setPosition(0,0);
+        getContext().window->draw(endGameSprite);
+        sleep(5);
+        requestStackPop();
+        requestStackPush(States::Menu);
     }
     return true;
 }

@@ -62,7 +62,7 @@ public:
 
     sf::FloatRect   getBoundingRect() const override;
     sf::Rect<float> getPlayerSpriteSize() const;
-
+    void setHitPoints(int hp);
     int getHitPoints() override;
 
 private:
