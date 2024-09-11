@@ -5,9 +5,8 @@
 
 #include <functional>
 #include <cassert>
-#include "../entity_managment/sever_structures.h"
 #include "../entity_managment/Entity/EntityType.h"
-
+#include "../server/server_structures.h"
 
 class SceneNode;
 
@@ -38,5 +37,4 @@ Command::Action derivedAction(Function fn){
         fn(static_cast<GameObject&>(node), dt);
     };
 }
-
 #endif //COURSE_COMMAND_H

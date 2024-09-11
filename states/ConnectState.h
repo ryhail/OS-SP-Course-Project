@@ -1,9 +1,8 @@
 #ifndef SFML_CONNECTSTATE_H
 #define SFML_CONNECTSTATE_H
-
-
 #include <SFML/Graphics.hpp>
 #include "State.h"
+
 
 class ConnectState : public State {
 public:
@@ -15,10 +14,9 @@ public:
 
 
 private:
-    sf::RectangleShape mFrame;
-    sf::RectangleShape mChoices[2];
-    bool               mChoice;
+    sf::Sprite         mBackgroundSprite;
     sf::RectangleShape mConnectButton;
+    sf::Text           mEnterIpText;
     sf::Text           mConnectText;
     sf::Text           mServerIp;
     std::string        mUserInput;

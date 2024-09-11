@@ -1,6 +1,6 @@
 #ifndef SFML_STATE_H
 #define SFML_STATE_H
-
+#include <arpa/inet.h>
 #include <memory>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Font.hpp>
@@ -8,7 +8,7 @@
 #include "../resources/ResourceHolder.h"
 #include "../resources/Fonts.h"
 #include "../player_managment/player/Player.h"
-
+#include "../server/client.h"
 namespace sf
 {
     class RenderWindow;
@@ -30,6 +30,8 @@ public:
         ResourceHolder<Fonts::ID, sf::Font>*                 fonts;
         Player*                                            player1;
         Player*                                            player2;
+        int*                                                sockfd;
+        sockaddr_in*                                    server_adr;
     };
 public:
     State(StateStack& stack, Context context);
@@ -43,6 +45,7 @@ protected:
     void				requestStackPush(States::ID stateID);
     void				requestStackPop();
     void				requestStateClear();
+    void                setServerParams(int sockfd, sockaddr_in server_adr);
     Context				getContext() const;
 
 private:

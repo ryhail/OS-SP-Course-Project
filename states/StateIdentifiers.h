@@ -8,10 +8,11 @@ namespace States
         None,
         Title,
         Menu,
+        Host,
         Connect,
+        Lobby,
         Game,
-        Loading,
-        Pause,
+        InGameMenu
     };
 }
 

@@ -2,15 +2,22 @@
 #define SFML_MAPTILE_H
 
 #include <SFML/Graphics.hpp>
-#include "../entity_managment/Bullet/Bullet.h"
+#include "Tile.h"
+#include "../resources/ResourceHolder.h"
+
+typedef ResourceHolder<Textures::ID, sf::Texture> TextureHolder;
 
 class MapTile {
-    std::vector<sf::Sprite> mTiles;
-    TextureHolder mTextures;
-    sf::RenderWindow* mWindow;
+    std::vector<Tile>               mTiles;
+    TextureHolder                   mTextures;
+    sf::RenderWindow*               mWindow;
+    sf::Vector2f                    mSpawnPoint;
 public:
     MapTile(sf::RenderWindow* window);
+    MapTile(sf::RenderWindow* window, char schema[11][21]);
     void draw();
+    sf::Vector2f                    getSpawnPoint();
+    Tile::Type     getCurrentTileType(sf::Vector2f);
 };
 
 

@@ -32,15 +32,23 @@ public:
         MoveDownRight,
         MoveUpLeft,
         MoveDownLeft,
+        FireLeft,
+        FireRight,
+        FireUp,
+        FireDown,
+        FireUpRight,
+        FireDownRight,
+        FireUpLeft,
+        FireDownLeft,
         ActionCount
     };
     InputHandler();
 
-    void					    handleEvent(const sf::Event& event, CommandQueue& commands);
-    void					    handleRealtimeInput(CommandQueue& commands);
+    void					                handleEvent(const sf::Event& event, CommandQueue& commands);
+    void					                handleRealtimeInput(CommandQueue& commands);
 
-    void					    assignKey(Action action, const HotKey& hotKey);
-    [[nodiscard]] HotKey 		getAssignedKey(Action action) const;
+    void					                assignKey(Action action, const sf::Keyboard::Key& hotKey);
+    [[nodiscard]] sf::Keyboard::Key 		getAssignedKey(Action action) const;
 
 private:
     void					initializeActions();
@@ -48,8 +56,8 @@ private:
 
 
 private:
-    std::map<HotKey, Action>		mKeyBinding;
-    std::map<Action, Command>	    mActionBinding;
+    std::map<sf::Keyboard::Key, Action>		mKeyBinding;
+    std::map<Action, Command>	            mActionBinding;
 
 };
 

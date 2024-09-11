@@ -14,8 +14,9 @@ MenuState::MenuState(StateStack &stack, State::Context context)
         option.setPosition(context.window->getView().getSize() / 2.5f + sf::Vector2f(50, y_shift));
         y_shift+=100;
     }
-    mOptions[0].setString("PLAY");
-    mOptions[1].setString("EXIT");
+    mOptions[0].setString("HOST");
+    mOptions[1].setString("CONNECT");
+    mOptions[2].setString("EXIT");
 }
 
 void MenuState::draw() {
@@ -49,9 +50,13 @@ bool MenuState::handleEvent(const sf::Event &event) {
             switch(currentOption) {
                 case 0:
                     requestStackPop();
-                    requestStackPush(States::Connect);
+                    requestStackPush(States::Host);
                     break;
                 case 1:
+                    requestStackPop();
+                    requestStackPush(States::Connect);
+                    break;
+                case 2:
                     requestStackPop();
                     break;
                 default:

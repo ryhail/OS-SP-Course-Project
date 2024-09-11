@@ -5,8 +5,22 @@ namespace Textures {
     enum ID {
         TitleScreen,
         MainMenu,
+        Lobby,
         Tile,
-        Player1
+        Icetile,
+        Slimetile,
+        Spadestile,
+        Border,
+        Heart,
+        Player1,
+        Player2,
+        Boss,
+        Bullet,
+        PlayerUnavailable,
+        PickUpIncreaseBullet,
+        PickUpRefillHealth,
+        endGameLose,
+        endGameWin
     };
 }
 

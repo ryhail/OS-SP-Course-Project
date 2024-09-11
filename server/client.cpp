@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,11 +6,11 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "sever_structures.h"
-
+#include "client.h"
 
 int initialize_client(int port){
     int sockfd;
+    int buffer_size = 128000;
     struct sockaddr_in local_addr;
     // Create UDP socket
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
@@ -29,12 +30,18 @@ int initialize_client(int port){
         exit(EXIT_FAILURE);
     }
 
-    if(fcntl(sockfd,F_SETFL, O_NONBLOCK) == -1)
-        perror("NON_BLOCK error");
     return sockfd;
 }
+void make_non_block(int sockfd){
+    if(fcntl(sockfd,F_SETFL, O_NONBLOCK) == -1)
+        perror("NON_BLOCK error");
+}
+void make_block(int sockfd){
+    if(fcntl(sockfd,F_SETFL, 0) == -1)
+        perror("NON_BLOCK err or");
+}
 
-void initialize_server(int port, char* server_ip, struct sockaddr_in* server_addr){
+void initialize_server(int port,const char* server_ip, struct sockaddr_in* server_addr){
     memset(server_addr, 0, sizeof(*server_addr));
     server_addr->sin_family = AF_INET;
     server_addr->sin_port = htons(port);
@@ -45,43 +52,38 @@ void initialize_server(int port, char* server_ip, struct sockaddr_in* server_add
     }
 }
 
-void send_client_data(client_data_t data, int sockfd, struct sockaddr_in server_addr){
+void    send_client_data(client_data_t data, int sockfd, struct sockaddr_in server_addr){
     int received_number;
+    make_non_block(sockfd);
     do{
         // Send number to server
         received_number = - 1;
         if (sendto(sockfd, &data, sizeof(data), 0, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
-            perror("Sendto failed");
-            close(sockfd);
-            exit(EXIT_FAILURE);
+            if(errno != EAGAIN)
+                perror("Sendto failed");
         }
         if (recv(sockfd, &received_number, sizeof(received_number), 0) == -1) {
             if(errno != EWOULDBLOCK) {
                 perror("Check error");
-                close(sockfd);
-                exit(EXIT_FAILURE);
             }
         } else {
             printf("Received response from server: %d\n", received_number);
         }
+        usleep(100);
     }while(received_number != 0 );
+    make_block(sockfd);
     printf("Number sent to server.\n");
 
     // Close socket
 
 }
 
-void receive_game_data(game_data_t * data, int sockfd, struct sockaddr_in server_addr){
+void receive_game_data(send_data_t * data, int sockfd, struct sockaddr_in server_addr){
     int count = recv(sockfd, data, sizeof(*data), 0);
     if (count == -1) {
         if(errno != EWOULDBLOCK) {
             perror("Receive error");
-            close(sockfd);
-            exit(EXIT_FAILURE);
         }
-    } else if(count > 0) {
-        printf("Received response from server: %d\n", data->player1.coordinates.x);
     }
+
 }
-
-
